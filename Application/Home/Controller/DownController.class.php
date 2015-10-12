@@ -65,7 +65,7 @@ class DownController extends PublicController {
 			$objProps->setCategory("国家学生体质健康标准测试数据管理与报送系统");
 			//学校信息			
 
-			$schInfo = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year);
+			$schInfo = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year,'one');
 						
 			$fileName = $schInfo['school_name'];
 

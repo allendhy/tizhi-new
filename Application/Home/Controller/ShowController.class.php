@@ -9,7 +9,7 @@ class ShowController extends PublicController {
 		$school_year_options = D('SchoolYear')->getOptions($this->school_year);
 		$town_id_options = get_town_options($this->town_id);
 		$school_id_options = get_school_options($this->school_year,$this->town_id,$this->school_id);
-		
+		//print_r($_SESSION);
 		$this->assign('school_year_options',$school_year_options);
 		$this->assign('town_id_options',$town_id_options);
 		$this->assign('school_id_options',$school_id_options);
