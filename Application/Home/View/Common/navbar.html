@@ -1,0 +1,105 @@
+	<body>
+		<div class="navbar navbar-default" id="navbar">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="navbar-container" id="navbar-container">
+				<div class="navbar-header pull-left">
+					<a href="/" class="navbar-brand">
+						<small>
+							{:C('WEB_SITE')}
+						</small>
+					</a><!-- /.brand -->
+				</div><!-- /.navbar-header -->
+
+				<div class="navbar-header pull-right" role="navigation">
+					<ul class="nav ace-nav">
+						<!-- 顶部菜单 -->
+						<li class="light-blue">
+							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+								<span class="user-info">
+									<small>欢迎,</small>
+									{$login_unit}
+								</span>
+							</a>
+						</li>
+					</ul><!-- /.ace-nav -->
+				</div><!-- /.navbar-header -->
+			</div><!-- /.container -->
+		</div>
+
+		<!-- 左侧菜单 -->
+
+		<div class="main-container" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="main-container-inner">
+				<a class="menu-toggler" id="menu-toggler" href="#">
+					<span class="menu-text"></span>
+				</a>
+				
+				<div class="sidebar" id="sidebar">
+					<script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+					</script>
+
+					<ul class="nav nav-list">
+					<volist name="navList" id="vo">
+						<li <eq name="vo['url']" value="$action_name">class="active"
+						<else/>
+						<if condition="deep_in_array($action_name,$vo['nav_list'])">
+						class="active open"
+						</if>
+						</eq>>
+							<a <neq name="vo['url']" value="">href="{:U($vo['url'])}"<else/>href="#" class="dropdown-toggle"</neq>>
+								<!--<i class="icon-text-width"></i>-->
+								<span class="menu-text"> {$vo.func_name} </span>
+								<eq name="vo['url']" value="">
+								<b class="arrow icon-angle-down"></b>
+								</eq>
+							</a>
+
+							<eq name="vo['url']" value="">
+							<ul class="submenu">
+							<volist name="vo['nav_list']" id="voSon">
+								<li <eq name="voSon['url']" value="$action_name">class="active"</eq>>
+									<a href="{:U($voSon['url'])}">
+										<!--<i class="icon-double-angle-right"></i>-->
+										{$voSon.func_name}
+									</a>
+								</li>
+							</volist>
+							</ul>
+							</eq>
+						</li>
+					</volist>
+					</ul><!-- /.nav-list -->
+
+					<div class="sidebar-collapse" id="sidebar-collapse">
+						<i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+					</div>
+
+					<script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+					</script>
+				</div>
+
+
+				<!--页面开始-->
+				<div class="main-content">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home home-icon"></i>
+								<a href="{:U('Home/Index/index')}">首页</a>
+							</li>
+							<li class="active">{$web_title}</li>
+						</ul><!-- .breadcrumb -->
+					</div>

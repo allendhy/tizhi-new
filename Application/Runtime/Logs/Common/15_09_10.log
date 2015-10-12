@@ -1,0 +1,30 @@
+[ 2015-09-10T17:34:47+08:00 ] 127.0.0.1 /index.php/sdfd
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000029s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000663s ]
+ERR: 无法加载模块:Sdfd
+
+[ 2015-09-10T17:35:00+08:00 ] 127.0.0.1 /index.php/sdfd
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000022s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000500s ]
+ERR: 无法加载模块:Sdfd
+
+[ 2015-09-10T17:35:01+08:00 ] 127.0.0.1 /index.php/sdfd
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000016s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000362s ]
+ERR: 无法加载模块:Sdfd
+
+[ 2015-09-10T17:35:01+08:00 ] 127.0.0.1 /index.php/sdfd
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000018s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000414s ]
+ERR: 无法加载模块:Sdfd
+
+[ 2015-09-10T17:35:02+08:00 ] 127.0.0.1 /index.php/sdfd
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000020s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000490s ]
+ERR: 无法加载模块:Sdfd
+

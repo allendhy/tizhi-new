@@ -1,0 +1,12 @@
+[ 2015-10-08T14:11:24+08:00 ] 127.0.0.1 /index.php?s=/Heme/Index/index.html
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000016s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000493s ]
+ERR: 无法加载模块:Heme
+
+[ 2015-10-08T14:11:35+08:00 ] 127.0.0.1 /index.php?s=/Heme/Index/index.html
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000015s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000446s ]
+ERR: 无法加载模块:Heme
+

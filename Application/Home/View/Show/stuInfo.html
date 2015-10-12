@@ -1,0 +1,121 @@
+<include file="Common:header" />
+	<!-- navber -->
+	<!-- 加载页面 // -->
+	<include file="Common:navbar" />
+
+					<div class="page-content">
+						<div class="page-header">
+							<form action="{:U('Home/Show/stuInfo')}" method="get" id="showForm">
+							<input value="showStuInfo" type="hidden" name="ac"/>
+							<select name="school_year" id="school_year" class="select2 width-15" disabled>{$school_year_options}</select>
+							<select name="town_id" id="town_id"  class="select2 width-15">{$town_id_options}</select>
+							<select name="school_id" id="school_id"  class="select2 width-25">{$school_id_options}</select>
+							<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
+							<select name="class_num" id="class_num"  class="select2 width-15">{$class_num_options}</select>
+							&nbsp;&nbsp;&nbsp;
+							<input type="submit" class="btn btn-small btn-white" value="查看" />
+							</form>
+						</div><!-- /.page-header -->
+
+							<div class="row">
+									<div class="col-xs-12">
+										<div class="table-responsive">
+											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+												<thead>
+													<tr>
+														<th>教育ID号</th>
+														<th>姓名</th>
+														<th class="hidden-480">学校名称</th>
+														<th class="hidden-480">年级</th>
+														<th class="hidden-480">班级</th>
+														<th class="hidden-480">性别</th>
+														<th class="hidden-480">民族</th>
+														<th class="hidden-480">全国学籍号</th>
+														<th class="hidden-480">生源地</th>
+														<eq name="userinfo['user_kind']" value="109030">
+														<th>是否在学</th>
+														</eq>
+													</tr>
+												</thead>
+
+												<tbody>
+												<volist name="stuinfos['list']" id="vo">
+													<tr>
+														<td>
+															{$vo.education_id}
+														</td>
+														<td>{$vo.name}</td>
+														<td class="hidden-480">{$vo.school_name}</td>
+
+														<td class="hidden-480">{$vo.grade_name}</td>
+														<td class="hidden-480">{$vo.class_name}</td>
+														<td class="hidden-480">{$vo.sex}</td>
+														<td class="hidden-480">{$vo.folk}</td>
+														<td class="hidden-480">{$vo.country_education_id}</td>
+														<td class="hidden-480">{$vo.student_source}</td>
+														<eq name="userinfo['user_kind']" value="109030">
+														<!--只有市级管理员有权限操作修改或删除-->
+														<td>
+														<select onchange="setInSchool(this,{$vo.year_score_id},this.value)">
+															<option value="1">是</option>
+															<option value="0" <eq name="vo['in_school']" value="0">selected</eq>>否</option>
+														</select>
+														</td>
+														</eq>
+													</tr>
+												</volist>
+												</tbody>
+											</table>
+										</div><!-- /.table-responsive -->
+									</div><!-- /span -->
+									<!--page-->
+									<neq name="stuinfos['page']" value="">
+									<div class="message-footer clearfix">{$stuinfos.page}</div>
+									</neq>
+									<!--/page-->
+							</div><!-- /row -->
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+			</div><!-- /.main-container-inner -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="icon-double-angle-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<!-- inline scripts related to this page -->
+		<script src="__PUBLIC__/assets/js/select2.min.js"></script>
+		<script src='__PUBLIC__/assets/js/jquery.form.js'></script>
+		<script src='__PUBLIC__/assets/js/is_chzh.js'></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				$(".select2").select2();
+
+				//学校下拉框
+				$('#town_id').change(function(){
+					ajaxSelectSchool('school','school_id');
+				});
+				//年级下拉框
+				$('#school_id').change(function(){
+					ajaxSelectSchool('grade','school_grade');
+				});
+				//班级下拉框
+				$('#school_grade').change(function(){
+					ajaxSelectSchool('class','class_num');
+				});
+			});
+			<eq name="userinfo['user_kind']" value="109030">
+			function setInSchool(obj,id,in_school){
+				if(!id || in_school == 'undefined')return;
+				$.post('{:U('Home/Show/stuInfo')}',{ac : 'chooseInSchool',id : id, in_school : in_school},function(result){
+					if(result.errno != 0){
+						layer.alert(result.errtitle,{icon : 2});
+						return;
+					}
+					layer.alert(result.errtitle,{icon : 1});
+				});
+			}
+			</eq>
+		</script>
+
+<include file="Common:footer" />

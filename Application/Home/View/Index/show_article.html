@@ -1,0 +1,54 @@
+<include file="Common:header" />
+	<!-- navber -->
+	<!-- 加载页面 // -->
+	<include file="Common:navbar" />
+
+					<div class="page-content">
+						<div class="page-header">
+							<h4>
+								<a href="{:U('Home/Index/index')}">最新动态</a>
+								<small>
+									<i class="icon-double-angle-right"></i>
+									{$small_title}
+								</small>
+							</h4>
+						</div><!-- /.page-header -->
+
+							<div class="row">
+									<div class="col-xs-12">
+										<div class="row">
+											<div class="col-sm-12"><!--
+												<h4>Headings &amp; Paragraphs</h4>
+
+												<hr>-->
+												<h1>{$article.article_title}</h1>
+												<hr>
+												<p class="">
+													{$article.article_content}
+												</p>
+											</div>
+										</div>
+									</div><!-- /span -->
+							</div><!-- /row -->
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+
+			</div><!-- /.main-container-inner -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="icon-double-angle-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<!-- inline scripts related to this page -->
+
+		<script type="text/javascript">
+			jQuery(function($) {
+				window.prettyPrint && prettyPrint();
+				$('#id-check-horizontal').removeAttr('checked').on('click', function(){
+					$('#dt-list-1').toggleClass('dl-horizontal').prev().html(this.checked ? '&lt;dl class="dl-horizontal"&gt;' : '&lt;dl&gt;');
+				});
+			})
+		</script>
+
+<include file="Common:footer" />

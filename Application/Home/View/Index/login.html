@@ -1,0 +1,128 @@
+<include file="Common:header" />
+
+	<body class="login-layout">
+		<div class="main-container">
+			<div class="main-content">
+				<div class="row">
+					<div class="col-sm-10 col-sm-offset-1">
+							<div class="center">
+								<h1>
+									<span class="white">国家学生体质健康标准测试数据管理与报送系统（北京市）</span>
+								</h1>
+							</div>
+						<div class="login-container">
+							<div class="space-6"></div>
+							<div class="position-relative">
+								<div id="login-box" class="login-box visible widget-box no-border">
+									<div class="widget-body">
+										<div class="widget-main">
+											<h4 class="header blue lighter bigger">
+												<i class="icon-coffee green"></i>
+												{$web_title}
+											</h4>
+
+											<div class="space-6"></div>
+
+											<form action="{:U('Home/Index/login')}" method="post" id="loginForm">
+												<fieldset>
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="text" name="login_name" class="form-control" placeholder="用户名" value="{$login_name}" check="^\S{1,15}$" warning="请输入用户名，字符长度不超过15"/>
+															<i class="icon-user"></i>
+														</span>
+													</label>
+
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="password" name="login_pwd" class="form-control" placeholder="密码" check="^\S{1,30}$" warning="请输入密码，密码长度不超过30"/>
+															<i class="icon-lock"></i>
+														</span>
+													</label>
+
+													<div class="space"></div>
+
+													<div class="clearfix">
+
+														<label class="inline">
+															<input type="checkbox" class="ace" name="remember" value="on" <neq name="login_name" value="">checked="checked"</neq>/>
+															<span class="lbl"> 记住账号 </span>
+														</label>
+
+														<button type="button" class="width-35 pull-right btn btn-sm btn-primary" id="submitBtn">
+															<i class="icon-key"></i>
+															登录
+														</button>
+													</div>
+
+													<div class="space-4"></div>
+												</fieldset>
+											</form>
+
+										</div><!-- /widget-main -->
+
+									</div><!-- /widget-body -->
+								</div><!-- /login-box -->
+							</div><!-- /position-relative -->
+						</div>
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div>
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+
+		<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>-->
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<![endif]-->
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='__PUBLIC__/assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+		<script type="text/javascript">
+		 window.jQuery || document.write("<script src='__PUBLIC__/assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
+		</script>
+		<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='__PUBLIC__/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+
+		<!-- inline scripts related to this page -->
+		<script src='__PUBLIC__/assets/js/jquery.form.js'></script>
+		<script src="__PUBLIC__/assets/js/is_chzh.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$('#submitBtn').click(function(){
+					$('#loginForm').ajaxSubmit({beforeSubmit:function(){
+						var result = allCheckForm(document.forms[0]);
+						return result;
+					},success:function(data){
+						if(data.errno == 0){
+							console.log(data.url);
+							layer.alert(data.errtitle,{icon : 1}, function(){
+								window.location.href = data.url;
+							});
+						}else{
+							layer.alert(data.errtitle,{icon : 0});
+							return ;
+						}
+					},error:function(){
+						layer.alert('服务器返回数据失败，请重试！',{icon : 2})
+					},dataType:'json'});
+				});
+
+			});
+		</script>
+<include file="Common:footer" />
