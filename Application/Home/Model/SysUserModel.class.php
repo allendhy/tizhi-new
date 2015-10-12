@@ -5,7 +5,7 @@ class SysUserModel extends Model {
 	// 登录方法
 	public function login($login_name,$login_pwd){
 		$where['login_name'] = $login_name;
-		$user = $this->field('login_name,login_pwd,user_kind,org_schoolcode,org_id,input_name,input_sex,input_unit')->where($where)->find();
+		$user = $this->field('user_id,login_name,login_pwd,user_kind,org_schoolcode,org_id,input_name,input_sex,input_unit')->where($where)->find();
 
 		if(empty($user))return array('errno'=>1,'errtitle'=>'用户名不存在！');
 
@@ -25,7 +25,9 @@ class SysUserModel extends Model {
 
 		if($new_pwd != $re_pwd)return array('errno'=>2,'errtitle'=>'两次密码输入不一致！');
 
-		$return = $this->where('user_id = %d',$userinfo['user_id'])->setField('login_pwd',md5($new_pwd));
+		if(md5($new_pwd) == $userinfo['login_pwd'])return array('errno'=>3,'errtitle'=>'密码无修改！');
+
+		$return = $this->where('user_id = %d',array($userinfo['user_id']))->setField(array('login_pwd'=>md5($new_pwd)));
 
 		if($return == true){
 			return array('errno'=>0,'errtitle'=>'密码修改成功，请重新登录系统！');
