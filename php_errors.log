@@ -1,7 +1,0 @@
-[11-Oct-2015 13:38:54 PRC] PHP Fatal error:  Undefined class constant 'PDO::SQLSRV_ATTR_ENCODING' in D:\www\tizhi_new.cc\ThinkPHP\Library\Think\Db.class.php on line 39
-[11-Oct-2015 13:39:06 PRC] PHP Fatal error:  Undefined class constant 'PDO::SQLSRV_ATTR_ENCODING' in D:\www\tizhi_new.cc\ThinkPHP\Library\Think\Db.class.php on line 39
-[11-Oct-2015 13:44:00 PRC] PHP Fatal error:  Undefined class constant 'PDO::SQLSRV_ATTR_ENCODING' in D:\www\tizhi_new.cc\ThinkPHP\Library\Think\Db.class.php on line 39
-[11-Oct-2015 13:44:05 PRC] PHP Fatal error:  Undefined class constant 'PDO::SQLSRV_ATTR_ENCODING' in D:\www\tizhi_new.cc\ThinkPHP\Library\Think\Db.class.php on line 39
-[11-Oct-2015 13:46:26 PRC] PHP Fatal error:  Undefined class constant 'PDO::SQLSRV_ATTR_ENCODING' in D:\www\tizhi_new.cc\ThinkPHP\Library\Think\Db.class.php on line 39
-[11-Oct-2015 13:46:31 PRC] PHP Fatal error:  Undefined class constant 'PDO::SQLSRV_ATTR_ENCODING' in D:\www\tizhi_new.cc\ThinkPHP\Library\Think\Db.class.php on line 39
-[11-Oct-2015 14:30:21 PRC] PHP Fatal error:  Undefined class constant 'PDO::SQLSRV_ATTR_ENCODING' in D:\www\tizhi_new.cc\ThinkPHP\Library\Think\Db.class.php on line 39
