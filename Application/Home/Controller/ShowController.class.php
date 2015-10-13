@@ -15,8 +15,7 @@ class ShowController extends PublicController {
 		$this->assign('school_id_options',$school_id_options);
 
 		//判断是否需要为模版年级和班级下拉框赋值
-		if(in_array(ACTION_NAME,array('stuInfo')) && !IS_AJAX){
-
+		if(in_array(ACTION_NAME,array('stuInfo','printRegister','upNum','phydata')) && !IS_AJAX){
 			$school_grade_options = get_grade_options($this->school_year,$this->town_id,$this->school_id,$this->school_grade);
 			$class_num_options = get_class_options($this->school_year,$this->town_id,$this->school_id,$this->school_grade,$this->class_num);
 			$this->assign('school_grade_options',$school_grade_options);
@@ -91,6 +90,62 @@ class ShowController extends PublicController {
 	}
 
 	//打印登记表
-	public function printRegister(){}
+	public function printRegister(){
+		$this->web_title = '登记卡打印';
+		$this->page_template = "Show:printRegister";
+	}
+	//查看受检未检人数
+	public function upNum(){
+		$this->web_title = '查看受检未检人数';
+		$this->page_template = "Show:upNum";
+	}
+	//查看学生体质成绩
+	public function phydata(){
+		$ac = I('ac','');
+
+		switch($ac){	
+			case 'showPhyInfo':
+				$this->showPhyInfo();
+			break;
+			case 'downPhyInfo':
+				$this->showPhyInfo('down');
+			break;
+			default:
+				$this->web_title = '查看学生体质成绩';
+				$this->page_template = "Show:phydata";
+			break;
+		}
+
+	}
+	//查看学生体质成绩
+	private function showPhyInfo($dtype){
+		if($this->town_id == 0)$this->error('请选择区县！');
+
+		$phyinfos = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_id,$this->school_grade,$this->class_num);
+
+		$gradeListCache = session('gradeList');
+		$folkListCache = session('folkList');
+		$dictListCache = session('dictList');
+		foreach($phyinfos['list'] as $key=>$row){
+			$phyinfos['list'][$key]['grade_name'] = $gradeListCache[$row['school_grade']];
+			//$stuinfos['list'][$key]['folk'] = $folkListCache[$row['folk']];
+			if($row['is_avoid'] == '1'){
+				$phyinfos['list'][$key]['score_level'] = '免体';
+				$phyinfos['list'][$key]['score_level_ori'] = '免体';
+			}else{
+				$phyinfos['list'][$key]['score_level'] = $dictListCache['203'][$row['score_level']]['dict_name'];
+				$phyinfos['list'][$key]['score_level_ori'] = $dictListCache['203'][$row['score_level_ori']]['dict_name'];
+			}
+		}
+		$this->assign('phyinfos',$phyinfos);
+
+		$this->web_title = '查看学生基础数据';
+	   	$this->page_template = 'Show:phydata';
+	}
+	//查看体质上传情况
+	public function phyUpStatus(){
+		$this->web_title = '查看学生体质上传情况';
+		$this->page_template = "Show:phyUpStatus";
+	}
 }
 ?>

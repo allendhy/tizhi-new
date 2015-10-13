@@ -165,5 +165,36 @@ class StudentScoreModel extends Model {
 		}
 		
 	}
+
+	//返回体质信息列表
+	public function get_phyinfos($year_year,$town_id,$school_code,$school_grade,$class_num,$type="school_id",$ac='show'){
+        $where = array();
+
+        $partition_field = intval($town_id . $year_year);
+        //条件
+        $where['partition_field'] = $partition_field;
+
+        if($school_code != 0 && $school_code != ''){
+        	if($type == 'school_id')$where['s.school_id'] = $school_code;
+        	else $where['s.school_code'] = $school_code;
+        }
+
+        if($school_grade != 0) $where['sc.school_grade'] = $school_grade;
+        if($class_num != 0) $where['sc.class_num'] = $class_num;
+
+        $where['s.is_del'] = 0;
+        $where['sc.is_del'] = 0;
+        //$where['sc.is_check'] = 1;
+
+        //查询
+		$count = $this->alias('sc')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->count();
+		//分页
+		$page = new \Think\Page($count,C('PAGE_LISTROWS'));
+		$limit = $ac == 'show' ? ($page->firstRow . ',' . $page->listRows) : '';
+
+        $list = $this->alias('sc')->field("t.town_name,sc.year_score_id,sc.town_id,sc.school_id,s.school_code,s.school_name,sc.school_grade,sc.class_num,sc.class_name,sc.name,case sc.sex when 106020 then '女' when 106010 then '男' else '未知' end sex,sc.folk,sc.education_id,sc.country_education_id,sc.student_source,sc.in_school,sc.is_avoid,sc.total_score,sc.score_level,sc.total_score_ori,sc.score_level_ori,sc.addach_score")->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->limit($limit)->select();
+        $show = $page->show();
+        return array('list'=>$list,'page'=>$show);
+	}
 }
 ?>
