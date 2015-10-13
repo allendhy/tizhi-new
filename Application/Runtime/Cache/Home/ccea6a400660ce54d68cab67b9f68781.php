@@ -30,6 +30,7 @@
 		<link rel="stylesheet" href="/Public/assets/css/ace-skins.min.css" />
 
 		<link rel="stylesheet" href="/Public/assets/css/select2.css" />
+		<link rel="stylesheet" href="/Public/assets/css/fileinput.min.css" />
 
 		<!--[if lte IE 8]>
 		  <link rel="stylesheet" href="/Public/assets/css/ace-ie.min.css" />

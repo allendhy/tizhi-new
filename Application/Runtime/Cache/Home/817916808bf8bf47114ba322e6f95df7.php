@@ -193,85 +193,30 @@
 
 					<div class="page-content">
 						<div class="page-header">
-							<h4>
-								<a href="<?php echo U('Home/Index/index');?>">最新动态</a>
-								<small>
-									<i class="icon-double-angle-right"></i>
-									<?php echo ($small_title); ?>
-								</small>
-							</h4>
+							<div class="table-header">温馨提示：如发现下载的模板中数据与实际学籍信息有误，请及时拨打客服电话，我们将协助您一起解决</div>
 						</div><!-- /.page-header -->
-
 							<div class="row">
-									<div class="col-xs-12">
-										<div class="table-responsive">
-											<table class="table table-striped  table-hover" id="sample-table-1">
-												<thead>
-													<tr><!--
-														<th class="center">
-															<label>
-																<input class="ace" type="checkbox">
-																<span class="lbl"></span>
-															</label>
-														</th>-->
-														<th>标题</th>
-														<th>类别</th>
-														<th class="hidden-480">发布时间</th>
-														<th class="hidden-480">作者</th>
-														<?php if(($userinfo['user_kind']) == "109010"): ?><th>操作</th><?php endif; ?>
-													</tr>
-												</thead>
-
-												<tbody>
-												<?php if(is_array($articles['list'])): $i = 0; $__LIST__ = $articles['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><tr><!--
-														<td class="center">
-															<label>
-																<input class="ace" type="checkbox">
-																<span class="lbl"></span>
-															</label>
-														</td>
-														-->
-														<td>
-															<a href="<?php echo U('Home/Index/index/ac/showart/own_part/'.$vo['own_part'].'/id/'.$vo['article_id'].'');?>"><?php echo ($vo["article_title"]); ?></a>
-														</td>
-														<td><a href="<?php echo U('Home/Index/index/own_part/'.$vo['own_part'].'');?>"><?php echo ($vo["dict_name"]); ?></td>
-														<td class="hidden-480"><?php echo (date("Y-m-d H:i",strtotime($vo["publish_time"]))); ?></td>
-
-														<td class="hidden-480"><!--
-															<span class="label label-sm label-success">Registered</span>
-															-->
-															<?php echo ($vo["publish_login_name"]); ?>
-														</td>
-														<?php if(($userinfo['user_kind']) == "109010"): ?><!--只有市级管理员有权限操作修改或删除-->
-														<td>
-															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
-															<!--
-																<a class="btn btn-xs btn-success" href="#">
-																	<i class="icon-ok bigger-120"></i>
-																</a>
-															-->
-																<a class="btn btn-xs btn-info" href="#edit">
-																	<i class="icon-edit bigger-120"></i>
-																</a>
-
-																<a class="btn btn-xs btn-danger" href="#delete">
-																	<i class="icon-trash bigger-120"></i>
-																</a>
-															<!--
-																<button class="btn btn-xs btn-warning">
-																	<i class="icon-flag bigger-120"></i>
-																</button>
-															-->
-															</div>
-														</td><?php endif; ?>
-													</tr><?php endforeach; endif; else: echo "" ;endif; ?>
-												</tbody>
-											</table>
-										</div><!-- /.table-responsive -->
-									</div><!-- /span -->
-									<!--page-->
-									<?php if(($articles['page']) != ""): ?><div class="message-footer clearfix"><?php echo ($articles["page"]); ?></div><?php endif; ?>
-									<!--/page-->
+								<div class="col-xs-12">
+									<div class="row">
+										<div class="col-sm-8">
+											
+												<input type="hidden" name="dType" id="dType" value="0">
+												<input value="showStuInfo" type="hidden" name="ac"/>
+												<select name="school_year" id="school_year" class="select2 width-20" disabled><?php echo ($school_year_options); ?></select>
+												<select name="town_id" id="town_id"  class="select2 width-25"><?php echo ($town_id_options); ?></select>
+												<select name="school_id" id="school_id"  class="select2 width-50"><?php echo ($school_id_options); ?></select>
+												<!--<input type="button" aname="d3" class="btn btn-small btn-white" value="有全国学籍号学生下载"/> 
+												<input type="button" class="btn btn-small btn-white"  aname="d5" value="无全国学籍号学生下载"/>-->
+											
+										</div>
+									</div>
+									<div class="row" style="padding:20px"></div>
+									<div class="row">
+										<div class="col-sm-6">
+											<input id="file-0a" name="file_data" type="file" data-min-file-count="1" data-overwrite-initial="false" file-id='11'>
+										</div>
+									</div>
+								</div>
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
@@ -283,16 +228,57 @@
 		</div><!-- /.main-container -->
 
 		<!-- inline scripts related to this page -->
+		<script src="/Public/assets/js/select2.min.js"></script>
+		<script src='/Public/assets/js/jquery.form.js'></script>
+		<script src='/Public/assets/js/is_chzh.js'></script>
 
+		<script src='/Public/assets/js/fileinput.min.js'></script>
+		<script src='/Public/assets/js/fileinput_zh.js'></script>
 		<script type="text/javascript">
 			jQuery(function($) {
-			
-				window.prettyPrint && prettyPrint();
-				$('#id-check-horizontal').removeAttr('checked').on('click', function(){
-					$('#dt-list-1').toggleClass('dl-horizontal').prev().html(this.checked ? '&lt;dl class="dl-horizontal"&gt;' : '&lt;dl&gt;');
+
+		        $("#file-0a").fileinput({
+			        language: 'zh',
+			        showPreview : false,
+			        showUpload: true,
+			        showCaption: true,
+			        uploadUrl: '#',
+			       // allowedFileExtensions : ['xls', 'xlsx'],
+			        // slugCallback : function(filename) {
+        			// }
+		        });
+
+				$(".select2").select2();
+
+				//学校下拉框
+				$('#town_id').change(function(){
+					ajaxSelectSchool('school','school_id');
 				});
-			
-			})
+				$('#school_id').change(function(){
+					ajaxSelectSchool('school','school_id');
+				});
+				//提交表单
+				$("input[type=button]").click(function(){
+					var dtype = $(this).attr('aname');
+					if(dtype == 'undefined' || dtype == ''){
+						alert('您的操作有误，请刷新页面后重试');
+						return false;
+					}
+					$('#dType').val(dtype);
+					$('#Form').submit();
+				});
+			});
+
+			<?php if(($userinfo['user_kind']) == "109030"): ?>function setInSchool(obj,id,in_school){
+				if(!id || in_school == 'undefined')return;
+				$.post('<?php echo U('Home/Show/stuInfo');?>',{ac : 'chooseInSchool',id : id, in_school : in_school},function(result){
+					if(result.errno != 0){
+						layer.alert(result.errtitle,{icon : 2});
+						return;
+					}
+					layer.alert(result.errtitle,{icon : 1});
+				});
+			}<?php endif; ?>
 		</script>
 
 </body>
