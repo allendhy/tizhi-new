@@ -18,20 +18,32 @@ class UpController extends PublicController {
 
 	//上传体质信息
 	public function phydata(){
-		if(IS_AJAX && $_FILES['file_data']){
-			//由于文件上传插件暂时无法解决同步提交学校ID，如果是区县或者市级进行上传，则在选择学校时异步将学校ID保存到SESSION中
-			//提交上传文件后,则根据相应权限进行判断学校ID区县ID等信息
-			//然后将上传的文件进度返回到浏览器
-			//并且将校验进度及校验结果返回到浏览器
 
-			//print_r($_REQUEST);
-			//print_r($_FILES);
-			sleep(10);
-			//exit();
-		}
+		$targetFolder = '/uploads'; // Relative to the root
+		$unique_salt = C('UNIQUE_SALT');
+		$verifyToken = md5($unique_salt . $_POST['timestamp']);
+		//PRINT_R($_FILES);exit();
+		if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
+			$tempFile = $_FILES['Filedata']['tmp_name'];
+			$targetPath = $_SERVER['DOCUMENT_ROOT'] . $targetFolder;
+			$targetFile = rtrim($targetPath,'/') . '/' . $_FILES['Filedata']['name'];
+				
+			// Validate the file type
+			$fileTypes = array('xls','xlsx'); // File extensions
+			$fileParts = pathinfo($_FILES['Filedata']['name']);
+				
+			if (in_array($fileParts['extension'],$fileTypes)) {
+				move_uploaded_file($tempFile,$targetFile);
+				echo '1';
+			} else {
+				echo 'Invalid file type.';
+			}
+		}else{
+			$this->assign('timestamp',time());
+			$this->web_title = '上传学生体质信息(有全国学籍号)';
+        	$this->page_template = 'Up:phydata';
+    	}
 
-		$this->web_title = '上传学生体质信息(有全国学籍号)';
-        $this->page_template = 'Up:phydata';
 	}
 	//上传体质信息，无全国学籍号
 	public function phydata2(){

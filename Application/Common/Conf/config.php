@@ -24,4 +24,7 @@ return array(
 	'VAR_PAGE'				=> 'p',		
 	'PAGE_ROLLPAGE'         => 5,						// 分页显示页数
 	'PAGE_LISTROWS'         => 20,						// 分页每页显示记录数
+
+	/** 表单提交unique_sqlt*/
+	'UNIQUE_SALT'			=> 'chzh',
 );

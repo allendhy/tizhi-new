@@ -36,7 +36,8 @@ class PublicController extends Controller {
 		//判断用户是否具有执行当前操作的权限
 		$action_whitelist = session('actionList');
 		$action_whitelist[] = 'Home/Index/login';
-
+		// echo $this->action_name;
+		// print_r($action_whitelist);
 		if(!in_array($this->action_name,$action_whitelist)){
 			$this->error('您无权执行当前操作！');
 		}

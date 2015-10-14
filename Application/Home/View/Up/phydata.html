@@ -23,7 +23,7 @@
 									<div class="row" style="padding:20px"></div>
 									<div class="row">
 										<div class="col-sm-6">
-											<input id="file-0a" name="file_data" type="file" data-min-file-count="1" data-overwrite-initial="false" file-id='11'>
+											<input id="file_upload" name="file_upload" type="file" multiple="false" />
 										</div>
 									</div>
 								</div>
@@ -41,22 +41,24 @@
 		<script src="__PUBLIC__/assets/js/select2.min.js"></script>
 		<script src='__PUBLIC__/assets/js/jquery.form.js'></script>
 		<script src='__PUBLIC__/assets/js/is_chzh.js'></script>
-
+		<!--
 		<script src='__PUBLIC__/assets/js/fileinput.min.js'></script>
 		<script src='__PUBLIC__/assets/js/fileinput_zh.js'></script>
+		-->
+		<script src='__PUBLIC__/assets/js/uploadify/jquery.uploadify.min.js'></script>
 		<script type="text/javascript">
 			jQuery(function($) {
-
-		        $("#file-0a").fileinput({
-			        language: 'zh',
-			        showPreview : false,
-			        showUpload: true,
-			        showCaption: true,
-			        uploadUrl: '#',
-			       	allowedFileExtensions : ['xls', 'xlsx'],
-			        // slugCallback : function(filename) {
-        			// }
-		        });
+				$('#file_upload').uploadify({
+					//'debug' : false,
+					//'auto'	:false,
+					'formData'     : {
+						'timestamp' : '{$timestamp}',
+						'token'     : '<php>echo md5(C('UNIQUE_SALT') . $timestamp);</php>'
+					},
+					'swf'      : '__PUBLIC__/assets/js/uploadify/uploadify.swf',
+					'uploader' : '{:U('Home/Up/phydata')}',
+				});
+		
 
 				$(".select2").select2();
 
