@@ -30,7 +30,6 @@
 		<link rel="stylesheet" href="/Public/assets/css/ace-skins.min.css" />
 
 		<link rel="stylesheet" href="/Public/assets/css/select2.css" />
-		<link rel="stylesheet" href="/Public/assets/css/fileinput.min.css" />
 
 		<!--[if lte IE 8]>
 		  <link rel="stylesheet" href="/Public/assets/css/ace-ie.min.css" />
@@ -193,33 +192,34 @@
 
 					<div class="page-content">
 						<div class="page-header">
-							<div class="table-header">温馨提示：如发现下载的模板中数据与实际学籍信息有误，请及时拨打客服电话，我们将协助您一起解决</div>
+							<h4>
+								<a href="<?php echo U('Home/Index/index');?>">最新动态</a>
+								<small>
+									<i class="icon-double-angle-right"></i>
+									<?php echo ($small_title); ?>
+								</small>
+							</h4>
 						</div><!-- /.page-header -->
+
 							<div class="row">
-								<div class="col-xs-12">
-									<div class="row">
-										<div class="col-sm-8">
-											
-												<input type="hidden" name="dType" id="dType" value="0">
-												<input value="showStuInfo" type="hidden" name="ac"/>
-												<select name="school_year" id="school_year" class="select2 width-20" disabled><?php echo ($school_year_options); ?></select>
-												<select name="town_id" id="town_id"  class="select2 width-25"><?php echo ($town_id_options); ?></select>
-												<select name="school_id" id="school_id"  class="select2 width-50"><?php echo ($school_id_options); ?></select>
-												<!--<input type="button" aname="d3" class="btn btn-small btn-white" value="有全国学籍号学生下载"/> 
-												<input type="button" class="btn btn-small btn-white"  aname="d5" value="无全国学籍号学生下载"/>-->
-											
+									<div class="col-xs-12">
+										<div class="row">
+											<div class="col-sm-12"><!--
+												<h4>Headings &amp; Paragraphs</h4>
+
+												<hr>-->
+												<h1><?php echo ($article["article_title"]); ?></h1>
+												<hr>
+												<p class="">
+													<?php echo ($article["article_content"]); ?>
+												</p>
+											</div>
 										</div>
-									</div>
-									<div class="row" style="padding:20px"></div>
-									<div class="row">
-										<div class="col-sm-6">
-											<input id="file-0a" name="file_data" type="file" data-min-file-count="1" data-overwrite-initial="false" file-id='11'>
-										</div>
-									</div>
-								</div>
+									</div><!-- /span -->
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
+
 			</div><!-- /.main-container-inner -->
 
 			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
@@ -228,57 +228,14 @@
 		</div><!-- /.main-container -->
 
 		<!-- inline scripts related to this page -->
-		<script src="/Public/assets/js/select2.min.js"></script>
-		<script src='/Public/assets/js/jquery.form.js'></script>
-		<script src='/Public/assets/js/is_chzh.js'></script>
 
-		<script src='/Public/assets/js/fileinput.min.js'></script>
-		<script src='/Public/assets/js/fileinput_zh.js'></script>
 		<script type="text/javascript">
 			jQuery(function($) {
-
-		        $("#file-0a").fileinput({
-			        language: 'zh',
-			        showPreview : false,
-			        showUpload: true,
-			        showCaption: true,
-			        uploadUrl: '#',
-			       // allowedFileExtensions : ['xls', 'xlsx'],
-			        // slugCallback : function(filename) {
-        			// }
-		        });
-
-				$(".select2").select2();
-
-				//学校下拉框
-				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_id');
+				window.prettyPrint && prettyPrint();
+				$('#id-check-horizontal').removeAttr('checked').on('click', function(){
+					$('#dt-list-1').toggleClass('dl-horizontal').prev().html(this.checked ? '&lt;dl class="dl-horizontal"&gt;' : '&lt;dl&gt;');
 				});
-				$('#school_id').change(function(){
-					ajaxSelectSchool('school','school_id');
-				});
-				//提交表单
-				$("input[type=button]").click(function(){
-					var dtype = $(this).attr('aname');
-					if(dtype == 'undefined' || dtype == ''){
-						alert('您的操作有误，请刷新页面后重试');
-						return false;
-					}
-					$('#dType').val(dtype);
-					$('#Form').submit();
-				});
-			});
-
-			<?php if(($userinfo['user_kind']) == "109030"): ?>function setInSchool(obj,id,in_school){
-				if(!id || in_school == 'undefined')return;
-				$.post('<?php echo U('Home/Show/stuInfo');?>',{ac : 'chooseInSchool',id : id, in_school : in_school},function(result){
-					if(result.errno != 0){
-						layer.alert(result.errtitle,{icon : 2});
-						return;
-					}
-					layer.alert(result.errtitle,{icon : 1});
-				});
-			}<?php endif; ?>
+			})
 		</script>
 
 </body>

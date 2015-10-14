@@ -30,6 +30,7 @@
 		<link rel="stylesheet" href="/Public/assets/css/ace-skins.min.css" />
 
 		<link rel="stylesheet" href="/Public/assets/css/select2.css" />
+		<link rel="stylesheet" href="/Public/assets/css/fileinput.min.css" />
 
 		<!--[if lte IE 8]>
 		  <link rel="stylesheet" href="/Public/assets/css/ace-ie.min.css" />
@@ -191,47 +192,73 @@
 					</div>
 
 					<div class="page-content">
+					
+					<div class="table-header"> 温馨提示：您可以点击 综合成绩 查看该学生的各项目成绩。</div>
+					
+					<hr/>
+						<div class="page-header">
+							<form action="" id="showForm" method="get">
+								<input value="showPhyInfo" type="hidden" name="ac"/>
+								<select name="school_year" id="school_year" class="select2 width-15"><?php echo ($school_year_options); ?></select>
+								<select name="town_id" id="town_id"  class="select2 width-10"><?php echo ($town_id_options); ?></select>
+								<select name="school_id" id="school_id"  class="select2 width-25"><?php echo ($school_id_options); ?></select>
+								<select name="school_grade" id="school_grade"  class="select2 width-10"><?php echo ($school_grade_options); ?></select>
+								<select name="class_num" id="class_num"  class="select2 width-10"><?php echo ($class_num_options); ?></select>
+								&nbsp;&nbsp;&nbsp;
+								<input type="button" class="btn btn-small btn-white" dtype="showPhyInfo" value="查看"/> 
+								<input type="button" class="btn btn-small btn-white" dtype="downPhyInfo"  value="下载"/>
+							</form>
+						</div><!-- /.page-header -->
+
 							<div class="row">
-									<form action="" method="post" id="editForm">
 									<div class="col-xs-12">
 										<div class="table-responsive">
-
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+												<thead>
+													<tr>
+														<th>ID</th>
+														<th>区县</th>
+														<th>姓名</th>
+														<th>全国学籍号</th>
+														<th>学校名称</th>
+														<th>年级</th>
+														<th>班级</th>
+														<th>性别</th>
+														<th>综合成绩</th>
+														<th>综合评定</th>
+														<th>测试成绩</th>
+														<th>测试成绩评定</th>
+														<th>附加分</th>
+													</tr>
+												</thead>
+
 												<tbody>
-													<tr><td class="width-30">登录名</td><td><div class="col-sm-9"><?php echo ($userinfo["login_name"]); ?></div></td></tr>
-													<tr><td>旧密码</td><td><div class="col-sm-9">
-											<input type="password" id="old_pwd" name="old_pwd" check="^\S{6,20}$" warning="请输入原密码，6-20个字符长度" maxlength="20"/>
-										</div></td></tr>
-													<tr><td>新密码</td><td><div class="col-sm-9">
-											<input type="password" id="new_pwd" name="new_pwd" check="^\S{6,20}$" warning="请输入新密码，6-20个字符长度"  maxlength="16" />
-										</div></td></tr>
-													<tr><td>确认新密码</td><td><div class="col-sm-9">
-											<input type="password" id="re_pwd" name="re_pwd"  check="^\S{6,20}$" warning="请再次输入密码，6-20个字符长度"  maxlength="16"/>
-										</div></td></tr>
+												<?php if(is_array($phyinfos['list'])): $i = 0; $__LIST__ = $phyinfos['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><tr>
+														<td>
+															<?php echo ($vo["year_score_id"]); ?>
+														</td>
+														<td><?php echo ($vo["town_name"]); ?></td>
+														<td class="hidden-480"><?php echo ($vo["name"]); ?></td>
+
+														<td><?php echo ($vo["country_education_id"]); ?></td>
+														<td><?php echo ($vo["school_name"]); ?></td>
+														<td><?php echo ($vo["grade_name"]); ?></td>
+														<td><?php echo ($vo["class_name"]); ?></td>
+														<td><?php echo ($vo["sex"]); ?></td>
+														<td><?php echo ($vo["total_score"]); ?></td>
+														<td><?php echo ($vo["score_level"]); ?></td>
+														<td><?php echo ($vo["total_score_ori"]); ?></td>
+														<td><?php echo ($vo["score_level_ori"]); ?></td>
+														<td><?php echo ($vo["addach_score"]); ?></td>
+													</tr><?php endforeach; endif; else: echo "" ;endif; ?>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
 									</div><!-- /span -->
-									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="form-field-tags"></label>
-
-										<div class="col-sm-9">
-											<button class="btn btn-info" type="button" id="submitBtn">
-												<i class="icon-ok bigger-110"></i>
-												提交
-											</button>
-
-											&nbsp; &nbsp; &nbsp;
-											<button class="btn" type="reset" id="resetBtn">
-												<i class="icon-undo bigger-110"></i>
-												重置
-											</button>
-										</div>
-									</div>
-									</form>
-									<div class="hr hr-24"></div>
+									<!--page-->
+									<?php if(($phyinfos['page']) != ""): ?><div class="message-footer clearfix"><?php echo ($phyinfos["page"]); ?></div><?php endif; ?>
+									<!--/page-->
 							</div><!-- /row -->
-
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
 			</div><!-- /.main-container-inner -->
@@ -247,27 +274,31 @@
 		<script src='/Public/assets/js/is_chzh.js'></script>
 		<script type="text/javascript">
 			jQuery(function($) {
-				$('#submitBtn').click(function (){
-					//checkform();return;
-					$('#editForm').ajaxSubmit({beforeSubmit:checkform,success:function(data){
-						if(data.errno != 0){
-							layer.alert(data.errtitle,{icon:0});
-							return;
-						}
-						layer.alert(data.errtitle,{icon:1},function(){
-							window.location.href = '<?php echo U('Home/Index/logout');?>';
-						});
-					},error:function(XMLResponse){
-						layer.alert(XMLResponse.responseText,{icon:0});
-					},dataType:'json'});
+				$(".select2").select2();
+
+				//学校下拉框
+				$('#town_id').change(function(){
+					ajaxSelectSchool('school','school_id');
+				});
+				//年级下拉框
+				$('#school_id').change(function(){
+					ajaxSelectSchool('grade','school_grade');
+				});
+				//班级下拉框
+				$('#school_grade').change(function(){
+					ajaxSelectSchool('class','class_num');
+				});
+				//提交表单
+				$("input[type=button]").click(function(){
+					var dtype = $(this).attr('dtype');
+					if(dtype == 'undefined' || dtype == ''){
+						alert('您的操作有误，请刷新页面后重试');
+						return false;
+					}
+					$('#ac').val(dtype);
+					$('#showForm').submit();
 				});
 			});
-
-			function checkform(){
-				var result = allCheckForm(document.forms[0]);
-				return result;
-			}
-
 		</script>
 
 </body>

@@ -15,7 +15,7 @@ class DownController extends PublicController {
 		$this->assign('school_id_options',$school_id_options);
 		
 		//判断是否需要为模版年级和班级下拉框赋值
-		if(in_array(ACTION_NAME,array('template')) && !IS_AJAX){
+		if(in_array(ACTION_NAME,array('template','receipt')) && !IS_AJAX){
 			$school_grade_options = get_grade_options($this->school_year,$this->town_id,$this->school_code,$this->school_grade,'school_code');
 			$class_num_options = get_class_options($this->school_year,$this->town_id,$this->school_id,$this->school_grade,$this->class_num);
 			$this->assign('school_grade_options',$school_grade_options);
@@ -381,4 +381,11 @@ class DownController extends PublicController {
 		$this->web_title = '下载数据模版';
         $this->page_template = 'Down:template';
 	}
+
+	//下载学生体质成绩回执单
+	public function receipt(){
+		$this->web_title = '下载学生体质成绩回执单';
+		$this->page_template = "Down:receipt";
+	}
+	//
 }

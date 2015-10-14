@@ -34,7 +34,7 @@ class Page {
     protected $pageSizes  =  array(20,50,100);
     
 	// 默认分页变量名
-	protected $config  =    array('header'=>'共 %totalRow% 条记录','prev'=>'<<','next'=>'>>','first'=>'1...','last'=>'...%totalPages%','theme'=>'<div class="pull-left"><form action="" method="get">%header%  %nowPage%/%totalPage%页  %findPage%</form></div>  <div class="pull-right"><ul class="pagination">%upPage%  %linkPage% %downPage% </div>');
+	protected $config  =    array('header'=>'共 %totalRow% 条记录','prev'=>'<<','next'=>'>>','first'=>'1...','last'=>'...%totalPages%','theme'=>'<div class="pull-left"><form action="%action%" method="get">%header%  %nowPage%/%totalPage%页  %findPage%</form></div>  <div class="pull-right"><ul class="pagination">%upPage%  %linkPage% %downPage% </div>');
     protected $varPage;
 
     /**
@@ -176,8 +176,8 @@ class Page {
 		// +---------------------------------------------------------------
 		
         $pageStr     =   str_replace(
-            array('%header%','%nowPage%','%totalRow%','%totalPage%','%upPage%','%downPage%','%first%','%prePage%','%linkPage%','%nextPage%','%end%','%findPage%'),
-            array($this->config['header'],$this->nowPage,$this->totalRows,$this->totalPages,$upPage,$downPage,$theFirst,$prePage,$linkPage,$nextPage,$theEnd,$findPage),$this->config['theme']);
+            array('%header%','%nowPage%','%totalRow%','%totalPage%','%upPage%','%downPage%','%first%','%prePage%','%linkPage%','%nextPage%','%end%','%findPage%','%action%'),
+            array($this->config['header'],$this->nowPage,$this->totalRows,$this->totalPages,$upPage,$downPage,$theFirst,$prePage,$linkPage,$nextPage,$theEnd,$findPage,str_replace('__PAGE__',$this->nowPage,$url)),$this->config['theme']);
 			
         return "{$pageStr}";
     }

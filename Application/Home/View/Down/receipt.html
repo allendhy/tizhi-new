@@ -1,0 +1,61 @@
+<include file="Common:header" />
+	<!-- navber -->
+	<!-- 加载页面 // -->
+	<include file="Common:navbar" />
+
+					<div class="page-content">
+					<div class="table-header">温馨提示：成绩回执单下载以班级为单位</div>
+					<hr/>
+
+							<div class="row">
+									<div class="col-xs-12">
+										<form action="" id="downForm" method="post">
+											<input value="showStuInfo" type="hidden" name="ac"/>
+											<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
+											<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
+											<select name="school_id" id="school_id"  class="select2 width-25">{$school_id_options}</select>
+											<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
+											<select name="class_num" id="class_num"  class="select2 width-10">{$class_num_options}</select>
+											&nbsp;&nbsp;&nbsp;
+											<input type="button" class="btn btn-small btn-white" value="下载"/> 
+										</form>
+									</div><!-- /span -->
+									<!--page-->
+									<neq name="stuinfos['page']" value="">
+									<div class="message-footer clearfix">{$stuinfos.page}</div>
+									</neq>
+									<!--/page-->
+							</div><!-- /row -->
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+			</div><!-- /.main-container-inner -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="icon-double-angle-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<!-- inline scripts related to this page -->
+		<script src="__PUBLIC__/assets/js/select2.min.js"></script>
+		<script src='__PUBLIC__/assets/js/jquery.form.js'></script>
+		<script src='__PUBLIC__/assets/js/is_chzh.js'></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				$(".select2").select2();
+
+				//学校下拉框
+				$('#town_id').change(function(){
+					ajaxSelectSchool('school','school_id');
+				});
+				//年级下拉框
+				$('#school_id').change(function(){
+					ajaxSelectSchool('grade','school_grade');
+				});
+				//班级下拉框
+				$('#school_grade').change(function(){
+					ajaxSelectSchool('class','class_num');
+				});
+			});
+		</script>
+
+<include file="Common:footer" />

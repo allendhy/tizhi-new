@@ -49,8 +49,8 @@ class PublicController extends Controller {
 
 		//检索学生信息相关字段赋值
 		$school_year = I('school_year',0);
+		$this_year_info = session('thisYear');
 		if($school_year == 0){
-			$this_year_info = session('thisYear');
 			$this->school_year = $this_year_info['year_year'];
 		}else $this->school_year = $school_year;
 
@@ -73,13 +73,10 @@ class PublicController extends Controller {
 				$townlist = session('townList');
 				$this->town_id = $townlist[0]['town_id'];
 				$this->school_code = $userinfo['org_schoolcode'];
-				
-				if(!$this->school_id){
-					$schInfo = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year,'one');
 
-					$this->school_id = $schInfo['school_id'];
-				}
-				
+				$schInfo = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year,'one');
+				$this->school_id = $schInfo['school_id'];
+
 			break;
 
 			default:

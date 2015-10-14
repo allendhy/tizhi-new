@@ -13,6 +13,7 @@ class UpController extends PublicController {
 		$this->assign('school_year_options',$school_year_options);
 		$this->assign('town_id_options',$town_id_options);
 		$this->assign('school_id_options',$school_id_options);
+
 	}
 
 	//上传体质信息
@@ -29,7 +30,17 @@ class UpController extends PublicController {
 			//exit();
 		}
 
-		$this->web_title = '上传学生体质信息';
+		$this->web_title = '上传学生体质信息(有全国学籍号)';
         $this->page_template = 'Up:phydata';
+	}
+	//上传体质信息，无全国学籍号
+	public function phydata2(){
+		$this->web_title = '上传学生体质信息(无全国学籍号)';
+        $this->page_template = 'Up:phydata';
+	}
+	//体质数据上报
+	public function phydataSubmit(){
+		$this->web_title = '学生体质数据上报';
+        $this->page_template = 'Up:phydataSubmit';
 	}
 }

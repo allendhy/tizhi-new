@@ -5,13 +5,12 @@
 
 					<div class="page-content">
 						<div class="page-header">
-							<div class="table-header">温馨提示：如发现下载的模板中数据与实际学籍信息有误，请及时拨打客服电话，我们将协助您一起解决</div>
+							<div class="table-header">数据上报截止时间为：2014年12月20日，上报过程中，如有疑问，请您将问题统一反馈至本区县体质负责人，谢谢</div>
 						</div><!-- /.page-header -->
 							<div class="row">
 								<div class="col-xs-12">
 									<div class="row">
 										<div class="col-sm-8">
-											
 												<input type="hidden" name="dType" id="dType" value="0">
 												<input value="showStuInfo" type="hidden" name="ac"/>
 												<select name="school_year" id="school_year" class="select2 width-20" disabled>{$school_year_options}</select>
@@ -19,7 +18,6 @@
 												<select name="school_id" id="school_id"  class="select2 width-50">{$school_id_options}</select>
 												<!--<input type="button" aname="d3" class="btn btn-small btn-white" value="有全国学籍号学生下载"/> 
 												<input type="button" class="btn btn-small btn-white"  aname="d5" value="无全国学籍号学生下载"/>-->
-											
 										</div>
 									</div>
 									<div class="row" style="padding:20px"></div>
@@ -68,6 +66,7 @@
 				});
 				$('#school_id').change(function(){
 					ajaxSelectSchool('school','school_id');
+
 				});
 				//提交表单
 				$("input[type=button]").click(function(){
@@ -81,18 +80,6 @@
 				});
 			});
 
-			<eq name="userinfo['user_kind']" value="109030">
-			function setInSchool(obj,id,in_school){
-				if(!id || in_school == 'undefined')return;
-				$.post('{:U('Home/Show/stuInfo')}',{ac : 'chooseInSchool',id : id, in_school : in_school},function(result){
-					if(result.errno != 0){
-						layer.alert(result.errtitle,{icon : 2});
-						return;
-					}
-					layer.alert(result.errtitle,{icon : 1});
-				});
-			}
-			</eq>
 		</script>
 
 <include file="Common:footer" />
