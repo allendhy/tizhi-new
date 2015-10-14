@@ -15,22 +15,35 @@ class UpController extends PublicController {
 		$this->assign('school_code_options',$school_code_options);
 
 	}
-
 	//上传体质信息
-	public function phydata(){
-
+	public function index(){
+		$ac = I('ac','phydata');
+		switch($ac){
+			case 'phydata':
+				$this->phydata();
+			break;
+			case 'phydata2':
+				$this->phydata2();
+			break;
+			case 'historyPhydata':
+				$this->historyPhydata();
+			break;
+		}
+	}
+	//有全国学籍号
+	private function phydata(){
 		$targetFolder = '/uploads'; // Relative to the root
 		$unique_salt = C('UNIQUE_SALT');
 		$verifyToken = md5($unique_salt . $_POST['timestamp']);
-		//PRINT_R($_FILES);exit();
+
 		if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
-			$tempFile = $_FILES['Filedata']['tmp_name'];
+			$tempFile = $_FILES['file_data']['tmp_name'];
 			$targetPath = $_SERVER['DOCUMENT_ROOT'] . $targetFolder;
 			$targetFile = rtrim($targetPath,'/') . '/' . $_FILES['Filedata']['name'];
 				
 			// Validate the file type
 			$fileTypes = array('xls','xlsx'); // File extensions
-			$fileParts = pathinfo($_FILES['Filedata']['name']);
+			$fileParts = pathinfo($_FILES['file_data']['name']);
 				
 			if (in_array($fileParts['extension'],$fileTypes)) {
 				move_uploaded_file($tempFile,$targetFile);
@@ -43,10 +56,10 @@ class UpController extends PublicController {
 			$this->web_title = '上传学生体质信息(有全国学籍号)';
         	$this->page_template = 'Up:phydata';
     	}
-
 	}
 	//上传体质信息，无全国学籍号
 	public function phydata2(){
+		$this->assign('timestamp',time());
 		$this->web_title = '上传学生体质信息(无全国学籍号)';
         $this->page_template = 'Up:phydata';
 	}

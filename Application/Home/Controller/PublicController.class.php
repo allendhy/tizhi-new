@@ -25,6 +25,20 @@ class PublicController extends Controller {
 
 		//当前操作名
 		$this->action_name = implode('/',$this->actions);
+
+		//为兼容uploadify flash插件 begin
+		$session_name = session_name();
+
+		if (isset($_POST[$session_name])){
+
+			session('[pause]');
+
+			session(array('id'=>$_POST[$session_name]));
+
+			session("[start]");
+		}
+		//end
+
 		//用户菜单
 		$navList = array();
 		$userinfo = session('userinfo');
@@ -36,8 +50,10 @@ class PublicController extends Controller {
 		//判断用户是否具有执行当前操作的权限
 		$action_whitelist = session('actionList');
 		$action_whitelist[] = 'Home/Index/login';
-		// echo $this->action_name;
-		// print_r($action_whitelist);
+		//$action_whitelist[] = 'Home/Up/login';
+
+
+
 		if(!in_array($this->action_name,$action_whitelist)){
 			$this->error('您无权执行当前操作！');
 		}

@@ -16,8 +16,6 @@
 												<select name="school_year" id="school_year" class="select2 width-20" disabled>{$school_year_options}</select>
 												<select name="town_id" id="town_id"  class="select2 width-25">{$town_id_options}</select>
 												<select name="school_code" id="school_code" class="select2 width-50">{$school_code_options}</select>
-												<!--<input type="button" aname="d3" class="btn btn-small btn-white" value="有全国学籍号学生下载"/> 
-												<input type="button" class="btn btn-small btn-white"  aname="d5" value="无全国学籍号学生下载"/>-->
 										</div>
 									</div>
 									<div class="row" style="padding:20px"></div>
@@ -45,43 +43,6 @@
 		<script src='__PUBLIC__/assets/js/fileinput.min.js'></script>
 		<script src='__PUBLIC__/assets/js/fileinput_zh.js'></script>
 		-->
-		<script src='__PUBLIC__/assets/js/uploadify/jquery.uploadify.min.js'></script>
-		<script type="text/javascript">
-			jQuery(function($) {
-				$('#file_upload').uploadify({
-					//'debug' : false,
-					//'auto'	:false,
-					'formData'     : {
-						'timestamp' : '{$timestamp}',
-						'token'     : '<php>echo md5(C('UNIQUE_SALT') . $timestamp);</php>'
-					},
-					'swf'      : '__PUBLIC__/assets/js/uploadify/uploadify.swf',
-					'uploader' : '{:U('Home/Up/phydata')}',
-				});
-		
-
-				$(".select2").select2();
-
-				//学校下拉框
-				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_code');
-				});
-				$('#school_id').change(function(){
-					//ajaxSelectSchool('school','school_id');
-
-				});
-				//提交表单
-				$("input[type=button]").click(function(){
-					var dtype = $(this).attr('aname');
-					if(dtype == 'undefined' || dtype == ''){
-						alert('您的操作有误，请刷新页面后重试');
-						return false;
-					}
-					$('#dType').val(dtype);
-					$('#Form').submit();
-				});
-			});
-
-		</script>
+		<include file="Common:uploadify_js" />
 
 <include file="Common:footer" />
