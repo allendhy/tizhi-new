@@ -5,13 +5,16 @@
 
 					<div class="page-content">
 						<div class="page-header">
-							<form action="{:U('Home/Show/stuInfo')}" method="get" id="showForm">
-							<input value="showStuInfo" type="hidden" name="ac"/>
-							<select name="school_year" id="school_year" class="select2 width-15" disabled>{$school_year_options}</select>
-							<select name="town_id" id="town_id"  class="select2 width-15">{$town_id_options}</select>
-							<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
-							<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
-							<select name="class_num" id="class_num"  class="select2 width-15">{$class_num_options}</select>
+							<form action="" method="get" id="showForm">
+							<select name="school_year" id="school_year"  class="select2 width-15">
+							{$school_year_options}
+							</select>
+							<select name="town_id" id="town_id"  class="select2 width-15">
+							{$town_id_options}
+							</select>
+							<select name="school_code" id="school_code"  class="select2 width-25">
+							{$school_code_options}
+							</select>
 							&nbsp;&nbsp;&nbsp;
 							<input type="submit" class="btn btn-small btn-white" value="查看" />
 							</form>
@@ -23,21 +26,15 @@
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<th>教育ID号</th>
-														<th>姓名</th>
-														<th class="hidden-480">学校名称</th>
-														<th class="hidden-480">年级</th>
-														<th class="hidden-480">班级</th>
-														<th class="hidden-480">性别</th>
-														<th class="hidden-480">民族</th>
-														<th class="hidden-480">全国学籍号</th>
-														<th class="hidden-480">生源地</th>
-														<eq name="userinfo['user_kind']" value="109030">
-														<th>是否在学</th>
-														</eq>
+														<th>上传记录ID</th>
+														<th>所属学年</th>
+														<th class="hidden-480">上传时间</th>
+														<th class="hidden-480">上传状态</th>
+														<th class="hidden-480">是否错误</th>
+														<th class="hidden-480">已上传的文件</th>
+														<th class="hidden-480">操作</th>
 													</tr>
 												</thead>
-
 												<tbody>
 												<volist name="stuinfos['list']" id="vo">
 													<tr>
@@ -90,32 +87,11 @@
 		<script type="text/javascript">
 			jQuery(function($) {
 				$(".select2").select2();
-
 				//学校下拉框
 				$('#town_id').change(function(){
 					ajaxSelectSchool('school','school_code');
 				});
-				//年级下拉框
-				$('#school_code').change(function(){
-					ajaxSelectSchool('grade','school_grade');
-				});
-				//班级下拉框
-				$('#school_grade').change(function(){
-					ajaxSelectSchool('class','class_num');
-				});
 			});
-			<eq name="userinfo['user_kind']" value="109030">
-			function setInSchool(obj,id,in_school){
-				if(!id || in_school == 'undefined')return;
-				$.post('{:U('Home/Show/stuInfo')}',{ac : 'chooseInSchool',id : id, in_school : in_school},function(result){
-					if(result.errno != 0){
-						layer.alert(result.errtitle,{icon : 2});
-						return;
-					}
-					layer.alert(result.errtitle,{icon : 1});
-				});
-			}
-			</eq>
 		</script>
 
 <include file="Common:footer" />

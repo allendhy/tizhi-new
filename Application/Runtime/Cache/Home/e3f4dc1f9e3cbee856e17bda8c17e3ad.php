@@ -197,12 +197,12 @@
 					-->
 					<hr/>
 						<div class="page-header">
-							<form action="" id="downForm" method="post">
+							<form action="" id="downForm" method="get">
 								<input type="hidden" name="dType" id="dType" value="0">
 								<input value="showStuInfo" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" class="select2 width-15"><?php echo ($school_year_options); ?></select>
 								<select name="town_id" id="town_id"  class="select2 width-10"><?php echo ($town_id_options); ?></select>
-								<select name="school_id" id="school_id"  class="select2 width-25"><?php echo ($school_id_options); ?></select>
+								<select name="school_code" id="school_code"  class="select2 width-25"><?php echo ($school_code_options); ?></select>
 								<select name="school_grade" id="school_grade"  class="select2 width-10"><?php echo ($school_grade_options); ?></select>
 								<select name="class_num" id="class_num"  class="select2 width-10"><?php echo ($class_num_options); ?></select>
 								&nbsp;&nbsp;&nbsp;
@@ -246,13 +246,16 @@
 		<script type="text/javascript">
 			jQuery(function($) {
 				$(".select2").select2();
-
+				$('#school_year').change(function(){
+					// $('#town_id').empty();
+					// $('#school_code').empty
+				});
 				//学校下拉框
 				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_id');
+					ajaxSelectSchool('school','school_code');
 				});
 				//年级下拉框
-				$('#school_id').change(function(){
+				$('#school_code').change(function(){
 					ajaxSelectSchool('grade','school_grade');
 				});
 				//班级下拉框

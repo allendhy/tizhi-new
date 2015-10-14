@@ -1,0 +1,71 @@
+<include file="Common:header" />
+	<!-- navber -->
+	<!-- 加载页面 // -->
+	<include file="Common:navbar" />
+
+					<div class="page-content">
+					<!--
+					<div class="table-header">温馨提示：如发现下载的模板中数据与实际学籍信息有误，请及时拨打客服电话，我们将协助您一起解决</div>
+					-->
+					<hr/>
+						<div class="page-header">
+							<form action="" id="showForm" method="get">
+								<input value="showStuInfo" type="hidden" name="ac"/>
+								<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
+								&nbsp;&nbsp;&nbsp;
+								<input type="submit" class="btn btn-small btn-white" value="查看"/> 
+							</form>
+						</div><!-- /.page-header -->
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="table-responsive">
+										<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="width-5"></th><th>样本个数</th><th>不及格</th><th>不及格率</th><th>及格</th><th>及格率</th><th>良好</th><th>良好率</th><th>优秀</th><th>优秀率</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr><td>城区</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
+												<tr><td>郊区</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
+												<tr><td>合计</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
+											</tbody>
+										</table>
+									</div><!-- /.table-responsive -->
+								</div><!-- /span -->
+							</div><!-- /row -->
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+			</div><!-- /.main-container-inner -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="icon-double-angle-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<!-- inline scripts related to this page -->
+		<script src="__PUBLIC__/assets/js/select2.min.js"></script>
+		<script src='__PUBLIC__/assets/js/jquery.form.js'></script>
+		<script src='__PUBLIC__/assets/js/is_chzh.js'></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				$(".select2").select2();
+
+				//学校下拉框
+				$('#town_id').change(function(){
+				//	ajaxSelectSchool('school','school_code');
+				});
+				//提交表单
+				$("input[type=button]").click(function(){
+					var dtype = $(this).attr('aname');
+					if(dtype == 'undefined' || dtype == ''){
+						alert('您的操作有误，请刷新页面后重试');
+						return false;
+					}
+					$('#dType').val(dtype);
+					$('#downForm').submit();
+				});
+			});
+		</script>
+
+<include file="Common:footer" />

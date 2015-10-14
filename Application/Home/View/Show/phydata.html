@@ -13,7 +13,7 @@
 								<input value="showPhyInfo" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
 								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
-								<select name="school_id" id="school_id"  class="select2 width-25">{$school_id_options}</select>
+								<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
 								<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
 								<select name="class_num" id="class_num"  class="select2 width-10">{$class_num_options}</select>
 								&nbsp;&nbsp;&nbsp;
@@ -28,6 +28,7 @@
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
+														<eq name="dtype" value="rank"><th>名次</th></eq>
 														<th>ID</th>
 														<th>区县</th>
 														<th>姓名</th>
@@ -47,6 +48,7 @@
 												<tbody>
 												<volist name="phyinfos['list']" id="vo">
 													<tr>
+														<eq name="dtype" value="rank"><td>{$vo.rank}</td></eq>
 														<td>
 															{$vo.year_score_id}
 														</td>
@@ -94,10 +96,10 @@
 
 				//学校下拉框
 				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_id');
+					ajaxSelectSchool('school','school_code');
 				});
 				//年级下拉框
-				$('#school_id').change(function(){
+				$('#school_code').change(function(){
 					ajaxSelectSchool('grade','school_grade');
 				});
 				//班级下拉框

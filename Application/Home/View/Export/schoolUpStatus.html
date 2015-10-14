@@ -3,19 +3,15 @@
 	<!-- 加载页面 // -->
 	<include file="Common:navbar" />
 
-					<div class="page-content">
+					<div class="page-content"><!--
 					<div class="table-header">温馨提示：成绩回执单下载以班级为单位</div>
 					<hr/>
-
+					-->
 							<div class="row">
 									<div class="col-xs-12">
 										<form action="" id="downForm" method="post">
-											<input value="showStuInfo" type="hidden" name="ac"/>
-											<select name="school_year" id="school_year" class="select2 width-15" disabled>{$school_year_options}</select>
+											<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
 											<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
-											<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
-											<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
-											<select name="class_num" id="class_num"  class="select2 width-10">{$class_num_options}</select>
 											&nbsp;&nbsp;&nbsp;
 											<input type="button" class="btn btn-small btn-white" value="下载"/> 
 										</form>
@@ -42,19 +38,6 @@
 		<script type="text/javascript">
 			jQuery(function($) {
 				$(".select2").select2();
-
-				//学校下拉框
-				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_code');
-				});
-				//年级下拉框
-				$('#school_code').change(function(){
-					ajaxSelectSchool('grade','school_grade');
-				});
-				//班级下拉框
-				$('#school_grade').change(function(){
-					ajaxSelectSchool('class','class_num');
-				});
 			});
 		</script>
 

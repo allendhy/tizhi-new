@@ -203,7 +203,7 @@
 												<input value="showStuInfo" type="hidden" name="ac"/>
 												<select name="school_year" id="school_year" class="select2 width-20" disabled><?php echo ($school_year_options); ?></select>
 												<select name="town_id" id="town_id"  class="select2 width-25"><?php echo ($town_id_options); ?></select>
-												<select name="school_id" id="school_id"  class="select2 width-50"><?php echo ($school_id_options); ?></select>
+												<select name="school_code" id="school_code" class="select2 width-50"><?php echo ($school_code_options); ?></select>
 												<!--<input type="button" aname="d3" class="btn btn-small btn-white" value="有全国学籍号学生下载"/> 
 												<input type="button" class="btn btn-small btn-white"  aname="d5" value="无全国学籍号学生下载"/>-->
 										</div>
@@ -250,10 +250,10 @@
 
 				//学校下拉框
 				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_id');
+					ajaxSelectSchool('school','school_code');
 				});
 				$('#school_id').change(function(){
-					ajaxSelectSchool('school','school_id');
+					//ajaxSelectSchool('school','school_id');
 
 				});
 				//提交表单

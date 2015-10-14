@@ -201,7 +201,7 @@
 								<input value="showPhyInfo" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" class="select2 width-15"><?php echo ($school_year_options); ?></select>
 								<select name="town_id" id="town_id"  class="select2 width-10"><?php echo ($town_id_options); ?></select>
-								<select name="school_id" id="school_id"  class="select2 width-25"><?php echo ($school_id_options); ?></select>
+								<select name="school_code" id="school_code"  class="select2 width-25"><?php echo ($school_code_options); ?></select>
 								<select name="school_grade" id="school_grade"  class="select2 width-10"><?php echo ($school_grade_options); ?></select>
 								<select name="class_num" id="class_num"  class="select2 width-10"><?php echo ($class_num_options); ?></select>
 								&nbsp;&nbsp;&nbsp;
@@ -216,6 +216,7 @@
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
+														<?php if(($dtype) == "rank"): ?><th>名次</th><?php endif; ?>
 														<th>ID</th>
 														<th>区县</th>
 														<th>姓名</th>
@@ -234,6 +235,7 @@
 
 												<tbody>
 												<?php if(is_array($phyinfos['list'])): $i = 0; $__LIST__ = $phyinfos['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><tr>
+														<?php if(($dtype) == "rank"): ?><td><?php echo ($vo["rank"]); ?></td><?php endif; ?>
 														<td>
 															<?php echo ($vo["year_score_id"]); ?>
 														</td>
@@ -278,10 +280,10 @@
 
 				//学校下拉框
 				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_id');
+					ajaxSelectSchool('school','school_code');
 				});
 				//年级下拉框
-				$('#school_id').change(function(){
+				$('#school_code').change(function(){
 					ajaxSelectSchool('grade','school_grade');
 				});
 				//班级下拉框

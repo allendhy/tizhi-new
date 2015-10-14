@@ -30,6 +30,7 @@
 		<link rel="stylesheet" href="/Public/assets/css/ace-skins.min.css" />
 
 		<link rel="stylesheet" href="/Public/assets/css/select2.css" />
+		<link rel="stylesheet" href="/Public/assets/css/fileinput.min.css" />
 
 		<!--[if lte IE 8]>
 		  <link rel="stylesheet" href="/Public/assets/css/ace-ie.min.css" />
@@ -196,7 +197,7 @@
 							<input value="showStuInfo" type="hidden" name="ac"/>
 							<select name="school_year" id="school_year" class="select2 width-15" disabled><?php echo ($school_year_options); ?></select>
 							<select name="town_id" id="town_id"  class="select2 width-15"><?php echo ($town_id_options); ?></select>
-							<select name="school_id" id="school_id"  class="select2 width-25"><?php echo ($school_id_options); ?></select>
+							<select name="school_code" id="school_code"  class="select2 width-25"><?php echo ($school_code_options); ?></select>
 							<select name="school_grade" id="school_grade"  class="select2 width-10"><?php echo ($school_grade_options); ?></select>
 							<select name="class_num" id="class_num"  class="select2 width-15"><?php echo ($class_num_options); ?></select>
 							&nbsp;&nbsp;&nbsp;
@@ -272,10 +273,10 @@
 
 				//学校下拉框
 				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_id');
+					ajaxSelectSchool('school','school_code');
 				});
 				//年级下拉框
-				$('#school_id').change(function(){
+				$('#school_code').change(function(){
 					ajaxSelectSchool('grade','school_grade');
 				});
 				//班级下拉框

@@ -1,0 +1,147 @@
+<include file="Common:header" />
+	<!-- navber -->
+	<!-- 加载页面 // -->
+	<include file="Common:navbar" />
+
+					<div class="page-content">
+						<div class="page-header">
+						<div class="table-header" style="font-size:12px">因2014-2015学年度体质系统根据教育部体质系统进行了改造，请在修改时区分所需修改的数据是2014-2015学年度以前的历史数据，还是2014-2015学年度以后的数据，以免给您的工作带来不便</div>
+						</div><!-- /.page-header -->
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="col-sm-12">
+										<div class="widget-box">
+											<div class="widget-header widget-header-flat center">
+											<h5>原体质历史数据修改模板及说明（2013-2014学年度及之前学年的学生体质数据）</h5>
+											</div>					
+											<div class="widget-body">
+												<div class="widget-main">
+												<p><img src="__PUBLIC__/assets/images/upstudata.jpg" width="100%"/></p>
+												<p>上传之前请先确认数据格式是否和上图一致，并注意以下规则：</p>
+												<p>1. '年级'列用汉字表示，小学用一年级、二年级、三年级、四年级、五年级、六年级；初中用初一、初二、初三；高中用高一、高二、高三； </p>
+												<p>2. 班号和班级按照学籍数据的班号和班级名称。学籍号由16位数字组成； </p>
+
+												<p>3. 性别用'男'和'女'表示； </p>
+
+												<p>4. 小学一年级至四年级无需检测肺活量和耐力项目则留空，其他年级的每一个数据项必填；</p>
+
+												<p>5. 耐力项目成绩和速度灵巧项目成绩如果为时间格式，请以小数点分隔。如1分22秒表示为1.22,1秒66表示为1.66。</p> 
+
+												<p>6. 上传之前请确认填报的各项目编号与所在区县规定的各年级测试项目是否一致，如不一致，系统将不允许上传。</p> 
+
+												</div>
+											</div>
+										</div>
+										<hr />
+										<div class="widget-box">
+											<div class="widget-header widget-header-flat center">
+											<h5>新体质历史数据修改模板及说明（2014-2015学年度及以后学年的学生体质数据）</h5>
+											</div>					
+											<div class="widget-body">
+												<div class="widget-main">
+												<p><img src="__PUBLIC__/assets/images/upstudata_new.jpg" width="100%" /></p>
+													<p>上传之前请先确认学年度是否选择为2014-2015学年度，并确认数据格式是否和上图一致，并注意以下规则：</p>
+
+													<p>1.下载的数据模板中所包含的学生基础信息可点击左侧[下载数据模板]，栏目下载包含学生基础信息的数据模板，栏目下载包含学生基础信息 的数据模板，将需要修改的学生基础数据复制到体质数据修改模板中；</p> 
+
+													<p>2.体质测试成绩需根据学生的年级按照标准填写；</p> 
+
+													<p>3.测试项目成绩如为时间格式，请以小数点分隔。如1分22秒表示为1.22，1分66秒表示为1.66； </p>
+
+													<p>4.上传之前请再次确认所修改的学生信息是否正确；</p>
+												</div>
+											</div>
+										</div>
+										<hr />
+										<div class="row">
+											<form action="" method="get" id="showForm">
+												<input value="showStuInfo" type="hidden" name="ac"/>
+												<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
+												<select name="town_id" id="town_id"  class="select2 width-15">{$town_id_options}</select>
+												<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
+												&nbsp;&nbsp;&nbsp;
+												<input type="submit" class="btn btn-small btn-white" value="上传" />&nbsp;
+											</form>
+										</div>
+										<div class="row" style="padding:20px"></div>
+										<div class="row">
+											<div class="col-sm-6">
+												<input id="file-0a" name="file_data" type="file" data-min-file-count="1" data-overwrite-initial="false" file-id='11'>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="row">
+										<div class="col-sm-12">
+
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+
+										</div><!-- /span -->
+										<!--page-->
+										<neq name="stuinfos['page']" value="">
+										<div class="message-footer clearfix">{$stuinfos.page}</div>
+										</neq>
+										<!--/page-->
+									</div><!-- /row -->
+								</div>
+							</div>
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+			</div><!-- /.main-container-inner -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="icon-double-angle-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<!-- inline scripts related to this page -->
+		<script src="__PUBLIC__/assets/js/select2.min.js"></script>
+		<script src='__PUBLIC__/assets/js/jquery.form.js'></script>
+		<script src='__PUBLIC__/assets/js/is_chzh.js'></script>
+
+		<script src='__PUBLIC__/assets/js/fileinput.min.js'></script>
+		<script src='__PUBLIC__/assets/js/fileinput_zh.js'></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+
+		        $("#file-0a").fileinput({
+			        language: 'zh',
+			        showPreview : false,
+			        showUpload: true,
+			        showCaption: true,
+			        uploadUrl: '#',
+			       	allowedFileExtensions : ['xls', 'xlsx'],
+			        // slugCallback : function(filename) {
+        			// }
+		        });
+
+				$(".select2").select2();
+
+				//学校下拉框
+				$('#town_id').change(function(){
+					ajaxSelectSchool('school','school_code');
+				});
+				$('#school_id').change(function(){
+					//ajaxSelectSchool('school','school_id');
+
+				});
+				//提交表单
+				$("input[type=button]").click(function(){
+					var dtype = $(this).attr('aname');
+					if(dtype == 'undefined' || dtype == ''){
+						alert('您的操作有误，请刷新页面后重试');
+						return false;
+					}
+					$('#dType').val(dtype);
+					$('#Form').submit();
+				});
+			});
+		</script>
+
+<include file="Common:footer" />
