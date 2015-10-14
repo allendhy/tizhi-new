@@ -52,8 +52,6 @@ class PublicController extends Controller {
 		$action_whitelist[] = 'Home/Index/login';
 		//$action_whitelist[] = 'Home/Up/login';
 
-
-
 		if(!in_array($this->action_name,$action_whitelist)){
 			$this->error('您无权执行当前操作！');
 		}

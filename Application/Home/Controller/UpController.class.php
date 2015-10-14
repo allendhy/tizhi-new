@@ -20,18 +20,21 @@ class UpController extends PublicController {
 		$ac = I('ac','phydata');
 		switch($ac){
 			case 'phydata':
-				$this->phydata();
+				$this->_phydata();
 			break;
 			case 'phydata2':
-				$this->phydata2();
+				$this->_phydata2();
 			break;
 			case 'historyPhydata':
-				$this->historyPhydata();
+				$this->_historyPhydata();
+			break;
+			default:
+				$this->_phydata();
 			break;
 		}
 	}
 	//有全国学籍号
-	private function phydata(){
+	private function _phydata(){
 		$targetFolder = '/uploads'; // Relative to the root
 		$unique_salt = C('UNIQUE_SALT');
 		$verifyToken = md5($unique_salt . $_POST['timestamp']);
