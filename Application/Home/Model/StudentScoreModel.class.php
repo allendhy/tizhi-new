@@ -3,34 +3,35 @@ namespace Home\Model;
 use Think\Model;
 class StudentScoreModel extends Model {
 	//根据schoolcode获取年级信息
-	public function get_grades($year_year,$town_id,$school_code,$type="school_id"){
+	public function get_grades($year_year,$town_id,$school_code,$type="school_code"){
 		$gradeListCache = session('gradeList');
 
 		$partition_field = intval($town_id . $year_year);
 
 		$wheresql = $type == 'school_id' ? " s.school_id = %d" : " s.school_code = '%s'";
 
-		$gradelist = $this->alias('sc')->field('sc.school_grade')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where("sc.partition_field = %d AND ".$wheresql." AND s.is_del = 0 AND sc.is_del = 0",array($partition_field,$school_code))->group('school_grade')->select();
+		$gradelist = $this->alias('sc')->field('sc.school_grade')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where("sc.partition_field = %d AND ".$wheresql." AND sc.is_del = 0",array($partition_field,$school_code))->group('school_grade')->order('school_grade')->select();
+		//AND s.is_del = 0
 		foreach($gradelist as $key=>$row){
 			$gradelist[$key]['grade_name'] = $gradeListCache[$row['school_grade']];
 		}
 		return $gradelist;
 	}
 	//获取班级列表信息
-	public function get_classes($year_year,$town_id,$school_code,$school_grade,$type="school_id"){
+	public function get_classes($year_year,$town_id,$school_code,$school_grade,$type="school_code"){
 
 		$partition_field = intval($town_id . $year_year);
 
 		$wheresql = $type == 'school_id' ? " s.school_id = %d" : " s.school_code = '%s'";
 
 		$wheresql .= ' AND sc.school_grade = %d ';
-
-		$classlist = $this->alias('sc')->field('sc.class_num,sc.class_name')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where("sc.partition_field = %d AND ".$wheresql." AND s.is_del = 0 AND sc.is_del = 0",array($partition_field,$school_code,$school_grade))->group('class_num,class_name')->select();
+		//AND s.is_del = 0
+		$classlist = $this->alias('sc')->field('sc.class_num,sc.class_name')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where("sc.partition_field = %d AND ".$wheresql."  AND sc.is_del = 0",array($partition_field,$school_code,$school_grade))->group('class_num,class_name')->select();
 		return $classlist;
 	}
 
 	//获取学生基本信息列表
-	public function get_stuinfos($year_year,$town_id,$school_code,$school_grade,$class_num,$type="school_id",$ac='show'){
+	public function get_stuinfos($year_year,$town_id,$school_code,$school_grade,$class_num,$type="school_code",$ac='show'){
         $where = array();
 
         $partition_field = intval($town_id . $year_year);
@@ -45,7 +46,7 @@ class StudentScoreModel extends Model {
         if($school_grade != 0) $where['sc.school_grade'] = $school_grade;
         if($class_num != 0) $where['sc.class_num'] = $class_num;
 
-        $where['s.is_del'] = 0;
+        //$where['s.is_del'] = 0;
         $where['sc.is_del'] = 0;
 
         //查询
@@ -60,19 +61,19 @@ class StudentScoreModel extends Model {
 	}
 
 	//获取指定学校年级班级信息
-	public function get_grade_class_infos($year_year,$town_id,$school_id){
+	public function get_grade_class_infos($year_year,$town_id,$school_code){
 
 		$partition_field = intval($town_id . $year_year);
 
-		return $this->field('school_grade,class_num,class_name')->where('partition_field = %d  AND school_id = %d AND is_del = 0 AND in_school = 1 AND class_num IS NOT NULL',array($partition_field,$school_id))->group('school_grade,class_num,class_name')->order('school_grade,class_num')->select();
+		return $this->field('school_grade,class_num,class_name')->where('partition_field = %d  AND school_code = %s AND is_del = 0 AND in_school = 1 AND class_num IS NOT NULL',array($partition_field,$school_code))->group('school_grade,class_num,class_name')->order('school_grade,class_num')->select();
 	}
 	//下载学生模板,指定字段学生信息
-	public function down_template($year_year,$town_id,$school_id,$school_grade = 0,$class_num = 0,$country_education_id_exp = 'IS NOT NULL'){
+	public function down_template($year_year,$town_id,$school_code,$school_grade = 0,$class_num = 0,$country_education_id_exp = 'IS NOT NULL'){
 		$partition_field = intval($town_id . $year_year);
 		$where = array(
 			'partition_field' => $partition_field,
-			'school_id' =>	$school_id,
-			'is_del' => 0,
+			's.school_code' =>	$school_code,
+			'sc.is_del' => 0,
 			'in_school' => 1,
 			'country_education_id' => array('EXP', $country_education_id_exp),
 			);
@@ -83,14 +84,14 @@ class StudentScoreModel extends Model {
 			$where['class_num'] = $class_num;
 		}
 
-		return $this->field('school_grade,class_num,class_name,country_education_id,education_id,folk,name,(case sex when 106020 then 2 else 1 end) AS sex,birthday,student_source,idcardno,address')->where($where)->order('school_grade,class_num')->select();
+		return $this->alias('sc')->field('school_grade,class_num,class_name,country_education_id,education_id,folk,name,(case sex when 106020 then 2 else 1 end) AS sex,birthday,student_source,idcardno,sc.address')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->order('school_grade,class_num')->select();
 	}
 	//获取是否有54制学生,如果有，返回54制学生的人数
-	public function get_school_length54_count($year_year,$town_id,$school_id,$school_grade = 0,$class_num = ''){
+	public function get_school_length54_count($year_year,$town_id,$school_code,$school_grade = 0,$class_num = ''){
 		$partition_field = intval($town_id . $year_year);
 		$where = array(
 			'partition_field' => $partition_field,
-			'school_id' =>	$school_id,
+			'school_code' =>	$school_code,
 			'is_del' => 0,
 			'in_school' => 1,
 			'school_length54' => 1,
@@ -167,7 +168,7 @@ class StudentScoreModel extends Model {
 	}
 
 	//返回体质信息列表
-	public function get_phyinfos($year_year,$town_id,$school_code,$school_grade,$class_num,$type="school_id",$ac='show'){
+	public function get_phyinfos($year_year,$town_id,$school_code,$school_grade,$class_num,$type="school_code",$ac='show',$order = ''){
         $where = array();
 
         $partition_field = intval($town_id . $year_year);
@@ -182,7 +183,7 @@ class StudentScoreModel extends Model {
         if($school_grade != 0) $where['sc.school_grade'] = $school_grade;
         if($class_num != 0) $where['sc.class_num'] = $class_num;
 
-        $where['s.is_del'] = 0;
+       // $where['s.is_del'] = 0;
         $where['sc.is_del'] = 0;
         //$where['sc.is_check'] = 1;
 
@@ -192,7 +193,7 @@ class StudentScoreModel extends Model {
 		$page = new \Think\Page($count,C('PAGE_LISTROWS'));
 		$limit = $ac == 'show' ? ($page->firstRow . ',' . $page->listRows) : '';
 
-        $list = $this->alias('sc')->field("t.town_name,sc.year_score_id,sc.town_id,sc.school_id,s.school_code,s.school_name,sc.school_grade,sc.class_num,sc.class_name,sc.name,case sc.sex when 106020 then '女' when 106010 then '男' else '未知' end sex,sc.folk,sc.education_id,sc.country_education_id,sc.student_source,sc.in_school,sc.is_avoid,sc.total_score,sc.score_level,sc.total_score_ori,sc.score_level_ori,sc.addach_score")->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->limit($limit)->select();
+        $list = $this->alias('sc')->field("t.town_name,sc.year_score_id,sc.town_id,sc.school_id,s.school_code,s.school_name,sc.school_grade,sc.class_num,sc.class_name,sc.name,case sc.sex when 106020 then '女' when 106010 then '男' else '未知' end sex,sc.folk,sc.education_id,sc.country_education_id,sc.student_source,sc.in_school,sc.is_avoid,sc.total_score,sc.score_level,sc.total_score_ori,sc.score_level_ori,sc.addach_score")->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->order($order)->limit($limit)->select();
         $show = $page->show();
         return array('list'=>$list,'page'=>$show);
 	}

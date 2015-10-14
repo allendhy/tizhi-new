@@ -61,7 +61,7 @@
         return $option;
     }
     //返回学校下拉菜单option
-    function get_school_options($school_year,$town_id,$school_id){
+    function get_school_options($school_year,$town_id,$school_code){
         $userinfo = session('userinfo');
         if(!$userinfo) return '';
 
@@ -82,19 +82,19 @@
         }
 
         foreach($list as $row){
-            $selected = $school_id > 0 && $school_id == $row['school_id'] ? 'selected' : '';
-            $option .= "<option value='".$row['school_id']."' ".$selected.">".$row['school_name'] ."</option>";
+            $selected = $school_code != 0 && $school_code == $row['school_code'] ? 'selected' : '';
+            $option .= "<option value='".$row['school_code']."' ".$selected.">".$row['school_name'] ."</option>";
         }
         return $option;
     }
     //返回年级下拉菜单option
-    function get_grade_options($school_year,$town_id,$school_id,$school_grade,$school_type="school_id"){
+    function get_grade_options($school_year,$town_id,$school_code,$school_grade,$school_type="school_code"){
         $userinfo = session('userinfo');
         if(!$userinfo) return '';
 
         $option = '<option value="0">--年级--</option>';
 
-        $list = D('StudentScore')->get_grades($school_year,$town_id,$school_id,$school_type);
+        $list = D('StudentScore')->get_grades($school_year,$town_id,$school_code,$school_type);
         foreach($list as $row){
             $selected = $school_grade > 0 && $school_grade == $row['school_grade'] ? 'selected' : '';
             $option .= "<option value='".$row['school_grade']."' ".$selected.">".$row['grade_name'] ."</option>";
@@ -103,13 +103,13 @@
     }
 
     //返回班级下拉菜单option
-    function get_class_options($school_year,$town_id,$school_id,$school_grade,$class_num){
+    function get_class_options($school_year,$town_id,$school_code,$school_grade,$class_num){
         $userinfo = session('userinfo');
         if(!$userinfo) return '';
 
         $option = '<option value="0">--班级--</option>';
 
-        $list = D('StudentScore')->get_classes($school_year,$town_id,$school_id,$school_grade,'school_id');
+        $list = D('StudentScore')->get_classes($school_year,$town_id,$school_code,$school_grade,'school_code');
         foreach($list as $row){
             $selected = $class_num == $row['class_num'] ? 'selected' : '';
             $option .= "<option value='".$row['class_num']."' ".$selected.">".$row['class_name'] ."</option>";

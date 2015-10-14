@@ -8,16 +8,16 @@ class DownController extends PublicController {
 		//各页面下拉选项列表
 		$school_year_options = D('SchoolYear')->getOptions($this->school_year);
 		$town_id_options = get_town_options($this->town_id);
-		$school_id_options = get_school_options($this->school_year,$this->town_id,$this->school_id);
+		$school_code_options = get_school_options($this->school_year,$this->town_id,$this->school_code);
 		
 		$this->assign('school_year_options',$school_year_options);
 		$this->assign('town_id_options',$town_id_options);
-		$this->assign('school_id_options',$school_id_options);
+		$this->assign('school_code_options',$school_code_options);
 		
 		//判断是否需要为模版年级和班级下拉框赋值
 		if(in_array(ACTION_NAME,array('template','receipt')) && !IS_AJAX){
 			$school_grade_options = get_grade_options($this->school_year,$this->town_id,$this->school_code,$this->school_grade,'school_code');
-			$class_num_options = get_class_options($this->school_year,$this->town_id,$this->school_id,$this->school_grade,$this->class_num);
+			$class_num_options = get_class_options($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
 			$this->assign('school_grade_options',$school_grade_options);
 			$this->assign('class_num_options',$class_num_options);
 		}
@@ -127,7 +127,7 @@ class DownController extends PublicController {
 				
 
 
-				$data = D('StudentScore')->down_template($this->school_year,$this->town_id,$schInfo['school_id'],$this->school_grade,$this->class_num);
+				$data = D('StudentScore')->down_template($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
 
 				if(empty($data))$this->error('当前学校学生数据为空或者您所选择的学生没有全国学籍号！');
 				foreach($data as $k=>$row){
@@ -192,7 +192,7 @@ class DownController extends PublicController {
 
 				//根据年级判断当前学校都包含哪些学段
 
-				$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$schInfo['school_id'],$this->school_grade);
+				$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$this->school_code,$this->school_grade);
 				
 				$grade = $this->school_grade;
 
@@ -213,8 +213,8 @@ class DownController extends PublicController {
 					}
 				}else{
 					
-					$data = D('StudentScore')->get_grades($this->school_year,$this->town_id,$schInfo['school_id']);
-					$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$schInfo['school_id']);
+					$data = D('StudentScore')->get_grades($this->school_year,$this->town_id,$this->school_code);
+					$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$this->school_code);
 
 					foreach($data as $val){
 						if(in_array($val['school_grade'],array(21,22,23,24)) && $school_length54_count > 0){
@@ -259,11 +259,12 @@ class DownController extends PublicController {
 					$country_education_id_exp = 'IS NULL';
 				}
 
-				$data = D('StudentScore')->down_template($this->school_year,$this->town_id,$schInfo['school_id'],$this->school_grade,$this->class_num,$country_education_id_exp);
-				//echo M()->getlastsql();exit();
-				if($dType == 'd3'){
-					if(empty($data))$this->error('当前学校学生数据为空或者当前学校所有学生没有全国学籍号');
-				}
+				$data = D('StudentScore')->down_template($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num,$country_education_id_exp);
+
+				if(empty($data))$this->error('没有符合要求的数据');
+				// if($dType == 'd3'){
+				// 	if(empty($data))$this->error('当前学校学生数据为空或者当前学校所有学生没有全国学籍号');
+				// }
 				
 				foreach($data as $k=>$row){
 				
@@ -323,7 +324,7 @@ class DownController extends PublicController {
 				$objActSheet->setCellValueExplicit('I1', '测试方法（手工/仪器）',\PHPExcel_Cell_DataType::TYPE_STRING);
 				$objActSheet->getStyle('I1')->getNumberFormat()->setFormatCode("@");
 				
-				$data = D('StudentScore')->get_grade_class_infos($this->school_year,$this->town_id,$schInfo['school_id']);
+				$data = D('StudentScore')->get_grade_class_infos($this->school_year,$this->town_id,$this->school_code);
 				if(empty($data))$this->error('当前学校学生数据为空或者当前学校所有学生没有全国学籍号');
 				
 				foreach($data as $k=>$row){
@@ -387,5 +388,9 @@ class DownController extends PublicController {
 		$this->web_title = '下载学生体质成绩回执单';
 		$this->page_template = "Down:receipt";
 	}
-	//
+	//导出学生体质信息
+	public function phydata(){
+		$this->web_title = '导出学生体质信息';
+		$this->page_template = "Down:phydata";
+	}
 }

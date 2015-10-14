@@ -8,16 +8,17 @@ class ShowController extends PublicController {
 		//各页面下拉选项列表
 		$school_year_options = D('SchoolYear')->getOptions($this->school_year);
 		$town_id_options = get_town_options($this->town_id);
-		$school_id_options = get_school_options($this->school_year,$this->town_id,$this->school_id);
-		//print_r($_SESSION);
+		$school_code_options = get_school_options($this->school_year,$this->town_id,$this->school_code);
+
 		$this->assign('school_year_options',$school_year_options);
 		$this->assign('town_id_options',$town_id_options);
-		$this->assign('school_id_options',$school_id_options);
+		$this->assign('school_code_options',$school_code_options);
 
 		//判断是否需要为模版年级和班级下拉框赋值
-		if(in_array(ACTION_NAME,array('stuInfo','printRegister','upNum','phydata')) && !IS_AJAX){
-			$school_grade_options = get_grade_options($this->school_year,$this->town_id,$this->school_id,$this->school_grade);
-			$class_num_options = get_class_options($this->school_year,$this->town_id,$this->school_id,$this->school_grade,$this->class_num);
+		if(in_array(ACTION_NAME,array('stuInfo','printRegister','upNum','phydata','phydataRanking')) && !IS_AJAX){
+			$school_grade_options = get_grade_options($this->school_year,$this->town_id,$this->school_code,$this->school_grade);
+			$class_num_options = get_class_options($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
+			
 			$this->assign('school_grade_options',$school_grade_options);
 			$this->assign('class_num_options',$class_num_options);
 		}
@@ -46,7 +47,7 @@ class ShowController extends PublicController {
 	private function showStuInfo(){
 		if($this->town_id == 0)$this->error('请选择区县！');
 
-		$stuinfos = D('StudentScore')->get_stuinfos($this->school_year,$this->town_id,$this->school_id,$this->school_grade,$this->class_num);
+		$stuinfos = D('StudentScore')->get_stuinfos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
 
 		$gradeListCache = session('gradeList');
 		$folkListCache = session('folkList');
@@ -68,13 +69,13 @@ class ShowController extends PublicController {
 		$options = '';
 		switch($selectType){
 			case 'school':
-				$options = get_school_options($this->school_year,$this->town_id,$this->school_id);
+				$options = get_school_options($this->school_year,$this->town_id,$this->school_code);
 			break;
 			case 'grade':
-				$options = get_grade_options($this->school_year,$this->town_id,$this->school_id,$this->school_grade);
+				$options = get_grade_options($this->school_year,$this->town_id,$this->school_code,$this->school_grade);
 			break;
 			case 'class':
-				$options = get_class_options($this->school_year,$this->town_id,$this->school_id,$this->school_grade,$this->class_num);
+				$options = get_class_options($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
 			break;
 		}
 		
@@ -117,16 +118,39 @@ class ShowController extends PublicController {
 		}
 
 	}
+	//测试总成绩排名
+	public function phydataRanking(){
+		$ac = I('ac','');
+		switch($ac){	
+			case 'showPhyInfo':
+				$this->showPhyInfo('rank');
+			break;
+			default:
+				$this->web_title = '查看学生体质成绩';
+				$this->page_template = "Show:phydata";
+			break;
+		}
+	}
+
 	//查看学生体质成绩
-	private function showPhyInfo($dtype){
+	private function showPhyInfo($dtype='list'){
 		if($this->town_id == 0)$this->error('请选择区县！');
 
-		$phyinfos = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_id,$this->school_grade,$this->class_num);
+		$order = '';
+		if($dtype == 'rank')$order = 'total_score DESC';
+
+		$phyinfos = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num,'school_code','show',$order);
 
 		$gradeListCache = session('gradeList');
 		$folkListCache = session('folkList');
 		$dictListCache = session('dictList');
+
+		$p = I('p',1);
+
 		foreach($phyinfos['list'] as $key=>$row){
+
+			$phyinfos['list'][$key]['rank'] = (intval($p) - 1) * C('PAGE_LISTROWS') + $row['row_number'];
+			//print_r($phyinfos['list'][$key]);exit();
 			$phyinfos['list'][$key]['grade_name'] = $gradeListCache[$row['school_grade']];
 			//$stuinfos['list'][$key]['folk'] = $folkListCache[$row['folk']];
 			if($row['is_avoid'] == '1'){
@@ -137,6 +161,7 @@ class ShowController extends PublicController {
 				$phyinfos['list'][$key]['score_level_ori'] = $dictListCache['203'][$row['score_level_ori']]['dict_name'];
 			}
 		}
+		$this->assign('dtype',$dtype);
 		$this->assign('phyinfos',$phyinfos);
 
 		$this->web_title = '查看学生基础数据';
@@ -146,6 +171,46 @@ class ShowController extends PublicController {
 	public function phyUpStatus(){
 		$this->web_title = '查看学生体质上传情况';
 		$this->page_template = "Show:phyUpStatus";
+	}
+	//查看历史修改数据
+	public function historyUpStatus(){
+		$this->web_title = '查看历史修改数据';
+		$this->page_template = "Show:historyUpStatus";
+	}
+	//历史数据查询--上传记录
+	public function historyPhyData(){
+		$this->web_title = '历史数据查询';
+		$this->page_template = "Show:historyPhyData";
+	}
+	//学生身高标准体重统计表
+	public function weightStat(){
+		$this->web_title = '学生身高标准体重统计表';
+		$this->page_template = "Show:weightStat";	
+	}
+	//总体成绩统计表
+	public function stat(){
+		$this->web_title = '总体成绩统计表';
+		$this->page_template = "Show:stat";	
+	}
+	//区县成绩统计表
+	public function townStat(){
+		$this->web_title = '区县成绩统计表';
+		$this->page_template = "Show:townStat";	
+	}
+	//审核学校上报情况
+	public function raterUpStatus(){
+		$this->web_title = '审核学校上报情况';
+		$this->page_template = "Show:raterUpStatus";	
+	}
+	//查看区县上报情况
+	public function townUpStatus(){
+		$this->web_title = '查看区县上报情况';
+		$this->page_template = "Show:townUpStatus";	
+	}
+	//分城郊区查看成绩统计
+	public function suburbStat(){
+		$this->web_title = '分城郊区查看成绩统计';
+		$this->page_template = "Show:suburbStat";	
 	}
 }
 ?>

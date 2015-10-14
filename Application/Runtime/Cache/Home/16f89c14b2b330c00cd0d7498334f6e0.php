@@ -192,73 +192,39 @@
 					</div>
 
 					<div class="page-content">
-					
-					<div class="table-header"> 温馨提示：您可以点击 综合成绩 查看该学生的各项目成绩。</div>
-					
+					<div class="table-header">温馨提示：如发现下载的模板中数据与实际学籍信息有误，请及时拨打客服电话，我们将协助您一起解决</div>
 					<hr/>
 						<div class="page-header">
-							<form action="" id="showForm" method="get">
-								<input value="showPhyInfo" type="hidden" name="ac"/>
-								<select name="school_year" id="school_year" class="select2 width-15"><?php echo ($school_year_options); ?></select>
+							<form action="" id="downForm" method="post">
+								<input type="hidden" name="dType" id="dType" value="0">
+								<input value="showStuInfo" type="hidden" name="ac"/>
+								<select name="school_year" id="school_year" class="select2 width-10" disabled><?php echo ($school_year_options); ?></select>
 								<select name="town_id" id="town_id"  class="select2 width-10"><?php echo ($town_id_options); ?></select>
-								<select name="school_code" id="school_code"  class="select2 width-25"><?php echo ($school_code_options); ?></select>
+								<select name="school_id" id="school_id"  class="select2 width-25"><?php echo ($school_id_options); ?></select>
 								<select name="school_grade" id="school_grade"  class="select2 width-10"><?php echo ($school_grade_options); ?></select>
 								<select name="class_num" id="class_num"  class="select2 width-10"><?php echo ($class_num_options); ?></select>
 								&nbsp;&nbsp;&nbsp;
-								<input type="button" class="btn btn-small btn-white" dtype="showPhyInfo" value="查看"/> 
-								<input type="button" class="btn btn-small btn-white" dtype="downPhyInfo"  value="下载"/>
+								<input type="button" aname="d3" class="btn btn-small btn-white" value="有全国学籍号学生下载"/> 
+								<input type="button" class="btn btn-small btn-white"  aname="d5" value="无全国学籍号学生下载"/>
 							</form>
 						</div><!-- /.page-header -->
 
 							<div class="row">
 									<div class="col-xs-12">
 										<div class="table-responsive">
+
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
-												<thead>
-													<tr>
-														<?php if(($dtype) == "rank"): ?><th>名次</th><?php endif; ?>
-														<th>ID</th>
-														<th>区县</th>
-														<th>姓名</th>
-														<th>全国学籍号</th>
-														<th>学校名称</th>
-														<th>年级</th>
-														<th>班级</th>
-														<th>性别</th>
-														<th>综合成绩</th>
-														<th>综合评定</th>
-														<th>测试成绩</th>
-														<th>测试成绩评定</th>
-														<th>附加分</th>
-													</tr>
-												</thead>
-
 												<tbody>
-												<?php if(is_array($phyinfos['list'])): $i = 0; $__LIST__ = $phyinfos['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><tr>
-														<?php if(($dtype) == "rank"): ?><td><?php echo ($vo["rank"]); ?></td><?php endif; ?>
-														<td>
-															<?php echo ($vo["year_score_id"]); ?>
-														</td>
-														<td><?php echo ($vo["town_name"]); ?></td>
-														<td class="hidden-480"><?php echo ($vo["name"]); ?></td>
-
-														<td><?php echo ($vo["country_education_id"]); ?></td>
-														<td><?php echo ($vo["school_name"]); ?></td>
-														<td><?php echo ($vo["grade_name"]); ?></td>
-														<td><?php echo ($vo["class_name"]); ?></td>
-														<td><?php echo ($vo["sex"]); ?></td>
-														<td><?php echo ($vo["total_score"]); ?></td>
-														<td><?php echo ($vo["score_level"]); ?></td>
-														<td><?php echo ($vo["total_score_ori"]); ?></td>
-														<td><?php echo ($vo["score_level_ori"]); ?></td>
-														<td><?php echo ($vo["addach_score"]); ?></td>
-													</tr><?php endforeach; endif; else: echo "" ;endif; ?>
+													<tr><td class="width-30">学校全部人数</td><td><?php echo ($sch_status["s_cnt"]); ?></td></tr>
+													<tr><td>其中不在学人数</td><td><?php echo ($sch_status["s_notinschool_cnt"]); ?></td></tr>
+													<tr><td>有全国学籍号人数</td><td><?php echo ($sch_status['s_cnt'] - $sch_status['s_noceid_cnt']); ?></td></tr>
+													<tr><td>没有全国学籍号人数</td><td><?php echo ($sch_status["s_noceid_cnt"]); ?></td></tr>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
 									</div><!-- /span -->
 									<!--page-->
-									<?php if(($phyinfos['page']) != ""): ?><div class="message-footer clearfix"><?php echo ($phyinfos["page"]); ?></div><?php endif; ?>
+									<?php if(($stuinfos['page']) != ""): ?><div class="message-footer clearfix"><?php echo ($stuinfos["page"]); ?></div><?php endif; ?>
 									<!--/page-->
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
@@ -280,10 +246,10 @@
 
 				//学校下拉框
 				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_code');
+					ajaxSelectSchool('school','school_id');
 				});
 				//年级下拉框
-				$('#school_code').change(function(){
+				$('#school_id').change(function(){
 					ajaxSelectSchool('grade','school_grade');
 				});
 				//班级下拉框
@@ -292,15 +258,25 @@
 				});
 				//提交表单
 				$("input[type=button]").click(function(){
-					var dtype = $(this).attr('dtype');
+					var dtype = $(this).attr('aname');
 					if(dtype == 'undefined' || dtype == ''){
 						alert('您的操作有误，请刷新页面后重试');
 						return false;
 					}
-					$('#ac').val(dtype);
-					$('#showForm').submit();
+					$('#dType').val(dtype);
+					$('#downForm').submit();
 				});
 			});
+			<?php if(($userinfo['user_kind']) == "109030"): ?>function setInSchool(obj,id,in_school){
+				if(!id || in_school == 'undefined')return;
+				$.post('<?php echo U('Home/Show/stuInfo');?>',{ac : 'chooseInSchool',id : id, in_school : in_school},function(result){
+					if(result.errno != 0){
+						layer.alert(result.errtitle,{icon : 2});
+						return;
+					}
+					layer.alert(result.errtitle,{icon : 1});
+				});
+			}<?php endif; ?>
 		</script>
 
 </body>

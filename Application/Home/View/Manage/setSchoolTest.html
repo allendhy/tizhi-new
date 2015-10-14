@@ -4,42 +4,42 @@
 	<include file="Common:navbar" />
 
 					<div class="page-content">
+					<!--
 					<div class="table-header">温馨提示：如发现下载的模板中数据与实际学籍信息有误，请及时拨打客服电话，我们将协助您一起解决</div>
+					-->
 					<hr/>
 						<div class="page-header">
-							<form action="" id="downForm" method="post">
-								<input type="hidden" name="dType" id="dType" value="0">
+							<form action="" id="showForm" method="get">
 								<input value="showStuInfo" type="hidden" name="ac"/>
-								<select name="school_year" id="school_year" class="select2 width-10" disabled>{$school_year_options}</select>
+								<select name="school_year" id="school_year" disabled="disabled" class="select2 width-15">{$school_year_options}</select>
 								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
 								<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
-								<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
-								<select name="class_num" id="class_num"  class="select2 width-10">{$class_num_options}</select>
+								<select name="show_type" id="show_type"  class="select2 width-15">
+								<option value="">是否参测</option>
+								<option value="1">是</option>
+								<option value="0">否</option>
+								</select>
 								&nbsp;&nbsp;&nbsp;
-								<input type="button" aname="d3" class="btn btn-small btn-white" value="有全国学籍号学生下载"/> 
-								<input type="button" class="btn btn-small btn-white"  aname="d5" value="无全国学籍号学生下载"/>
+								<input type="submit" class="btn btn-small btn-white" value="查看"/> 
 							</form>
 						</div><!-- /.page-header -->
-
 							<div class="row">
-									<div class="col-xs-12">
-										<div class="table-responsive">
-
-											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
-												<tbody>
-													<tr><td class="width-30">学校全部人数</td><td>{$sch_status.s_cnt}</td></tr>
-													<tr><td>其中不在学人数</td><td>{$sch_status.s_notinschool_cnt}</td></tr>
-													<tr><td>有全国学籍号人数</td><td>{$sch_status['s_cnt'] - $sch_status['s_noceid_cnt']}</td></tr>
-													<tr><td>没有全国学籍号人数</td><td>{$sch_status.s_noceid_cnt}</td></tr>
-												</tbody>
-											</table>
-										</div><!-- /.table-responsive -->
-									</div><!-- /span -->
-									<!--page-->
-									<neq name="stuinfos['page']" value="">
-									<div class="message-footer clearfix">{$stuinfos.page}</div>
-									</neq>
-									<!--/page-->
+								<div class="col-xs-12">
+									<div class="table-responsive">
+										<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th>区县名称</th><th>学校名称</th><th>是否参测</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr><td>东城区</td><td>北京市东城区文汇小学</td><td>0</td></tr>
+												<tr><td>东城区</td><td>北京市第二十四中学</td><td>0</td></tr>
+												<tr><td>东城区</td><td>东城区史家胡同小学</td><td>0</td></tr>
+											</tbody>
+										</table>
+									</div><!-- /.table-responsive -->
+								</div><!-- /span -->
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
@@ -61,14 +61,6 @@
 				//学校下拉框
 				$('#town_id').change(function(){
 					ajaxSelectSchool('school','school_code');
-				});
-				//年级下拉框
-				$('#school_code').change(function(){
-					ajaxSelectSchool('grade','school_grade');
-				});
-				//班级下拉框
-				$('#school_grade').change(function(){
-					ajaxSelectSchool('class','class_num');
 				});
 				//提交表单
 				$("input[type=button]").click(function(){

@@ -96,6 +96,7 @@
 
 	<!-- navber -->
 	<!-- 加载页面 // -->
+<<<<<<< HEAD
 		<body>
 		<div class="navbar navbar-default" id="navbar">
 			<script type="text/javascript">
@@ -189,77 +190,139 @@
 							</li>
 							<li class="active"><?php echo ($web_title); ?></li>
 						</ul><!-- .breadcrumb -->
+=======
+		<body>
+		<div class="navbar navbar-default" id="navbar">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="navbar-container" id="navbar-container">
+				<div class="navbar-header pull-left">
+					<a href="/" class="navbar-brand">
+						<small>
+							<?php echo C('WEB_SITE');?>
+						</small>
+					</a><!-- /.brand -->
+				</div><!-- /.navbar-header -->
+
+				<div class="navbar-header pull-right" role="navigation">
+					<ul class="nav ace-nav">
+						<!-- 顶部菜单 -->
+						<li class="light-blue">
+							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+								<span class="user-info">
+									<small>欢迎,</small>
+									<?php echo ($login_unit); ?>
+								</span>
+							</a>
+						</li>
+					</ul><!-- /.ace-nav -->
+				</div><!-- /.navbar-header -->
+			</div><!-- /.container -->
+		</div>
+
+		<!-- 左侧菜单 -->
+
+		<div class="main-container" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="main-container-inner">
+				<a class="menu-toggler" id="menu-toggler" href="#">
+					<span class="menu-text"></span>
+				</a>
+				
+				<div class="sidebar" id="sidebar">
+					<script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+					</script>
+
+					<ul class="nav nav-list">
+					<?php if(is_array($navList)): $i = 0; $__LIST__ = $navList;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if(($vo['url']) == $action_name): ?>class="active"
+						<?php else: ?>
+						<?php if(deep_in_array($action_name,$vo['nav_list'])): ?>class="active open"<?php endif; endif; ?>>
+							<a <?php if(($vo['url']) != ""): ?>href="<?php echo U($vo['url']);?>"<?php else: ?>href="#" class="dropdown-toggle"<?php endif; ?>>
+								<!--<i class="icon-text-width"></i>-->
+								<span class="menu-text"> <?php echo ($vo["func_name"]); ?> </span>
+								<?php if(($vo['url']) == ""): ?><b class="arrow icon-angle-down"></b><?php endif; ?>
+							</a>
+
+							<?php if(($vo['url']) == ""): ?><ul class="submenu">
+							<?php if(is_array($vo['nav_list'])): $i = 0; $__LIST__ = $vo['nav_list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$voSon): $mod = ($i % 2 );++$i;?><li <?php if(($voSon['url']) == $action_name): ?>class="active"<?php endif; ?>>
+									<a href="<?php echo U($voSon['url']);?>">
+										<!--<i class="icon-double-angle-right"></i>-->
+										<?php echo ($voSon["func_name"]); ?>
+									</a>
+								</li><?php endforeach; endif; else: echo "" ;endif; ?>
+							</ul><?php endif; ?>
+						</li><?php endforeach; endif; else: echo "" ;endif; ?>
+					</ul><!-- /.nav-list -->
+
+					<div class="sidebar-collapse" id="sidebar-collapse">
+						<i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+					</div>
+
+					<script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+					</script>
+				</div>
+
+
+				<!--页面开始-->
+				<div class="main-content">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home home-icon"></i>
+								<a href="<?php echo U('Home/Index/index');?>">首页</a>
+							</li>
+							<li class="active"><?php echo ($web_title); ?></li>
+						</ul><!-- .breadcrumb -->
+>>>>>>> cbda60dd068c1f6862e2f9ac1dd5528340857c06
 					</div>
 
 					<div class="page-content">
-					
-					<div class="table-header"> 温馨提示：您可以点击 综合成绩 查看该学生的各项目成绩。</div>
-					
-					<hr/>
 						<div class="page-header">
-							<form action="" id="showForm" method="get">
-								<input value="showPhyInfo" type="hidden" name="ac"/>
-								<select name="school_year" id="school_year" class="select2 width-15"><?php echo ($school_year_options); ?></select>
-								<select name="town_id" id="town_id"  class="select2 width-10"><?php echo ($town_id_options); ?></select>
-								<select name="school_code" id="school_code"  class="select2 width-25"><?php echo ($school_code_options); ?></select>
-								<select name="school_grade" id="school_grade"  class="select2 width-10"><?php echo ($school_grade_options); ?></select>
-								<select name="class_num" id="class_num"  class="select2 width-10"><?php echo ($class_num_options); ?></select>
-								&nbsp;&nbsp;&nbsp;
-								<input type="button" class="btn btn-small btn-white" dtype="showPhyInfo" value="查看"/> 
-								<input type="button" class="btn btn-small btn-white" dtype="downPhyInfo"  value="下载"/>
-							</form>
+<<<<<<< HEAD
+							<div class="table-header">温馨提示：如发现下载的模板中数据与实际学籍信息有误，请及时拨打客服电话，我们将协助您一起解决</div>
+=======
+							<div class="table-header">数据上报截止时间为：2014年12月20日，上报过程中，如有疑问，请您将问题统一反馈至本区县体质负责人，谢谢</div>
+>>>>>>> cbda60dd068c1f6862e2f9ac1dd5528340857c06
 						</div><!-- /.page-header -->
-
 							<div class="row">
-									<div class="col-xs-12">
-										<div class="table-responsive">
-											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
-												<thead>
-													<tr>
-														<?php if(($dtype) == "rank"): ?><th>名次</th><?php endif; ?>
-														<th>ID</th>
-														<th>区县</th>
-														<th>姓名</th>
-														<th>全国学籍号</th>
-														<th>学校名称</th>
-														<th>年级</th>
-														<th>班级</th>
-														<th>性别</th>
-														<th>综合成绩</th>
-														<th>综合评定</th>
-														<th>测试成绩</th>
-														<th>测试成绩评定</th>
-														<th>附加分</th>
-													</tr>
-												</thead>
-
-												<tbody>
-												<?php if(is_array($phyinfos['list'])): $i = 0; $__LIST__ = $phyinfos['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><tr>
-														<?php if(($dtype) == "rank"): ?><td><?php echo ($vo["rank"]); ?></td><?php endif; ?>
-														<td>
-															<?php echo ($vo["year_score_id"]); ?>
-														</td>
-														<td><?php echo ($vo["town_name"]); ?></td>
-														<td class="hidden-480"><?php echo ($vo["name"]); ?></td>
-
-														<td><?php echo ($vo["country_education_id"]); ?></td>
-														<td><?php echo ($vo["school_name"]); ?></td>
-														<td><?php echo ($vo["grade_name"]); ?></td>
-														<td><?php echo ($vo["class_name"]); ?></td>
-														<td><?php echo ($vo["sex"]); ?></td>
-														<td><?php echo ($vo["total_score"]); ?></td>
-														<td><?php echo ($vo["score_level"]); ?></td>
-														<td><?php echo ($vo["total_score_ori"]); ?></td>
-														<td><?php echo ($vo["score_level_ori"]); ?></td>
-														<td><?php echo ($vo["addach_score"]); ?></td>
-													</tr><?php endforeach; endif; else: echo "" ;endif; ?>
-												</tbody>
-											</table>
-										</div><!-- /.table-responsive -->
-									</div><!-- /span -->
-									<!--page-->
-									<?php if(($phyinfos['page']) != ""): ?><div class="message-footer clearfix"><?php echo ($phyinfos["page"]); ?></div><?php endif; ?>
-									<!--/page-->
+								<div class="col-xs-12">
+									<div class="row">
+										<div class="col-sm-8">
+<<<<<<< HEAD
+											
+=======
+>>>>>>> cbda60dd068c1f6862e2f9ac1dd5528340857c06
+												<input type="hidden" name="dType" id="dType" value="0">
+												<input value="showStuInfo" type="hidden" name="ac"/>
+												<select name="school_year" id="school_year" class="select2 width-20" disabled><?php echo ($school_year_options); ?></select>
+												<select name="town_id" id="town_id"  class="select2 width-25"><?php echo ($town_id_options); ?></select>
+												<select name="school_id" id="school_id"  class="select2 width-50"><?php echo ($school_id_options); ?></select>
+												<!--<input type="button" aname="d3" class="btn btn-small btn-white" value="有全国学籍号学生下载"/> 
+												<input type="button" class="btn btn-small btn-white"  aname="d5" value="无全国学籍号学生下载"/>-->
+<<<<<<< HEAD
+											
+=======
+>>>>>>> cbda60dd068c1f6862e2f9ac1dd5528340857c06
+										</div>
+									</div>
+									<div class="row" style="padding:20px"></div>
+									<div class="row">
+										<div class="col-sm-6">
+											<input id="file-0a" name="file_data" type="file" data-min-file-count="1" data-overwrite-initial="false" file-id='11'>
+										</div>
+									</div>
+								</div>
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
@@ -274,34 +337,69 @@
 		<script src="/Public/assets/js/select2.min.js"></script>
 		<script src='/Public/assets/js/jquery.form.js'></script>
 		<script src='/Public/assets/js/is_chzh.js'></script>
+
+		<script src='/Public/assets/js/fileinput.min.js'></script>
+		<script src='/Public/assets/js/fileinput_zh.js'></script>
 		<script type="text/javascript">
 			jQuery(function($) {
+
+		        $("#file-0a").fileinput({
+			        language: 'zh',
+			        showPreview : false,
+			        showUpload: true,
+			        showCaption: true,
+			        uploadUrl: '#',
+<<<<<<< HEAD
+			       // allowedFileExtensions : ['xls', 'xlsx'],
+=======
+			       	allowedFileExtensions : ['xls', 'xlsx'],
+>>>>>>> cbda60dd068c1f6862e2f9ac1dd5528340857c06
+			        // slugCallback : function(filename) {
+        			// }
+		        });
+
 				$(".select2").select2();
 
 				//学校下拉框
 				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_code');
+					ajaxSelectSchool('school','school_id');
 				});
-				//年级下拉框
-				$('#school_code').change(function(){
-					ajaxSelectSchool('grade','school_grade');
-				});
-				//班级下拉框
-				$('#school_grade').change(function(){
-					ajaxSelectSchool('class','class_num');
+				$('#school_id').change(function(){
+					ajaxSelectSchool('school','school_id');
+<<<<<<< HEAD
+=======
+
+>>>>>>> cbda60dd068c1f6862e2f9ac1dd5528340857c06
 				});
 				//提交表单
 				$("input[type=button]").click(function(){
-					var dtype = $(this).attr('dtype');
+					var dtype = $(this).attr('aname');
 					if(dtype == 'undefined' || dtype == ''){
 						alert('您的操作有误，请刷新页面后重试');
 						return false;
 					}
-					$('#ac').val(dtype);
-					$('#showForm').submit();
+					$('#dType').val(dtype);
+					$('#Form').submit();
 				});
 			});
+
+<<<<<<< HEAD
+			<?php if(($userinfo['user_kind']) == "109030"): ?>function setInSchool(obj,id,in_school){
+				if(!id || in_school == 'undefined')return;
+				$.post('<?php echo U('Home/Show/stuInfo');?>',{ac : 'chooseInSchool',id : id, in_school : in_school},function(result){
+					if(result.errno != 0){
+						layer.alert(result.errtitle,{icon : 2});
+						return;
+					}
+					layer.alert(result.errtitle,{icon : 1});
+				});
+			}<?php endif; ?>
 		</script>
 
 </body>
+=======
+		</script>
+
+</body>
+>>>>>>> cbda60dd068c1f6862e2f9ac1dd5528340857c06
 </html>

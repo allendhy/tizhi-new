@@ -192,21 +192,16 @@
 					</div>
 
 					<div class="page-content">
-					
-					<div class="table-header"> 温馨提示：您可以点击 综合成绩 查看该学生的各项目成绩。</div>
-					
-					<hr/>
 						<div class="page-header">
-							<form action="" id="showForm" method="get">
-								<input value="showPhyInfo" type="hidden" name="ac"/>
-								<select name="school_year" id="school_year" class="select2 width-15"><?php echo ($school_year_options); ?></select>
-								<select name="town_id" id="town_id"  class="select2 width-10"><?php echo ($town_id_options); ?></select>
-								<select name="school_code" id="school_code"  class="select2 width-25"><?php echo ($school_code_options); ?></select>
-								<select name="school_grade" id="school_grade"  class="select2 width-10"><?php echo ($school_grade_options); ?></select>
-								<select name="class_num" id="class_num"  class="select2 width-10"><?php echo ($class_num_options); ?></select>
-								&nbsp;&nbsp;&nbsp;
-								<input type="button" class="btn btn-small btn-white" dtype="showPhyInfo" value="查看"/> 
-								<input type="button" class="btn btn-small btn-white" dtype="downPhyInfo"  value="下载"/>
+							<form action="<?php echo U('Home/Show/stuInfo');?>" method="get" id="showForm">
+							<input value="showStuInfo" type="hidden" name="ac"/>
+							<select name="school_year" id="school_year" class="select2 width-15" disabled><?php echo ($school_year_options); ?></select>
+							<select name="town_id" id="town_id"  class="select2 width-15"><?php echo ($town_id_options); ?></select>
+							<select name="school_id" id="school_id"  class="select2 width-25"><?php echo ($school_id_options); ?></select>
+							<select name="school_grade" id="school_grade"  class="select2 width-10"><?php echo ($school_grade_options); ?></select>
+							<select name="class_num" id="class_num"  class="select2 width-15"><?php echo ($class_num_options); ?></select>
+							&nbsp;&nbsp;&nbsp;
+							<input type="submit" class="btn btn-small btn-white" value="查看" />
 							</form>
 						</div><!-- /.page-header -->
 
@@ -216,49 +211,47 @@
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-														<?php if(($dtype) == "rank"): ?><th>名次</th><?php endif; ?>
-														<th>ID</th>
-														<th>区县</th>
+														<th>教育ID号</th>
 														<th>姓名</th>
-														<th>全国学籍号</th>
-														<th>学校名称</th>
-														<th>年级</th>
-														<th>班级</th>
-														<th>性别</th>
-														<th>综合成绩</th>
-														<th>综合评定</th>
-														<th>测试成绩</th>
-														<th>测试成绩评定</th>
-														<th>附加分</th>
+														<th class="hidden-480">学校名称</th>
+														<th class="hidden-480">年级</th>
+														<th class="hidden-480">班级</th>
+														<th class="hidden-480">性别</th>
+														<th class="hidden-480">民族</th>
+														<th class="hidden-480">全国学籍号</th>
+														<th class="hidden-480">生源地</th>
+														<?php if(($userinfo['user_kind']) == "109030"): ?><th>是否在学</th><?php endif; ?>
 													</tr>
 												</thead>
 
 												<tbody>
-												<?php if(is_array($phyinfos['list'])): $i = 0; $__LIST__ = $phyinfos['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><tr>
-														<?php if(($dtype) == "rank"): ?><td><?php echo ($vo["rank"]); ?></td><?php endif; ?>
+												<?php if(is_array($stuinfos['list'])): $i = 0; $__LIST__ = $stuinfos['list'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><tr>
 														<td>
-															<?php echo ($vo["year_score_id"]); ?>
+															<?php echo ($vo["education_id"]); ?>
 														</td>
-														<td><?php echo ($vo["town_name"]); ?></td>
-														<td class="hidden-480"><?php echo ($vo["name"]); ?></td>
+														<td><?php echo ($vo["name"]); ?></td>
+														<td class="hidden-480"><?php echo ($vo["school_name"]); ?></td>
 
-														<td><?php echo ($vo["country_education_id"]); ?></td>
-														<td><?php echo ($vo["school_name"]); ?></td>
-														<td><?php echo ($vo["grade_name"]); ?></td>
-														<td><?php echo ($vo["class_name"]); ?></td>
-														<td><?php echo ($vo["sex"]); ?></td>
-														<td><?php echo ($vo["total_score"]); ?></td>
-														<td><?php echo ($vo["score_level"]); ?></td>
-														<td><?php echo ($vo["total_score_ori"]); ?></td>
-														<td><?php echo ($vo["score_level_ori"]); ?></td>
-														<td><?php echo ($vo["addach_score"]); ?></td>
+														<td class="hidden-480"><?php echo ($vo["grade_name"]); ?></td>
+														<td class="hidden-480"><?php echo ($vo["class_name"]); ?></td>
+														<td class="hidden-480"><?php echo ($vo["sex"]); ?></td>
+														<td class="hidden-480"><?php echo ($vo["folk"]); ?></td>
+														<td class="hidden-480"><?php echo ($vo["country_education_id"]); ?></td>
+														<td class="hidden-480"><?php echo ($vo["student_source"]); ?></td>
+														<?php if(($userinfo['user_kind']) == "109030"): ?><!--只有市级管理员有权限操作修改或删除-->
+														<td>
+														<select onchange="setInSchool(this,<?php echo ($vo["year_score_id"]); ?>,this.value)">
+															<option value="1">是</option>
+															<option value="0" <?php if(($vo['in_school']) == "0"): ?>selected<?php endif; ?>>否</option>
+														</select>
+														</td><?php endif; ?>
 													</tr><?php endforeach; endif; else: echo "" ;endif; ?>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
 									</div><!-- /span -->
 									<!--page-->
-									<?php if(($phyinfos['page']) != ""): ?><div class="message-footer clearfix"><?php echo ($phyinfos["page"]); ?></div><?php endif; ?>
+									<?php if(($stuinfos['page']) != ""): ?><div class="message-footer clearfix"><?php echo ($stuinfos["page"]); ?></div><?php endif; ?>
 									<!--/page-->
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
@@ -280,27 +273,27 @@
 
 				//学校下拉框
 				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_code');
+					ajaxSelectSchool('school','school_id');
 				});
 				//年级下拉框
-				$('#school_code').change(function(){
+				$('#school_id').change(function(){
 					ajaxSelectSchool('grade','school_grade');
 				});
 				//班级下拉框
 				$('#school_grade').change(function(){
 					ajaxSelectSchool('class','class_num');
 				});
-				//提交表单
-				$("input[type=button]").click(function(){
-					var dtype = $(this).attr('dtype');
-					if(dtype == 'undefined' || dtype == ''){
-						alert('您的操作有误，请刷新页面后重试');
-						return false;
-					}
-					$('#ac').val(dtype);
-					$('#showForm').submit();
-				});
 			});
+			<?php if(($userinfo['user_kind']) == "109030"): ?>function setInSchool(obj,id,in_school){
+				if(!id || in_school == 'undefined')return;
+				$.post('<?php echo U('Home/Show/stuInfo');?>',{ac : 'chooseInSchool',id : id, in_school : in_school},function(result){
+					if(result.errno != 0){
+						layer.alert(result.errtitle,{icon : 2});
+						return;
+					}
+					layer.alert(result.errtitle,{icon : 1});
+				});
+			}<?php endif; ?>
 		</script>
 
 </body>

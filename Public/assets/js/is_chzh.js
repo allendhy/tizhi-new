@@ -127,11 +127,11 @@ function Trim(str){
 		school_year = $('#school_year').val();
 		town_id = $('#town_id').val();
 
-		school_id = 0;
+		school_code = 0;
 		school_grade = 0;
 
 		if(select_type == 'grade' || select_type == 'class'){
-			school_id = $('#school_id').val();
+			school_code = $('#school_code').val();
 
 			if(select_type == 'class')school_grade = $('#school_grade').val();
 		}
@@ -143,7 +143,7 @@ function Trim(str){
 		}
 		$('#' + obj).empty();
 					
-		$.post("/index.php/Home/Show/stuInfo",{ac : 'ajaxSelect',select_type : select_type, school_year : school_year, town_id : town_id, school_id : school_id, school_grade: school_grade},function(result){
+		$.post("/index.php/Home/Show/stuInfo",{ac : 'ajaxSelect',select_type : select_type, school_year : school_year, town_id : town_id, school_code : school_code, school_grade: school_grade},function(result){
 			if(result.errno != 0){
 				layer.alert(result.errtitle,{icon : 2});
 				return;

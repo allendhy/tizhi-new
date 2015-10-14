@@ -4,14 +4,31 @@ use Think\Model;
 class SchoolModel extends Model {
 	//根据区县ID
 	public function get_list_by_town_year($town_id,$year_year){
-		return $this->field('school_id,school_code,school_name')->where('town_id = %d AND year_year = %d',array($town_id,$year_year))->select();
+		//自2015学年后,school表增加year_year字段,之前的学年该字段为空
+
+		if($year_year < 2015){
+			$where['year_year'] = array('exp','is null');
+		}else{
+			$where['year_year'] = $year_year;
+		}
+		$where['town_id'] = $town_id;
+		//$where['is_del'] = 0;
+		return $this->field('school_code,school_name')->where($where)->group('school_code,school_name')->select();
 	}
 	//根据学校代码
 	public function get_list_by_schoolcode_year($school_code,$year_year,$type="list"){
-		if($type == 'one'){
-			return $this->field('school_id,school_code,school_name,town_id')->where("school_code = '%s' AND year_year = %d",array($school_code,$year_year))->find();
+		if($year_year < 2015){
+			$where['year_year'] = array('exp','is null');
 		}else{
-			return $this->field('school_id,school_code,school_name,town_id')->where("school_code = '%s' AND year_year = %d",array($school_code,$year_year))->select();
+			$where['year_year'] = $year_year;
+		}
+		$where['school_code'] = $school_code;
+		//$where['is_del'] = 0;
+
+		if($type == 'one'){
+			return $this->field('school_code,school_name,town_id')->where($where)->find();
+		}else{
+			return $this->field('school_code,school_name,town_id')->where($where)->group('town_id,school_code,school_name')->select();
 		}
 		
 	}

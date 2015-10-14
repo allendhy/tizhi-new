@@ -15,11 +15,11 @@ class PublicController extends Controller {
 
 	//查找学生信息相关条件
 	protected $school_year 	= 0;
-	protected $town_id			= 0;
-	protected $school_id		= 0;
-	protected $school_code 	= '';
+	protected $town_id		= 0;
+	//protected $school_id		= 0;
+	protected $school_code 	= 0;
 	protected $school_grade	= 0;
-	protected $class_num		= '';
+	protected $class_num	= 0;
 
 	public function _initialize(){
 
@@ -74,8 +74,8 @@ class PublicController extends Controller {
 				$this->town_id = $townlist[0]['town_id'];
 				$this->school_code = $userinfo['org_schoolcode'];
 
-				$schInfo = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year,'one');
-				$this->school_id = $schInfo['school_id'];
+				//$schInfo = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year,'one');
+				//$this->school_id = $schInfo['school_id'];
 
 			break;
 
