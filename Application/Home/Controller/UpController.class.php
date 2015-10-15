@@ -18,50 +18,48 @@ class UpController extends PublicController {
 	//上传体质信息
 	public function index(){
 		$ac = I('ac','phydata');
-		switch($ac){
-			case 'phydata':
-				$this->_phydata();
-			break;
-			case 'phydata2':
-				$this->_phydata2();
-			break;
-			case 'historyPhydata':
-				$this->_historyPhydata();
-			break;
-			default:
-				$this->_phydata();
-			break;
-		}
-	}
-	//有全国学籍号
-	private function _phydata(){
-		$targetFolder = '/uploads'; // Relative to the root
+
 		$unique_salt = C('UNIQUE_SALT');
 		$verifyToken = md5($unique_salt . $_POST['timestamp']);
 
 		if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
-			$tempFile = $_FILES['file_data']['tmp_name'];
-			$targetPath = $_SERVER['DOCUMENT_ROOT'] . $targetFolder;
-			$targetFile = rtrim($targetPath,'/') . '/' . $_FILES['Filedata']['name'];
-				
-			// Validate the file type
-			$fileTypes = array('xls','xlsx'); // File extensions
-			$fileParts = pathinfo($_FILES['file_data']['name']);
-				
-			if (in_array($fileParts['extension'],$fileTypes)) {
-				move_uploaded_file($tempFile,$targetFile);
-				echo '1';
-			} else {
-				echo 'Invalid file type.';
+			//判断来源
+			if(!in_array($ac,array('phydata','phydata2','historyPhydata'))){
+				$this->ajaxReturn(array('errno'=>99,'errtitle'=>'请求来源错误!'));
 			}
+
+			$fileinfo = $this->upload('file_data');
+			//print_r($fileinfo);
+			if($fileinfo['errno'] != 0){
+				$this->ajaxReturn($fileinfo);
+			}
+
+			switch($ac){
+				case 'phydata':
+				case 'phydata2':
+					$this->_phydata($fileinfo,$ac);
+				break;
+				case 'historyPhydata':
+					$this->_historyPhydata();
+				break;
+			}
+			//读取文件并处理数据
 		}else{
+			$this->assign('ac','phydata');
 			$this->assign('timestamp',time());
 			$this->web_title = '上传学生体质信息(有全国学籍号)';
         	$this->page_template = 'Up:phydata';
     	}
 	}
+	//有全国学籍号:phydata, 无全国学籍号:phydata2
+	private function _phydata($fileinfo,$ac='phydata'){
+		//$this->ajaxReturn($fileinfo);
+		sleep(10);
+		echo '下载';
+	}
 	//上传体质信息，无全国学籍号
 	public function phydata2(){
+		$this->assign('ac','phydata2');
 		$this->assign('timestamp',time());
 		$this->web_title = '上传学生体质信息(无全国学籍号)';
         $this->page_template = 'Up:phydata';
@@ -76,5 +74,24 @@ class UpController extends PublicController {
 	public function historyPhyData(){
 		$this->web_title = '历史数据修改（模板下载）';
         $this->page_template = 'Up:historyPhyData';
+	}
+
+	//上传文件方法
+	private function upload($file_data){
+		$userinfo = session('userinfo');
+	    $upload = new \Think\Upload();// 实例化上传类
+	    $upload->maxSize   	=     3145728 ;// 设置附件上传大小,3m
+	    $upload->exts      	=     array('xls','xlsx');// 设置附件上传类型
+	    $upload->rootPath  	=      './Upload/'; // 设置附件上传根目录
+	    $upload->savePath  	=	'stuPhyData/' . $userinfo['login_name'] . '/';
+		$upload->autoSub 	= true;
+		$upload->subName 	= array('date','Ym');
+	    // 上传单个文件 
+	    $info   =   $upload->uploadOne($_FILES[$file_data]);
+	    if(!$info) {// 上传错误提示错误信息
+	        return array('errno'=>1,'errtitle'=>$upload->getError());
+	    }else{// 上传成功 获取上传文件信息
+	        return array('errno'=>0,'info'=>$info);
+	    }
 	}
 }

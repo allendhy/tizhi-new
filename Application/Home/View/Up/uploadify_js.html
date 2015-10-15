@@ -2,65 +2,70 @@
 		<script type="text/javascript">
 			jQuery(function($) {
 				$('#file_upload').uploadify({
-					'debug' : false,
+					'debug' : true,
 					'auto'	: true,
 					'successTimeout':99999,
 					'formData'     : {
 						'timestamp' : '{$timestamp}',
 						'token'     : '<php>echo md5(C('UNIQUE_SALT') . $timestamp);</php>',
 						'{:session_name()}':'{:session_id()}',
+						'ac' : '{$ac|default='phydata'}',
 					},
 					'swf'      : '__PUBLIC__/assets/js/uploadify/uploadify.swf',
 					'uploader' : '{:U('Home/Up/index')}',
 					'fileObjName':'file_data',
-			        //'buttonImage':'upbutton.gif',
-			        //浏览按钮的宽度
+			        'buttonImage':'__PUBLIC__/assets/images/uploadbtn.png',
 			        'width':'100',
-			        //浏览按钮的高度
-			        'height':'32',
-			        //expressInstall.swf文件的路径。
-			        'expressInstall':'expressInstall.swf',
-			        //在浏览窗口底部的文件类型下拉菜单中显示的文本
-			        'fileTypeDesc':'只能上传excel文件：',
-			        //允许上传的文件后缀
-			        'fileTypeExts':'*.xls;*.xlsx',
-			        //上传文件的大小限制
+			        'height':'35',
+			       // 'fileTypeDesc':'只能上传excel文件：',
+			        'fileTypeExts':'*.xls;*.xlsx;',
 			        'fileSizeLimit':'3MB',
-			        //上传数量
-			        'queueSizeLimit' : 25,
-			        //每次更新上载的文件的进展
 			        'onUploadProgress' : function(file, bytesUploaded, bytesTotal, totalBytesUploaded, totalBytesTotal) {
 			             //有时候上传进度什么想自己个性化控制，可以利用这个方法
 			             //使用方法见官方说明
 			        },
-			        //选择上传文件后调用
 			        'onSelect' : function(file) {
-			                  
+			        	$('#file_upload').uploadify('settings','formData',{
+			        		school_year : 	$('#school_year').val(),
+			        		town_id : 		$('#town_id').val(),
+			        		school_code : 	''	+	$('#school_code').val()
+			        	});
 			        },
-			        //返回一个错误，选择文件的时候触发
+			        'onUploadStart' : function(file){
+			        	if($('#school_code').val() == '' || $('#school_code').val() == '0' || $('#school_code').val() == 'undefined'){
+			        		layer.alert('请选择要上传数据的学校!',{icon:0});
+			        		$('#file_upload').uploadify('cancel');
+			        	}
+			        },
 			        'onSelectError':function(file, errorCode, errorMsg){
 			            switch(errorCode) {
 			                case -100:
-			                    layer.alert("上传的文件数量已经超出系统限制的"+$('#file_upload').uploadify('settings','queueSizeLimit')+"个文件！");
+			                    layer.alert("上传的文件数量已经超出系统限制的"+$('#file_upload').uploadify('settings','queueSizeLimit')+"个文件！",{icon:0});
 			                    break;
 			                case -110:
-			                    alert("文件 ["+file.name+"] 大小超出系统限制的"+$('#file_upload').uploadify('settings','fileSizeLimit')+"大小！");
+			                    layer.alert("文件 ["+file.name+"] 大小超出系统限制的"+$('#file_upload').uploadify('settings','fileSizeLimit')+"大小！",{icon:0});
 			                    break;
 			                case -120:
-			                    alert("文件 ["+file.name+"] 大小异常！");
+			                    layer.alert("文件 ["+file.name+"] 大小异常！",{icon:0});
 			                    break;
 			                case -130:
-			                    alert("文件 ["+file.name+"] 类型不正确！");
+			                    layer.alert("文件 ["+file.name+"] 类型不正确！",{icon:0});
 			                    break;
 			            }
 			        },
 			        //检测FLASH失败调用
 			        'onFallback':function(){
-			            alert("您未安装FLASH控件，无法上传图片！请安装FLASH控件后再试。");
+			            layer.alert("您未安装FLASH控件，无法上传图片！请安装FLASH控件后再试。",{icon:0});
+			            return;
 			        },
-			        //上传到服务器，服务器返回相应信息到data里
 			        'onUploadSuccess':function(file, data, response){
-			            alert(data);
+			        	var dataObj=eval("("+data+")");
+			        	if(dataObj.errno != 0){
+			        		layer.alert(dataObj.errtitle,{icon:0});
+			        		return;
+			        	}
+
+			            console.log(dataObj.errno);
 			        }
 				});
 		
@@ -73,7 +78,6 @@
 				});
 				$('#school_id').change(function(){
 					//ajaxSelectSchool('school','school_id');
-
 				});
 			});
 		</script>
