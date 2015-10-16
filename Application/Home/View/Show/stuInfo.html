@@ -32,9 +32,9 @@
 														<th class="hidden-480">民族</th>
 														<th class="hidden-480">全国学籍号</th>
 														<th class="hidden-480">生源地</th>
-														<eq name="userinfo['user_kind']" value="109030">
+														<neq name="userinfo['user_kind']" value="109020">
 														<th>是否在学</th>
-														</eq>
+														</neq>
 													</tr>
 												</thead>
 
@@ -53,7 +53,7 @@
 														<td class="hidden-480">{$vo.folk}</td>
 														<td class="hidden-480">{$vo.country_education_id}</td>
 														<td class="hidden-480">{$vo.student_source}</td>
-														<eq name="userinfo['user_kind']" value="109030">
+														<neq name="userinfo['user_kind']" value="109020">
 														<!--只有市级管理员有权限操作修改或删除-->
 														<td>
 														<select onchange="setInSchool(this,{$vo.year_score_id},this.value)">
@@ -61,7 +61,7 @@
 															<option value="0" <eq name="vo['in_school']" value="0">selected</eq>>否</option>
 														</select>
 														</td>
-														</eq>
+														</neq>
 													</tr>
 												</volist>
 												</tbody>

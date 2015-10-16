@@ -26,7 +26,7 @@ class SchoolModel extends Model {
 		//$where['is_del'] = 0;
 
 		if($type == 'one'){
-			return $this->field('school_code,school_name,town_id')->where($where)->find();
+			return $this->field('school_id,school_code,school_name,town_id')->where($where)->find();
 		}else{
 			return $this->field('school_code,school_name,town_id')->where($where)->group('town_id,school_code,school_name')->select();
 		}

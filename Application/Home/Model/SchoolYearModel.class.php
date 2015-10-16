@@ -16,5 +16,8 @@ class SchoolYearModel extends Model {
 		}
 		return $option;
 	}
+	public function get_info($school_year){
+		return $this->where('year_year = %d',$school_year)->find();
+	}
 }
 ?>

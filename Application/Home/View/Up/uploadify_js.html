@@ -1,8 +1,10 @@
 		<script src='__PUBLIC__/assets/js/uploadify/jquery.uploadify.min.js'></script>
 		<script type="text/javascript">
+			var errno = 0;
 			jQuery(function($) {
+				var layerIndex;
 				$('#file_upload').uploadify({
-					'debug' : true,
+					'debug' : false,
 					'auto'	: true,
 					'successTimeout':99999,
 					'formData'     : {
@@ -17,13 +19,9 @@
 			        'buttonImage':'__PUBLIC__/assets/images/uploadbtn.png',
 			        'width':'100',
 			        'height':'35',
-			       // 'fileTypeDesc':'只能上传excel文件：',
+			       	'fileTypeDesc':'只能上传excel文件：',
 			        'fileTypeExts':'*.xls;*.xlsx;',
 			        'fileSizeLimit':'3MB',
-			        'onUploadProgress' : function(file, bytesUploaded, bytesTotal, totalBytesUploaded, totalBytesTotal) {
-			             //有时候上传进度什么想自己个性化控制，可以利用这个方法
-			             //使用方法见官方说明
-			        },
 			        'onSelect' : function(file) {
 			        	$('#file_upload').uploadify('settings','formData',{
 			        		school_year : 	$('#school_year').val(),
@@ -36,6 +34,9 @@
 			        		layer.alert('请选择要上传数据的学校!',{icon:0});
 			        		$('#file_upload').uploadify('cancel');
 			        	}
+			        	layerIndex = layer.load(1); //换了种风格
+			        	$('#file_upload').uploadify('disable',true);
+			        	$('#file_check_state').html('');
 			        },
 			        'onSelectError':function(file, errorCode, errorMsg){
 			            switch(errorCode) {
@@ -59,12 +60,25 @@
 			            return;
 			        },
 			        'onUploadSuccess':function(file, data, response){
+
+			        	layer.close(layerIndex);
+			        	$('#file_upload').uploadify('disable',false);
+
 			        	var dataObj=eval("("+data+")");
 			        	if(dataObj.errno != 0){
-			        		layer.alert(dataObj.errtitle,{icon:0});
-			        		return;
+			        		$('#file_check_state').html(dataObj.errtitle);
+			        		return ;
 			        	}
-
+			        	
+						var idInt = setInterval(function(){
+						    $.post("{:U('Home/Up/index')}", {id:dataObj.import_id,ac:'check_state'},function(data){
+						        $('#file_check_state').html(data.errtitle);
+						        if(data.errno == 1){
+						        	clearInterval(idInt);
+						        	return false;
+						        }
+						    });
+						},2000);
 			            console.log(dataObj.errno);
 			        }
 				});
@@ -80,4 +94,7 @@
 					//ajaxSelectSchool('school','school_id');
 				});
 			});
+			function check_state(id){
+
+			}
 		</script>
