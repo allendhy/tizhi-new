@@ -1,4 +1,24 @@
 <?php
+    //文件下载,文件流
+    function down_file($file_name,$file_path,$file_type = ''){
+
+        header('Pragma:public');
+        header('Content-Type:application/x-msexecl;name='.$filfile_nameeName);
+        header('Content-Disposition:inline;filename='.$file_name);
+
+        Header("Accept-Length: ".filesize($_SERVER['DOCUMENT_ROOT'] . $file_path));
+            
+        $ua = $_SERVER["HTTP_USER_AGENT"];
+        if (preg_match("/MSIE/", $ua)) {
+            header('Content-Disposition: attachment; filename="' . urlencode($file_name));
+        } else if (preg_match("/Firefox/", $ua)) {
+            header('Content-Disposition: attachment; filename*="utf8\'\'' . $file_name );
+        } else {
+            header('Content-Disposition: attachment; filename="' . $file_name);
+        }
+
+        readfile($_SERVER['DOCUMENT_ROOT'] . $file_path);
+    }
     //数组转换为对象
     function array2object($array) {
         if (is_array($array)) {

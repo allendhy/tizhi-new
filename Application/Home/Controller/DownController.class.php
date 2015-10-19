@@ -385,12 +385,26 @@ class DownController extends PublicController {
 
 	//下载学生体质成绩回执单
 	public function receipt(){
-		$this->web_title = '下载学生体质成绩回执单';
-		$this->page_template = "Down:receipt";
+		
+		$ac = I('ac','phydata');
+		//下载学校上传的文件 
+		if($ac == 'import_log'){
+			$import_id = I('id',0);
+
+			$loginfo = D('ImportLog')->where('import_id = %d',$import_id)->find();
+			if(empty($loginfo))$this->error('导入信息为空!');
+			//下载文件
+			down_file($loginfo['file_name'],$loginfo['file_path'],'application/vnd.ms-excel');
+		}else{
+			$this->web_title = '下载学生体质成绩回执单';
+			$this->page_template = "Down:receipt";
+		}
 	}
 	//导出学生体质信息
 	public function phydata(){
+
 		$this->web_title = '导出学生体质信息';
 		$this->page_template = "Down:phydata";
+
 	}
 }

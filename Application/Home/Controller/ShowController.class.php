@@ -94,6 +94,7 @@ class ShowController extends PublicController {
 	public function printRegister(){
 		$this->web_title = '登记卡打印';
 		$this->page_template = "Show:printRegister";
+
 	}
 	//查看受检未检人数
 	public function upNum(){
@@ -169,8 +170,32 @@ class ShowController extends PublicController {
 	}
 	//查看体质上传情况
 	public function phyUpStatus(){
+		$ac = I('ac','list');
+		
+		if(!in_array($ac,array('list','detail')))$ac = 'list';
+
+		$is_error = I('is_error','');
+		$this->assign('is_error',$is_error);
+		$this->assign('dictList',session('dictList'));
+
+		if($ac == 'list'){
+			$this->page_template = "Show:phyUpStatus";
+
+			$logs = D('ImportLog')->getInfos($this->school_year,$this->town_id,$this->school_code,$is_error);
+			$this->assign('logs',$logs);
+		}else{
+
+			$import_id = I('id',0);
+			$this->page_template = "Show:phyUpStatusDetail";
+
+			$detail_tb = $this->school_year >= 2014 ? 'ImportDetailNew' : 'ImportDetail';
+			$details = D($detail_tb)->get_details($this->school_year,$this->town_id,$import_id);
+			//print_r($details);
+			$this->assign('details',$details);
+			$this->assign('gradeList',session('gradeList'));
+		}
+
 		$this->web_title = '查看学生体质上传情况';
-		$this->page_template = "Show:phyUpStatus";
 	}
 	//查看历史修改数据
 	public function historyUpStatus(){

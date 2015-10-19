@@ -6,10 +6,16 @@
 					<div class="page-content">
 						<div class="page-header">
 							<form action="" method="get" id="showForm">
-							<select name="" id=""  class="select2 width-15">
+							<select name="town_id" id="town_id"  class="select2 width-15">
+							{$town_id_options}
+							</select>
+							<select name="school_code" id="school_code"  class="select2 width-25">
+							{$school_code_options}
+							</select>
+							<select name="is_error" id=""  class="select2 width-15">
 							<option value="">是否错误</option>
-							<option value="1">是</option>
-							<option value="0">否</option>
+							<option value="1" <eq name="is_error" value="1">selected</eq>>是</option>
+							<option value="0" <eq name="is_error" value="0">selected</eq>>否</option>
 							</select>
 							&nbsp;&nbsp;&nbsp;
 							<input type="submit" class="btn btn-small btn-white" value="查看" />
@@ -32,29 +38,18 @@
 													</tr>
 												</thead>
 												<tbody>
-												<volist name="stuinfos['list']" id="vo">
+												<volist name="logs['list']" id="vo">
 													<tr>
 														<td>
-															{$vo.education_id}
+															{$vo.import_id}
 														</td>
-														<td>{$vo.name}</td>
-														<td class="hidden-480">{$vo.school_name}</td>
+														<td>{$vo.year_year}-{$vo['year_year'] + 1}学年</td>
+														<td class="hidden-480">{:date('Y-m-d H:i:s',strtotime($vo['import_time']))}</td>
 
-														<td class="hidden-480">{$vo.grade_name}</td>
-														<td class="hidden-480">{$vo.class_name}</td>
-														<td class="hidden-480">{$vo.sex}</td>
-														<td class="hidden-480">{$vo.folk}</td>
-														<td class="hidden-480">{$vo.country_education_id}</td>
-														<td class="hidden-480">{$vo.student_source}</td>
-														<eq name="userinfo['user_kind']" value="109030">
-														<!--只有市级管理员有权限操作修改或删除-->
-														<td>
-														<select onchange="setInSchool(this,{$vo.year_score_id},this.value)">
-															<option value="1">是</option>
-															<option value="0" <eq name="vo['in_school']" value="0">selected</eq>>否</option>
-														</select>
-														</td>
-														</eq>
+														<td class="hidden-480">{$dictList['204'][$vo['deal_status']]['dict_name']}</td>
+														<td class="hidden-480"><eq name="is_error" value='1'>是<else/>否</eq></td>
+														<td class="hidden-480"><a href="{:U('Home/Down/receipt',array('ac'=>'import_log','id'=>$vo['import_id']))}">下载</a></td>
+														<td class="hidden-480"><a href="{:U('Home/Show/phyUpStatus',array('ac'=>'detail','id'=>$vo['import_id'],'school_year'=>$vo['year_year'],'town_id'=>$vo['town_id']))}">查看</a></td>
 													</tr>
 												</volist>
 												</tbody>
@@ -62,8 +57,8 @@
 										</div><!-- /.table-responsive -->
 									</div><!-- /span -->
 									<!--page-->
-									<neq name="stuinfos['page']" value="">
-									<div class="message-footer clearfix">{$stuinfos.page}</div>
+									<neq name="logs['page']" value="">
+									<div class="message-footer clearfix">{$logs.page}</div>
 									</neq>
 									<!--/page-->
 							</div><!-- /row -->
@@ -83,6 +78,11 @@
 		<script type="text/javascript">
 			jQuery(function($) {
 				$(".select2").select2();
+
+				//学校下拉框
+				$('#town_id').change(function(){
+					ajaxSelectSchool('school','school_code');
+				});
 			});
 		</script>
 
