@@ -45,6 +45,7 @@ class DownController extends PublicController {
 			//加载phpexcel类库
 
 			import("Org.Util.PHPExcel");
+			import("Org.Util.PHPExcel.IOFactory");
 
 			$objPHPExcel = new \PHPExcel();
 

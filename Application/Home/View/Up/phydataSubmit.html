@@ -8,13 +8,17 @@
 					<hr/>
 						<div class="page-header">
 							<form action="" id="upForm" method="post">
-								<input type="hidden" name="dType" id="dType" value="0">
-								<input value="showStuInfo" type="hidden" name="ac"/>
+								<input value="dataSubmit" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" class="select2 width-10" disabled>{$school_year_options}</select>
 								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
 								<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
 								&nbsp;&nbsp;&nbsp;
-								<input type="button" aname="d3" class="btn btn-small btn-white" value="数据上报"/> 
+
+								<if condition="$sch_status['s_status'] eq 206010 OR $sch_status['s_status'] eq 206040">
+									<input type="button" class="btn btn-small btn-white" value="<eq name="sch_status['s_status']" value="206040">审核未通过,可继续上报<else/>数据上报</eq>"/> 
+								<else />
+									<span class="btn btn-small btn-white"><eq name="sch_status['s_status']" value="206030">审核已通过<else/>待审核</eq></span>
+								</if>
 							</form>
 						</div><!-- /.page-header -->
 
@@ -29,17 +33,12 @@
 													<tr><td>有全国学籍号人数</td><td>{$sch_status['s_cnt'] - $sch_status['s_noceid_cnt']}</td></tr>
 													<tr><td>没有全国学籍号人数</td><td>{$sch_status.s_noceid_cnt}</td></tr>
 													<tr><td>学校免体人数</td><td>{$sch_status.s_noceid_cnt}</td></tr>
-													<tr><td>实际上传体质数据人数</td><td>{$sch_status.s_noceid_cnt}</td></tr>
-													<tr><td>上传率</td><td>{$sch_status.s_noceid_cnt}</td></tr>
+													<tr><td>实际上传体质数据人数</td><td>{$sch_status.s_phy_cnt}</td></tr>
+													<tr><td>上传率</td><td>{:round($sch_status['s_phy_cnt'] / $sch_status['s_cnt'],4) * 100}%</td></tr>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
 									</div><!-- /span -->
-									<!--page-->
-									<neq name="stuinfos['page']" value="">
-									<div class="message-footer clearfix">{$stuinfos.page}</div>
-									</neq>
-									<!--/page-->
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
@@ -71,14 +70,26 @@
 					ajaxSelectSchool('class','class_num');
 				});
 				//提交表单
-				$("input[type=button]").click(function(){
-					var dtype = $(this).attr('aname');
-					if(dtype == 'undefined' || dtype == ''){
-						alert('您的操作有误，请刷新页面后重试');
-						return false;
-					}
-					$('#dType').val(dtype);
-					$('#downForm').submit();
+				$('input[type=button]').click(function(){
+					layer.confirm('上报数据后,在区县撤销审核之前您无法再次修改数据,是否确定上报?', {icon: 3, title:'提示', btn:['上报','取消']
+						},function(index){
+							$('#upForm').ajaxSubmit({beforeSubmit:function(){},success:function(data){
+								if(data.errno == 0){
+									layer.alert(data.errtitle,{icon : 1}, function(){
+										window.location.reload();
+									});
+								}else{
+									layer.alert(data.errtitle,{icon : 0});
+									return ;
+								}
+							},error:function(){
+								layer.alert('服务器返回数据失败，请重试！',{icon : 2})
+							},dataType:'json'});
+						},function(index){
+							layer.close(index);
+							return false;
+					});
+
 				});
 			});
 		</script>

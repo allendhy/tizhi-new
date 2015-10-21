@@ -512,8 +512,40 @@ class UpController extends PublicController {
 	}
 	//体质数据上报
 	public function phydataSubmit(){
-		$this->web_title = '学生体质数据上报';
-        $this->page_template = 'Up:phydataSubmit';
+
+		$ac = I('ac','default');
+
+		$sch_status = D('SchoolStatus')->get_status_info_one($this->school_year,$this->school_code);
+
+		$this->assign('sch_status',$sch_status);
+
+		if($ac == 'dataSubmit' && IS_AJAX && IS_POST){
+			//提交上报
+			if(empty($sch_status))$this->ajaxReturn(array('errno'=>1,'errtitle'=>'学校信息错误!'));
+
+			if($sch_status['s_status'] == 206020 || $sch_status['s_status'] == 206030){
+
+				$this->ajaxReturn(array('errno'=>2,'errtitle'=>'当前状态不允许上报,如需上报请等待区县撤销!'));
+
+			}
+
+			$return = D('SchoolStatus')->set_status($sch_status['school_id'],'206020');
+
+			if($return == true){
+
+				$this->ajaxReturn(array('errno'=>0,'errtitle'=>'操作成功!'));
+
+			}else{
+				$this->ajaxReturn(array('errno'=>5,'errtitle'=>'状态操作失败!'));
+			}
+
+		}else{
+
+			$this->web_title = '学生体质数据上报';
+
+      	 	$this->page_template = 'Up:phydataSubmit';
+
+		}
 	}
 
 	//历史数据修改（模板下载）

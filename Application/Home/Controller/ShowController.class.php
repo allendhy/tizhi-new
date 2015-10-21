@@ -98,8 +98,33 @@ class ShowController extends PublicController {
 	}
 	//查看受检未检人数
 	public function upNum(){
-		$this->web_title = '查看受检未检人数';
-		$this->page_template = "Show:upNum";
+		$ac = I('ac','show');
+
+
+		if($ac == 'down'){
+
+		}else{
+			$this->web_title = '查看受检未检人数';
+			$this->page_template = "Show:upNum";
+
+			if($this->school_grade != 0){
+				$data = D('StudentScore')->get_up_num($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
+			}else{
+				//school_status
+				$data = D('SchoolStatus')->get_up_num($this->school_year,$this->town_id,$this->school_code);
+			}
+
+			//应受检人数
+			$data['s_ysj_cnt'] = $data['s_cnt'] - ($data['s_notinschool_cnt'] + $data['s_noceid_cnt'] - $data['s_n2_cnt']);
+			//已受检人数
+			$data['s_sj_cnt'] = $data['s_phy_cnt'] - ($data['s_phynotinschool_cnt'] + $data['s_phynoceid_cnt'] - $data['s_phyn2_cnt']);
+			//未受检人数
+			$data['s_wsj_cnt'] = $data['s_ysj_cnt'] - $data['s_sj_cnt'];
+			//上传率
+			$data['s_scl'] = round($data['s_sj_cnt']/$data['s_ysj_cnt'],4) * 100 . '%';
+
+			$this->assign('sch_status',$data);
+		}
 	}
 	//查看学生体质成绩
 	public function phydata(){

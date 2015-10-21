@@ -154,7 +154,8 @@ class StudentScoreModel extends Model {
 			and school_id = s.school_id AND is_del = 0 AND is_check = 1  AND in_school=1 AND country_education_id is not null AND is_avoid = 1) 
 			from school s,school_status sst
 			where s.school_id = sst.school_id
-			AND sst.school_id = %d",array($stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['school_id']));
+			AND s.year_year = %d
+			AND sst.school_id = %d",array($stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['year_year'],$stu_info['school_id']));
 		}
 
 		if($return == true){
@@ -185,7 +186,7 @@ class StudentScoreModel extends Model {
 
        // $where['s.is_del'] = 0;
         $where['sc.is_del'] = 0;
-        //$where['sc.is_check'] = 1;
+        $where['sc.is_check'] = 1;
 
         //查询
 		$count = $this->alias('sc')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->count();
@@ -196,6 +197,25 @@ class StudentScoreModel extends Model {
         $list = $this->alias('sc')->field("t.town_name,sc.year_score_id,sc.town_id,sc.school_id,s.school_code,s.school_name,sc.school_grade,sc.class_num,sc.class_name,sc.name,case sc.sex when 106020 then '女' when 106010 then '男' else '未知' end sex,sc.folk,sc.education_id,sc.country_education_id,sc.student_source,sc.in_school,sc.is_avoid,sc.total_score,sc.score_level,sc.total_score_ori,sc.score_level_ori,sc.addach_score")->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->order($order)->limit($limit)->select();
         $show = $page->show();
         return array('list'=>$list,'page'=>$show);
+	}
+
+	//返回受检未检人数
+	public function get_up_num($year_year,$town_id,$school_code,$school_grade,$class_num){
+
+		$where['sc.partition_field'] = intval($town_id . $year_year);
+		$where['s.school_code'] = $school_code;
+
+		if($school_grade != 0){
+			$where['sc.school_grade'] = $school_grade;
+		}
+
+		if($class_num != 0){
+			$where['sc.class_num'] = $class_num;
+		}
+
+		$where['sc.is_del'] = 0;
+
+		return $this->alias('sc')->field(' SUM(1) AS s_cnt,SUM(CASE sc.in_school WHEN 0 THEN 1 ELSE 0 END) AS s_notinschool_cnt,SUM(CASE WHEN sc.country_education_id is null THEN 1 ELSE 0 END) AS s_noceid_cnt,SUM(CASE WHEN sc.in_school = 0 AND sc.country_education_id is null THEN 1 ELSE 0 END) AS s_n2_cnt,SUM(CASE sc.is_check WHEN 1 THEN 1 ELSE 0 END ) AS s_phy_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.in_school = 0 THEN 1 ELSE 0 END) AS s_phynotinschool_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.country_education_id is null THEN 1 ELSE 0 END) AS s_phynoceid_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.country_education_id is null AND sc.in_school = 0 THEN 1 ELSE 0 END ) AS s_phyn2_cnt,SUM(CASE WHEN sc.is_check = 1 and sc.is_avoid = 1 THEN 1 ELSE 0 END) AS s_phyavoid_cnt')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->find();
 	}
 }
 ?>

@@ -30,10 +30,10 @@
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 												<tbody>
 													<tr><td class="width-30">总人数</td><td>{$sch_status.s_cnt}</td></tr>
-													<tr><td>应受检人数(是指有全国学籍号且在学的人数)</td><td>{$sch_status.s_notinschool_cnt}</td></tr>
-													<tr><td>未受检人数</td><td>{$sch_status['s_cnt'] - $sch_status['s_noceid_cnt']}</td></tr>
-													<tr><td>上传率</td><td>{$sch_status.s_noceid_cnt}</td></tr>
-													<tr><td>免体人数</td><td>{$sch_status.s_noceid_cnt}</td></tr>
+													<tr><td>应受检人数(是指有全国学籍号且在学的人数)</td><td>{$sch_status['s_ysj_cnt']}</td></tr>
+													<tr><td>未受检人数</td><td>{$sch_status['s_wsj_cnt']}</td></tr>
+													<tr><td>上传率</td><td>{$sch_status['s_scl']}</td></tr>
+													<tr><td>免体人数</td><td>{$sch_status.s_phyavoid_cnt}</td></tr>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
