@@ -98,11 +98,15 @@ class ShowController extends PublicController {
 	}
 	//查看受检未检人数
 	public function upNum(){
-		$ac = I('ac','show');
+		$ac = I('ac','');
 
+		if($ac == '下载'){
+			if($this->school_code == 0)$this->error('请选择学校!');
+			$list = D('StudentScore')->get_up_num_infos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
 
-		if($ac == 'down'){
+			if(empty($list)) $this->error('数据有误!');
 
+			$this->downUpNumInfos($list);
 		}else{
 			$this->web_title = '查看受检未检人数';
 			$this->page_template = "Show:upNum";
@@ -126,15 +130,159 @@ class ShowController extends PublicController {
 			$this->assign('sch_status',$data);
 		}
 	}
+	//下载没有受检的人信息
+	private function downUpNumInfos($list){
+
+		import("Org.Util.PHPExcel");
+		import("Org.Util.PHPExcel.IOFactory");
+
+		$file = './Public/template/stuDataTmp.xls';
+		$objReader = \PHPExcel_IOFactory::createReader('Excel5');
+		$objPHPExcel = $objReader->load($file);
+		$objActSheet = $objPHPExcel->getActiveSheet();
+		//缓存
+		$cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_in_memory_serialized;
+		\PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
+		// Set properties
+		$objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
+										 ->setLastModifiedBy("Maarten Balliauw")
+										 ->setTitle("physicalHealth")
+										 ->setSubject("physicalHealth")
+										 ->setDescription("physicalHealth")
+										 ->setKeywords("physicalHealth")
+										 ->setCategory("physicalHealth");
+
+		$rowNum = 2;
+
+		foreach($list as $k=>$row){
+			$sex = $row['sex']=='106020'?'2':'1';
+			$birthday = date('Y-m-d',strtotime($row['birthday']));
+			if(is_object($row['birthday'])){
+				$birthdayObj = object2array($row['birthday']);
+				$birthday = date('Y-m-d',strtotime($birthdayObj['date']));
+			}
+
+			if($row['country_education_id'] == '')$row['country_education_id'] = $row['education_id'];
+					
+			$objActSheet->setCellValueExplicit('A'.$rowNum, $row['school_grade'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('A'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('B'.$rowNum, $row['class_num'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('B'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('C'.$rowNum, $row['class_name'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('C'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('D'.$rowNum, $row['country_education_id'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('D'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			$objActSheet->setCellValueExplicit('E'.$rowNum, $row['folk_code'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('E'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('F'.$rowNum, $row['name'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('F'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('G'.$rowNum, $sex,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('G'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('H'.$rowNum, $birthday,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('H'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			$objActSheet->setCellValueExplicit('I'.$rowNum, $row['address'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('I'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			if($row['is_avoid'] == '是'){
+				$row['body_height'] = '免体';
+			}else{
+				if(floatval($row['body_height'])<=0){$row['body_height']='';}
+			}
+			$objActSheet->setCellValueExplicit('J'.$rowNum, $row['body_height'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('J'.$rowNum)->getNumberFormat()->setFormatCode("@");
+			if(floatval($row['body_weight'])<=0){$row['body_weight']='';}
+			$objActSheet->setCellValueExplicit('K'.$rowNum, $row['body_weight'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('K'.$rowNum)->getNumberFormat()->setFormatCode("@");
+			if(floatval($row['vital_capacity'])<=0){$row['vital_capacity']='';}
+			$objActSheet->setCellValueExplicit('L'.$rowNum, $row['vital_capacity'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('L'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			$objActSheet->setCellValueExplicit('M'.$rowNum, $row['wsm'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('M'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			if(floatval($row['ldty'])<=0 || $row['school_grade'] < 21){$row['ldty']='';}
+			$objActSheet->setCellValueExplicit('N'.$rowNum, $row['ldty'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('N'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			$objActSheet->setCellValueExplicit('O'.$rowNum, $row['zwtqq'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('O'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			if(floatval($row['wsmwfp'])<=0 || $row['school_grade'] < 15 || $row['school_grade'] > 16){$row['wsmwfp']='';}
+			$objActSheet->setCellValueExplicit('P'.$rowNum, $row['wsmwfp'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('P'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			if(floatval($row['ywqz_ytxs']) >= 0 && $row['school_grade'] >=13 && $row['school_grade'] <= 16){$yfzywqz=$row['ywqz_ytxs'];}else{$yfzywqz = '';}
+			$objActSheet->setCellValueExplicit('Q'.$rowNum, $yfzywqz,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('Q'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			if(floatval($row['yfzts'])<=0 || $row['school_grade'] > 16){$row['yfzts']='';}
+			$objActSheet->setCellValueExplicit('R'.$rowNum, $row['yfzts'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('R'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			if(floatval($row['bbm_yqm']) > 0 && $row['sex'] == 106020 && $row['school_grade'] > 16 ){$bbm=$row['bbm_yqm'];}else{$bbm='';}
+			$objActSheet->setCellValueExplicit('S'.$rowNum, $bbm,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('S'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			if(floatval($row['bbm_yqm']) > 0 && $row['sex'] == 106010 && $row['school_grade'] > 16 ){$yqm=$row['bbm_yqm'];}else{$yqm='';}
+			$objActSheet->setCellValueExplicit('T'.$rowNum, $yqm,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('T'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			if(floatval($row['ywqz_ytxs']) >= 0 && $row['sex'] == 106020 && $row['school_grade'] > 16 ){$ywqz=$row['ywqz_ytxs'];}else{$ywqz='';}
+			$objActSheet->setCellValueExplicit('U'.$rowNum, $ywqz,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('U'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			if(floatval($row['ywqz_ytxs']) >= 0 && $row['sex'] == 106010 && $row['school_grade'] > 16 ){$ytxs=$row['ywqz_ytxs'];}else{$ytxs='';}
+			$objActSheet->setCellValueExplicit('V'.$rowNum, $ytxs,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('V'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$rowNum++;
+		}
+
+		$fileName = '学生体质数据上传情况';
+		$fileName = iconv('utf-8','gb2312',$fileName);
+		// Rename sheet
+		$objPHPExcel->getActiveSheet()->setTitle('student');
+		// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+		$objPHPExcel->setActiveSheetIndex(0);
+		// Redirect output to a client’s web browser (Excel5)
+
+		//ob_end_clean ();
+		//输出到浏览器
+		header('Pragma:public');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Type:application/x-msexecl;name='.$fileName.'.xlsx');
+		header('Content-Disposition:inline;filename='.$fileName.'.xlsx');
+			
+		$ua = $_SERVER["HTTP_USER_AGENT"];
+		if (preg_match("/MSIE/", $ua)) {
+			header('Content-Disposition: attachment; filename="' . urlencode($fileName) . '.xlsx"');
+		} else {
+			header('Content-Disposition: attachment; filename="' . $fileName . '.xlsx"');
+		}
+
+		// Redirect output to a client’s web browser (Excel5)
+		$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objWriter->save('php://output');
+		//PHPExcel::Destroy();
+		exit();
+	}
 	//查看学生体质成绩
 	public function phydata(){
 		$ac = I('ac','');
 
 		switch($ac){	
-			case 'showPhyInfo':
-				$this->showPhyInfo();
+			case '查看':
+				$this->showPhyInfo('list');
 			break;
-			case 'downPhyInfo':
+			case '下载':
 				$this->showPhyInfo('down');
 			break;
 			default:
@@ -147,12 +295,14 @@ class ShowController extends PublicController {
 	//测试总成绩排名
 	public function phydataRanking(){
 		$ac = I('ac','');
+		$this->assign('dtype','rank');
 		switch($ac){	
-			case 'showPhyInfo':
+			case '查看':
 				$this->showPhyInfo('rank');
+				$this->assign('dtype','rank');
 			break;
 			default:
-				$this->web_title = '查看学生体质成绩';
+				$this->web_title = '测试总成绩排名';
 				$this->page_template = "Show:phydata";
 			break;
 		}
@@ -163,10 +313,14 @@ class ShowController extends PublicController {
 		if($this->town_id == 0)$this->error('请选择区县！');
 
 		$order = '';
+
 		if($dtype == 'rank')$order = 'total_score DESC';
 
-		$phyinfos = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num,'school_code','show',$order);
+		$ac = $dtype == 'down' ? 'down' : 'show';
 
+		$phyinfos = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num,'school_code',$ac,$order);
+
+	
 		$gradeListCache = session('gradeList');
 		$folkListCache = session('folkList');
 		$dictListCache = session('dictList');
@@ -187,11 +341,131 @@ class ShowController extends PublicController {
 				$phyinfos['list'][$key]['score_level_ori'] = $dictListCache['203'][$row['score_level_ori']]['dict_name'];
 			}
 		}
-		$this->assign('dtype',$dtype);
-		$this->assign('phyinfos',$phyinfos);
 
-		$this->web_title = '查看学生基础数据';
-	   	$this->page_template = 'Show:phydata';
+		if($ac == 'down'){
+			if($this->school_code == 0)$this->error('请选择学校!');
+			if(empty($phyinfos['list']))$this->error('无数据!');
+			$this->downPhyInfo($phyinfos['list']);
+		}else{
+			$this->assign('dtype',$dtype);
+			$this->assign('phyinfos',$phyinfos);
+
+			$this->web_title = '查看学生基础数据';
+		   	$this->page_template = 'Show:phydata';
+		}
+	}
+	//下载体质数据
+	private function downPhyInfo($list){
+		import("Org.Util.PHPExcel");
+		import("Org.Util.PHPExcel.IOFactory");
+
+		$objPHPExcel = new \PHPExcel();
+
+		$objActSheet = $objPHPExcel->getActiveSheet();
+		//缓存
+		$cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_in_memory_serialized;
+		\PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
+		// Set properties
+		$objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
+										 ->setLastModifiedBy("Maarten Balliauw")
+										 ->setTitle("physicalHealth")
+										 ->setSubject("physicalHealth")
+										 ->setDescription("physicalHealth")
+										 ->setKeywords("physicalHealth")
+										 ->setCategory("physicalHealth");
+		$objActSheet->setCellValueExplicit('A1', '全国学籍号',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('B1', '教育ID',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('C1', '所属区县',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('D1', '姓名',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('E1', '学校名称',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('F1', '年级',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('G1', '班级',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('H1', '性别',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('I1', '综合成绩',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('J1', '综合评定',\PHPExcel_Cell_DataType::TYPE_STRING);
+
+		$objActSheet->setCellValueExplicit('K1', '测试成绩',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('L1', '测试成绩评定',\PHPExcel_Cell_DataType::TYPE_STRING);
+
+		$objActSheet->setCellValueExplicit('M1', '附加分',\PHPExcel_Cell_DataType::TYPE_STRING);
+
+		//$objActSheet->getStyle('A1')->getNumberFormat()->setFormatCode("@");
+		$rowNum = 2;
+		//$objPHPExcel ->getSheet(0)->getProtection()->setSheet(true);
+		foreach($list as $k=>$row){
+			$objActSheet->setCellValueExplicit('A'.$rowNum, $row['country_education_id'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('A'.$rowNum)->getNumberFormat()->setFormatCode("@");
+					
+			$objActSheet->setCellValueExplicit('B'.$rowNum, $row['education_id'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('B'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('C'.$rowNum, $row['town_name'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('C'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('D'.$rowNum, $row['name'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('D'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('E'.$rowNum, $row['school_name'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('E'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('F'.$rowNum, $row['grade_name'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('F'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('G'.$rowNum, $row['class_name'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('G'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('H'.$rowNum, $row['sex'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('H'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+
+
+			$total_score = round($row['total_score'],0);
+			$total_score_ori = round($row['total_score_ori'],0);
+
+			$objActSheet->setCellValueExplicit('I'.$rowNum, $total_score,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('I'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('J'.$rowNum, $row['score_level'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('J'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+
+			$objActSheet->setCellValueExplicit('K'.$rowNum, $total_score_ori,\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('K'.$rowNum)->getNumberFormat()->setFormatCode("@");
+
+			$objActSheet->setCellValueExplicit('L'.$rowNum, $row['score_level_ori'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('L'.$rowNum)->getNumberFormat()->setFormatCode("@");
+				//}
+					
+			$objActSheet->setCellValueExplicit('M'.$rowNum, $row['addach_score'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->getStyle('M'.$rowNum)->getNumberFormat()->setFormatCode("@");
+			$rowNum++;
+		}
+
+		$fileName = iconv('utf-8','gb2312',$list[0]['school_name'].$this->school_year.'学年成绩数据');
+		// Rename sheet
+		$objPHPExcel->getActiveSheet()->setTitle('studentData');
+		// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+		$objPHPExcel->setActiveSheetIndex(0);
+
+		//ob_end_clean ();
+		//输出到浏览器
+		header('Pragma:public');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Type:application/x-msexecl;name='.$fileName.'.xlsx');
+		header('Content-Disposition:inline;filename='.$fileName.'.xlsx');
+			
+		$ua = $_SERVER["HTTP_USER_AGENT"];
+		if (preg_match("/MSIE/", $ua)) {
+			header('Content-Disposition: attachment; filename="' . urlencode($fileName) . '.xlsx"');
+		} else {
+			header('Content-Disposition: attachment; filename="' . $fileName . '.xlsx"');
+		}
+
+		// Redirect output to a client’s web browser (Excel5)
+		$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$objWriter->save('php://output');
+		//PHPExcel::Destroy();
+		exit();
 	}
 	//查看体质上传情况
 	public function phyUpStatus(){
@@ -234,11 +508,189 @@ class ShowController extends PublicController {
 	}
 	//学生身高标准体重统计表
 	public function weightStat(){
+		$ac = I('ac','');
+		$show_type = I('show_type','');
+
+		if($ac == 'show'){
+			if($this->town_id == 0)$this->error('请选择区县!');
+
+			if(!in_array($show_type,array('age','sex')))$this->error('请选择查看方式!');
+
+			$data = D('StudentScore')->weight_stat($this->school_year,$this->town_id,$this->school_code,$show_type);
+
+			foreach($data as $row){
+				if($row['age']<=7){
+					$age = 7;
+					$weightData['7']['age'] = '7岁及以下';
+				}elseif($row['age']>=22){
+					$age = 22;
+					$weightData['22']['age'] = '22岁及以上';
+				}else{
+					$age = $row['age'];
+					$weightData[$age]['age'] = $age;
+				}
+
+
+				$weightData[$age][$row['sex']]['sex'] = $row['sex'] == '106010' ? '男' : '女'; 
+
+				if (empty($weightData[$age]['106020'])) {
+					$weightData[$age]['106020']['sex'] = '女';
+				}
+
+				if (empty($weightData[$age]['106010'])) {
+					$weightData[$age]['106010']['sex'] = '男';
+				}
+
+				$weightData[$age][$row['sex']]['cnt'] = ($weightData[$age][$row['sex']]['cnt'] + $row['cnt'])>0?($weightData[$age][$row['sex']]['cnt'] + $row['cnt']):0;
+
+				$weightData[$age][$row['sex']]['yybl_cnt'] = ($weightData[$age][$row['sex']]['yybl_cnt'] + $row['yybl_cnt'])>0?($weightData[$age][$row['sex']]['yybl_cnt'] + $row['yybl_cnt']):0;
+				$weightData[$age][$row['sex']]['yybl_bfb'] = round($weightData[$age][$row['sex']]['yybl_cnt']/$weightData[$age][$row['sex']]['cnt']*100,2).'%';
+
+				$weightData[$age][$row['sex']]['jdtz_cnt'] = ($weightData[$age][$row['sex']]['jdtz_cnt'] + $row['jdtz_cnt'])>0?($weightData[$age][$row['sex']]['jdtz_cnt'] + $row['jdtz_cnt']):0;
+				$weightData[$age][$row['sex']]['jdtz_bfb'] = round($weightData[$age][$row['sex']]['jdtz_cnt']/$weightData[$age][$row['sex']]['cnt']*100,2).'%';
+
+				$weightData[$age][$row['sex']]['zc_cnt'] = ($weightData[$age][$row['sex']]['zc_cnt'] + $row['zc_cnt'])>0?($weightData[$age][$row['sex']]['zc_cnt'] + $row['zc_cnt']):0;
+				$weightData[$age][$row['sex']]['zc_bfb'] = round($weightData[$age][$row['sex']]['zc_cnt']/$weightData[$age][$row['sex']]['cnt']*100,2).'%';
+
+				$weightData[$age][$row['sex']]['cz_cnt'] = ($weightData[$age][$row['sex']]['cz_cnt'] + $row['cz_cnt'])>0?($weightData[$age][$row['sex']]['cz_cnt'] + $row['cz_cnt']):0;
+				$weightData[$age][$row['sex']]['cz_bfb'] = round($weightData[$age][$row['sex']]['cz_cnt']/$weightData[$age][$row['sex']]['cnt']*100,2).'%';
+
+				$weightData[$age][$row['sex']]['fp_cnt'] = ($weightData[$age][$row['sex']]['fp_cnt'] + $row['fp_cnt'])>0?($weightData[$age][$row['sex']]['fp_cnt'] + $row['fp_cnt']):0;
+				$weightData[$age][$row['sex']]['fp_bfb'] = round($weightData[$age][$row['sex']]['fp_cnt']/$weightData[$age][$row['sex']]['cnt']*100,2).'%';
+
+				//合计
+				$weightData[$age]['heji']['cnt'] = $weightData[$age]['106010']['cnt'] + $weightData[$age]['106020']['cnt'];
+				$weightData[$age]['heji']['yybl_cnt'] = $weightData[$age]['106010']['yybl_cnt'] + $weightData[$age]['106020']['yybl_cnt'];
+				$weightData[$age]['heji']['yybl_bfb'] = round($weightData[$age]['heji']['yybl_cnt']/$weightData[$age]['heji']['cnt']*100,2).'%';
+
+				$weightData[$age]['heji']['jdtz_cnt'] = $weightData[$age]['106010']['jdtz_cnt'] + $weightData[$age]['106020']['jdtz_cnt'];
+				$weightData[$age]['heji']['jdtz_bfb'] = round($weightData[$age]['heji']['jdtz_cnt']/$weightData[$age]['heji']['cnt']*100,2).'%';
+
+				$weightData[$age]['heji']['zc_cnt'] = $weightData[$age]['106010']['zc_cnt'] + $weightData[$age]['106020']['zc_cnt'];
+				$weightData[$age]['heji']['zc_bfb'] = round($weightData[$age]['heji']['zc_cnt']/$weightData[$age]['heji']['cnt']*100,2).'%';
+
+				$weightData[$age]['heji']['cz_cnt'] = $weightData[$age]['106010']['cz_cnt'] + $weightData[$age]['106020']['cz_cnt'];
+				$weightData[$age]['heji']['cz_bfb'] = round($weightData[$age]['heji']['cz_cnt']/$weightData[$age]['heji']['cnt']*100,2).'%';
+
+				$weightData[$age]['heji']['fp_cnt'] = $weightData[$age]['106010']['fp_cnt'] + $weightData[$age]['106020']['fp_cnt'];
+				$weightData[$age]['heji']['fp_bfb'] = round($weightData[$age]['heji']['fp_cnt']/$weightData[$age]['heji']['cnt']*100,2).'%';
+			}
+			$this->assign('weightData',$weightData);
+		}
+		$this->assign('show_type',$show_type);
 		$this->web_title = '学生身高标准体重统计表';
 		$this->page_template = "Show:weightStat";	
 	}
 	//总体成绩统计表
 	public function stat(){
+		$ac = I('ac','');
+		$show_type = I('show_type','');
+		
+		if($ac == 'show'){
+			if($this->town_id == 0)$this->error('请选择区县!');
+
+			if(!in_array($show_type,array('age','sex','level','item')))$this->error('请选择查看方式!');
+
+			$data = D('StudentScore')->stat($this->school_year,$this->town_id,$this->school_code,$show_type);
+
+			foreach($data as $k=>$row){
+				if($show_type == 'age' || $show_type == 'sex'){
+					if($row['age']<=7){
+						$age = 7;
+						$statData['7']['age'] = '7岁及以下';
+					}elseif($row['age']>=22){
+						$age = 22;
+						$statData['22']['age'] = '22岁及以上';
+					}else{
+						$age = $row['age'];
+						$statData[$age]['age'] = $age;
+					}
+					$statData[$age][$row['sex']]['sex'] = $row['sex'] == '106010' ? '男' : '女'; 
+
+					if (empty($statData[$age]['106020'])) {
+						$statData[$age]['106020']['sex'] = '女';
+					}
+
+					if (empty($statData[$age]['106010'])) {
+						$statData[$age]['106010']['sex'] = '男';
+					}
+
+					$statData[$age][$row['sex']]['cnt'] = ($statData[$age][$row['sex']]['cnt'] + $row['cnt'])>0?($statData[$age][$row['sex']]['cnt'] + $row['cnt']):0;
+
+					$statData[$age][$row['sex']]['bjg_cnt'] = ($statData[$age][$row['sex']]['bjg_cnt'] + $row['bjg_cnt'])>0?($statData[$age][$row['sex']]['bjg_cnt'] + $row['bjg_cnt']):0;
+					$statData[$age][$row['sex']]['bjg_bfb'] = round($statData[$age][$row['sex']]['bjg_cnt']/$statData[$age][$row['sex']]['cnt']*100,2).'%';
+
+					$statData[$age][$row['sex']]['jg_cnt'] = ($statData[$age][$row['sex']]['jg_cnt'] + $row['jg_cnt'])>0?($statData[$age][$row['sex']]['jg_cnt'] + $row['jg_cnt']):0;
+					$statData[$age][$row['sex']]['jg_bfb'] = round($statData[$age][$row['sex']]['jg_cnt']/$statData[$age][$row['sex']]['cnt']*100,2).'%';
+
+					$statData[$age][$row['sex']]['lh_cnt'] = ($statData[$age][$row['sex']]['lh_cnt'] + $row['lh_cnt'])>0?($statData[$age][$row['sex']]['lh_cnt'] + $row['lh_cnt']):0;
+					$statData[$age][$row['sex']]['lh_bfb'] = round($statData[$age][$row['sex']]['lh_cnt']/$statData[$age][$row['sex']]['cnt']*100,2).'%';
+
+					$statData[$age][$row['sex']]['yx_cnt'] = ($statData[$age][$row['sex']]['yx_cnt'] + $row['yx_cnt'])>0?($statData[$age][$row['sex']]['yx_cnt'] + $row['yx_cnt']):0;
+					$statData[$age][$row['sex']]['yx_bfb'] = round($statData[$age][$row['sex']]['yx_cnt']/$statData[$age][$row['sex']]['cnt']*100,2).'%';
+
+
+						//合计
+					$statData[$age]['heji']['cnt'] = $statData[$age]['106010']['cnt'] + $statData[$age]['106020']['cnt'];
+					$statData[$age]['heji']['bjg_cnt'] = $statData[$age]['106010']['bjg_cnt'] + $statData[$age]['106020']['bjg_cnt'];
+					$statData[$age]['heji']['bjg_bfb'] = round($statData[$age]['heji']['bjg_cnt']/$statData[$age]['heji']['cnt']*100,2).'%';
+
+					$statData[$age]['heji']['jg_cnt'] = $statData[$age]['106010']['jg_cnt'] + $statData[$age]['106020']['jg_cnt'];
+					$statData[$age]['heji']['jg_bfb'] = round($statData[$age]['heji']['jg_cnt']/$statData[$age]['heji']['cnt']*100,2).'%';
+
+					$statData[$age]['heji']['lh_cnt'] = $statData[$age]['106010']['lh_cnt'] + $statData[$age]['106020']['lh_cnt'];
+					$statData[$age]['heji']['lh_bfb'] = round($statData[$age]['heji']['lh_cnt']/$statData[$age]['heji']['cnt']*100,2).'%';
+
+					$statData[$age]['heji']['yx_cnt'] = $statData[$age]['106010']['yx_cnt'] + $statData[$age]['106020']['yx_cnt'];
+					$statData[$age]['heji']['yx_bfb'] = round($statData[$age]['heji']['yx_cnt']/$statData[$age]['heji']['cnt']*100,2).'%';
+				}else{
+
+					if($show_type == 'item' && $row['itemname'] == 'other')continue;
+					
+					$row['bjg_bfb'] = round($row['bjg_cnt']/$row['cnt']*100,2).'%';
+
+					$row['jg_bfb'] = round($row['jg_cnt']/$row['cnt']*100,2).'%';
+
+					$row['lh_bfb'] = round($row['lh_cnt']/$row['cnt']*100,2).'%';
+
+					$row['yx_bfb'] = round($row['yx_cnt']/$row['cnt']*100,2).'%';
+
+
+
+					$statHeji['cnt'] = $statHeji['cnt'] + $row['cnt'];
+
+					$statHeji['bjg_cnt'] = $statHeji['bjg_cnt'] + $row['bjg_cnt'];
+
+					$statHeji['jg_cnt'] = $statHeji['jg_cnt'] + $row['jg_cnt'];
+					
+					$statHeji['lh_cnt'] = $statHeji['lh_cnt'] + $row['lh_cnt'];
+					
+					$statHeji['yx_cnt'] = $statHeji['yx_cnt'] + $row['yx_cnt'];
+					
+
+					$statData[] = $row;
+
+
+				}
+			}
+
+			if(!empty($statData) && ($show_type == 'level')){ // OR $show_type == 'item'
+				$statHeji['bjg_bfb'] = round($statHeji['bjg_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['jg_bfb'] = round($statHeji['jg_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['lh_bfb'] = round($statHeji['lh_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['yx_bfb'] = round($statHeji['yx_cnt']/$statHeji['cnt']*100,2).'%';
+
+				// if($show_type == 'level'){
+					$statHeji['levelname'] = '合计';
+				// }
+
+				array_push($statData,$statHeji);
+			}
+			
+
+			$this->assign('statData',$statData);
+		}
+		$this->assign('show_type',$show_type);
 		$this->web_title = '总体成绩统计表';
 		$this->page_template = "Show:stat";	
 	}

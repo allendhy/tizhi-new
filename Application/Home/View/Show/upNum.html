@@ -10,16 +10,14 @@
 					<hr/>
 						<div class="page-header">
 							<form action="" id="downForm" method="get">
-								<input type="hidden" name="dType" id="dType" value="0">
-								<input value="showStuInfo" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
 								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
 								<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
 								<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
 								<select name="class_num" id="class_num"  class="select2 width-10">{$class_num_options}</select>
 								&nbsp;&nbsp;&nbsp;
-								<input type="button" class="btn btn-small btn-white" value="查看"/> 
-								<input type="button" class="btn btn-small btn-white"  value="下载"/>
+								<input type="submit" class="btn btn-small btn-white" name="ac" value="查看"/> 
+								<input type="submit" class="btn btn-small btn-white" name="ac" value="下载"/>
 							</form>
 						</div><!-- /.page-header -->
 
@@ -75,16 +73,6 @@
 				//班级下拉框
 				$('#school_grade').change(function(){
 					ajaxSelectSchool('class','class_num');
-				});
-				//提交表单
-				$("input[type=button]").click(function(){
-					var dtype = $(this).attr('aname');
-					if(dtype == 'undefined' || dtype == ''){
-						alert('您的操作有误，请刷新页面后重试');
-						return false;
-					}
-					$('#dType').val(dtype);
-					$('#downForm').submit();
 				});
 			});
 		</script>

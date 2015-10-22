@@ -10,14 +10,14 @@
 					<hr/>
 						<div class="page-header">
 							<form action="" id="showForm" method="get">
-								<input value="showStuInfo" type="hidden" name="ac"/>
+								<input value="show" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
 								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
 								<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
 								<select name="show_type" id="show_type"  class="select2 width-15">
 								<option value="">查看方式</option>
-								<option value="age">按年龄查看</option>
-								<option value="sex">按性别查看</option>
+								<option value="age" <eq name="show_type" value="age">selected</eq>>按年龄查看</option>
+								<option value="sex" <eq name="show_type" value="sex">selected</eq>>按性别查看</option>
 								</select>
 								&nbsp;&nbsp;&nbsp;
 								<input type="submit" class="btn btn-small btn-white" value="查看"/> 
@@ -31,13 +31,55 @@
 											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 												<thead>
 													<tr>
-													<th class="width-5"></th><th>样本个数</th><th>营养不良</th><th>营养不良比例</th><th>较轻体重</th><th>较轻体重比例</th><th>正常体重</th><th>正常体重比例</th><th>超重</th><th>超重比例</th><th>肥胖</th><th>肥胖比例</th>
+													<eq name="show_type" value="age"><th>年龄</th></eq><th class="width-5"></th><th>样本个数</th><th>营养不良</th><th>营养不良比例</th><th>较轻体重</th><th>较轻体重比例</th><th>正常体重</th><th>正常体重比例</th><th>超重</th><th>超重比例</th><th>肥胖</th><th>肥胖比例</th>
 													</tr>
 												</thead>
 												<tbody>
-													<tr><td>男</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td><td>32</td><td>14.68%</td></tr>
-													<tr><td>女</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td><td>32</td><td>14.68%</td></tr>
-													<tr><td>合计</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td><td>32</td><td>14.68%</td></tr>
+												<volist name="weightData" id="vo">
+												<tr>
+												<eq name="show_type" value="age"><td rowspan='3' class="center">{$vo.age}</td></eq>
+												<td>{$vo['106010'].sex}</td>
+												<td>{$vo['106010'].cnt}</td>
+												<td>{$vo['106010'].yybl_cnt}</td>
+												<td>{$vo['106010'].yybl_bfb}</td>
+												<td>{$vo['106010'].jdtz_cnt}</td>
+												<td>{$vo['106010'].jdtz_bfb}</td>
+												<td>{$vo['106010'].zc_cnt}</td>
+												<td>{$vo['106010'].zc_bfb}</td>
+												<td>{$vo['106010'].cz_cnt}</td>
+												<td>{$vo['106010'].cz_bfb}</td>
+												<td>{$vo['106010'].fp_cnt}</td>
+												<td>{$vo['106010'].fp_bfb}</td>
+												</tr>
+												<tr>
+												<td>{$vo['106020'].sex}</td>
+												<td>{$vo['106020'].cnt}</td>
+												<td>{$vo['106020'].yybl_cnt}</td>
+												<td>{$vo['106020'].yybl_bfb}</td>
+												<td>{$vo['106020'].jdtz_cnt}</td>
+												<td>{$vo['106020'].jdtz_bfb}</td>
+												<td>{$vo['106020'].zc_cnt}</td>
+												<td>{$vo['106020'].zc_bfb}</td>
+												<td>{$vo['106020'].cz_cnt}</td>
+												<td>{$vo['106020'].cz_bfb}</td>
+												<td>{$vo['106020'].fp_cnt}</td>
+												<td>{$vo['106020'].fp_bfb}</td>
+												</tr>
+												<tr>
+												<td>合计</td>
+												<td>{$vo['heji'].cnt}</td>
+												<td>{$vo['heji'].yybl_cnt}</td>
+												<td>{$vo['heji'].yybl_bfb}</td>
+												<td>{$vo['heji'].jdtz_cnt}</td>
+												<td>{$vo['heji'].jdtz_bfb}</td>
+												<td>{$vo['heji'].zc_cnt}</td>
+												<td>{$vo['heji'].zc_bfb}</td>
+												<td>{$vo['heji'].cz_cnt}</td>
+												<td>{$vo['heji'].cz_bfb}</td>
+												<td>{$vo['heji'].fp_cnt}</td>
+												<td>{$vo['heji'].fp_bfb}</td>
+												</tr>
+												</volist>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->

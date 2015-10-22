@@ -10,16 +10,16 @@
 					<hr/>
 						<div class="page-header">
 							<form action="" id="showForm" method="get">
-								<input value="showStuInfo" type="hidden" name="ac"/>
+								<input value="show" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
 								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
 								<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
 								<select name="show_type" id="show_type"  class="select2 width-15">
 								<option value="">查看方式</option>
-								<option value="age">按年龄查看</option>
-								<option value="sex">按性别查看</option>
-								<option value="level">按学段查看</option>
-								<option value="item">按项目查看</option>
+								<option value="age" <eq name="show_type" value="age">selected</eq>>按年龄查看</option>
+								<option value="sex" <eq name="show_type" value="sex">selected</eq>>按性别查看</option>
+								<option value="level" <eq name="show_type" value="level">selected</eq>>按学段查看</option>
+								<option value="item" <eq name="show_type" value="item">selected</eq>>按项目查看</option>
 								</select>
 								&nbsp;&nbsp;&nbsp;
 								<input type="submit" class="btn btn-small btn-white" value="查看"/> 
@@ -31,13 +31,64 @@
 										<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 											<thead>
 												<tr>
-													<th class="width-5"></th><th>样本个数</th><th>不及格</th><th>不及格率</th><th>及格</th><th>及格率</th><th>良好</th><th>良好率</th><th>优秀</th><th>优秀率</th>
+													<eq name="show_type" value="age"><th>年龄</th></eq><th class="width-5"></th><th>样本个数</th><th>不及格</th><th>不及格率</th><th>及格</th><th>及格率</th><th>良好</th><th>良好率</th><th>优秀</th><th>优秀率</th>
 												</tr>
 											</thead>
 											<tbody>
-												<tr><td>男</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
-												<tr><td>女</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
-												<tr><td>合计</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
+												<volist name="statData" id="vo">
+												<if condition="$show_type eq 'age' OR $show_type eq 'sex'">
+												<tr>
+												<eq name="show_type" value="age"><td rowspan='3' class="center">{$vo.age}</td></eq>
+												<td>{$vo['106010'].sex}</td>
+												<td>{$vo['106010'].cnt}</td>
+												<td>{$vo['106010'].bjg_cnt}</td>
+												<td>{$vo['106010'].bjg_bfb}</td>
+												<td>{$vo['106010'].jg_cnt}</td>
+												<td>{$vo['106010'].jg_bfb}</td>
+												<td>{$vo['106010'].lh_cnt}</td>
+												<td>{$vo['106010'].lh_bfb}</td>
+												<td>{$vo['106010'].yx_cnt}</td>
+												<td>{$vo['106010'].yx_bfb}</td>
+												</tr>
+												<tr>
+												<td>{$vo['106020'].sex}</td>
+												<td>{$vo['106020'].cnt}</td>
+												<td>{$vo['106020'].bjg_cnt}</td>
+												<td>{$vo['106020'].bjg_bfb}</td>
+												<td>{$vo['106020'].jg_cnt}</td>
+												<td>{$vo['106020'].jg_bfb}</td>
+												<td>{$vo['106020'].lh_cnt}</td>
+												<td>{$vo['106020'].lh_bfb}</td>
+												<td>{$vo['106020'].yx_cnt}</td>
+												<td>{$vo['106020'].yx_bfb}</td>
+												</tr>
+												<tr>
+												<td>合计</td>
+												<td>{$vo['heji'].cnt}</td>
+												<td>{$vo['heji'].bjg_cnt}</td>
+												<td>{$vo['heji'].bjg_bfb}</td>
+												<td>{$vo['heji'].jg_cnt}</td>
+												<td>{$vo['heji'].jg_bfb}</td>
+												<td>{$vo['heji'].lh_cnt}</td>
+												<td>{$vo['heji'].lh_bfb}</td>
+												<td>{$vo['heji'].yx_cnt}</td>
+												<td>{$vo['heji'].yx_bfb}</td>
+												</tr>
+												<else />
+												<tr>
+												<td><eq name="show_type" value="item">{$vo.itemname}<else/>{$vo.levelname}</eq></td>
+												<td>{$vo.cnt}</td>
+												<td>{$vo.bjg_cnt}</td>
+												<td>{$vo.bjg_bfb}</td>
+												<td>{$vo.jg_cnt}</td>
+												<td>{$vo.jg_bfb}</td>
+												<td>{$vo.lh_cnt}</td>
+												<td>{$vo.lh_bfb}</td>
+												<td>{$vo.yx_cnt}</td>
+												<td>{$vo.yx_bfb}</td>
+												</tr>
+												</if>
+												</volist>
 											</tbody>
 										</table>
 									</div><!-- /.table-responsive -->
