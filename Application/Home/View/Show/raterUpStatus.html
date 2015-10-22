@@ -9,11 +9,11 @@
 							<select name="school_year" id="school_year" disabled="disabled" class="select2 width-15">{$school_year_options}</select>
 							<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
 							<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
-							<select name="" id=""  class="select2 width-15">
+							<select name="deal_status" id=""  class="select2 width-15">
 							<option value="">上报状态</option>
-							<option value="206020">待审核</option>
-							<option value="206030">审核通过</option>
-							<option value="206040">撤销</option>
+							<volist name="deal_status_list" id="vo">
+							<option value="{$vo.dict_id}" <eq name="vo['dict_id']" value="$deal_status">selected</eq>>{$vo.dict_name}</option>
+							</volist>
 							</select>
 							&nbsp;&nbsp;&nbsp;
 							<input type="submit" class="btn btn-small btn-white" value="查看" />
@@ -33,29 +33,21 @@
 													</tr>
 												</thead>
 												<tbody>
-												<volist name="stuinfos['list']" id="vo">
+												<volist name="s_status['list']" id="vo">
 													<tr>
 														<td>
-															{$vo.education_id}
+															{$vo.school_name}
 														</td>
-														<td>{$vo.name}</td>
-														<td class="hidden-480">{$vo.school_name}</td>
-
-														<td class="hidden-480">{$vo.grade_name}</td>
-														<td class="hidden-480">{$vo.class_name}</td>
-														<td class="hidden-480">{$vo.sex}</td>
-														<td class="hidden-480">{$vo.folk}</td>
-														<td class="hidden-480">{$vo.country_education_id}</td>
-														<td class="hidden-480">{$vo.student_source}</td>
-														<eq name="userinfo['user_kind']" value="109030">
-														<!--只有市级管理员有权限操作修改或删除-->
-														<td>
-														<select onchange="setInSchool(this,{$vo.year_score_id},this.value)">
-															<option value="1">是</option>
-															<option value="0" <eq name="vo['in_school']" value="0">selected</eq>>否</option>
-														</select>
+														<td>{$vo.s_status_name}</td>
+														<td class="hidden-480">{$vo.sub_time}</td>
+														<td class="hidden-480">
+														<if condition="$vo['s_status'] eq 206020">
+														<a href="javascript:void(0);" data="{$vo.school_id}" class="check text-success">审核</a>
+														<elseif condition="$vo['s_status'] eq 206030" />
+														<a href="javascript:void(0);" data="{$vo.school_id}" class="check text-danger">撤销审核</a>
+														<else />
+														</if>
 														</td>
-														</eq>
 													</tr>
 												</volist>
 												</tbody>
@@ -63,8 +55,8 @@
 										</div><!-- /.table-responsive -->
 									</div><!-- /span -->
 									<!--page-->
-									<neq name="stuinfos['page']" value="">
-									<div class="message-footer clearfix">{$stuinfos.page}</div>
+									<neq name="s_status['page']" value="">
+									<div class="message-footer clearfix">{$s_status.page}</div>
 									</neq>
 									<!--/page-->
 							</div><!-- /row -->
@@ -87,6 +79,23 @@
 				//学校下拉框
 				$('#town_id').change(function(){
 					ajaxSelectSchool('school','school_code');
+				});
+				$('.check').click(function(){
+					var data = $(this).attr('data');
+					if(!data){
+						layer.alert('参数错误!',{icon:0});
+						return false;
+					}
+					$.post('{:U('Home/Show/raterUpStatus')}',{ac:'check',data:data},function(result){
+						if(result.errno != 0){
+							layer.alert(result.errtitle,{icon:0});
+							return false;
+						}else{
+							layer.alert(result.errtitle,{icon:1},function(){
+								window.location.reload();
+							});
+						}
+					});
 				});
 			});
 		</script>

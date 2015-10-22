@@ -66,7 +66,6 @@ class IndexController extends PublicController {
         //登陆验证
         if(IS_POST && ($login_name && $login_pwd) && IS_AJAX){
             $remember = I('post.remember','off');
-            //echo $remember;
 
             $return = D('SysUser')->login($login_name,$login_pwd);
 
@@ -74,16 +73,12 @@ class IndexController extends PublicController {
             if($return['errno'] != 0) $this->ajaxReturn($return);
 
             $user_info = $return['data'];
-           // print_r($return);
 
             // 登录成功，数据写入session
             if($remember == 'on'){
                 cookie('login_name',base64_encode($user_info['login_name']),3600 * 24 * 7);
             }
             
-
-           // session(null);
-           // session('[destroy]');
             session('[regenerate]'); // 重新生成session id
 
             session('userinfo',$user_info);
@@ -145,7 +140,10 @@ class IndexController extends PublicController {
             session('actionList',$actionList);
 
             //print_r($_SESSION);exit();
-            $this->ajaxReturn(array('errno'=>0 , 'errtitle' => '登录成功！', 'url' => U('Home/Index/index') ));
+            $key = session_name();
+            $value = session_id();
+            $this->ajaxReturn(array('errno'=>0 , 'errtitle' => '登录成功！', 'url' =>  U('Home/Index/index',array($key=>$value)) ));
+           // $this->success('登录成功!',U('Home/Index/index',array($key=>$value)));exit();
         }
 
     	$this->web_title = '登录系统';

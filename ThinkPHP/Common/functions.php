@@ -552,7 +552,10 @@ function load($name, $baseUrl='', $ext='.php') {
             $baseUrl    =   APP_PATH . array_shift($array).'/Common/';
             $name       =   implode('/',$array);
         }
-    }
+    }/*
+    if(isset($name['use_only_cookies']))  
+        ini_set('session.use_only_cookies', $name['use_only_cookies']?1:0);
+        */
     if (substr($baseUrl, -1) != '/')
         $baseUrl       .= '/';
     require_cache($baseUrl . $name . $ext);

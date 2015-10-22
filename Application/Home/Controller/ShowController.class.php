@@ -59,7 +59,6 @@ class ShowController extends PublicController {
 
 		$this->web_title = '查看学生基础数据';
 	   	$this->page_template = 'Show:stuInfo';
-
 	}
 	//ajax返回下拉框options信息
 	private function ajaxSelect(){
@@ -94,7 +93,6 @@ class ShowController extends PublicController {
 	public function printRegister(){
 		$this->web_title = '登记卡打印';
 		$this->page_template = "Show:printRegister";
-
 	}
 	//查看受检未检人数
 	public function upNum(){
@@ -696,13 +694,108 @@ class ShowController extends PublicController {
 	}
 	//区县成绩统计表
 	public function townStat(){
+		$ac = I('ac','');
+		$show_type = I('show_type','');
+		
+		if($ac == 'show'){
+			if($this->town_id == 0)$this->error('请选择区县!');
+
+			$data = D('StudentScore')->town_stat($this->school_year,$this->town_id);
+			
+			foreach($data as $k=>$row){
+
+				$row['bjg_bfb'] = round($row['bjg_cnt']/$row['cnt']*100,2).'%';
+
+				$row['jg_bfb'] = round($row['jg_cnt']/$row['cnt']*100,2).'%';
+
+				$row['lh_bfb'] = round($row['lh_cnt']/$row['cnt']*100,2).'%';
+
+				$row['yx_bfb'] = round($row['yx_cnt']/$row['cnt']*100,2).'%';
+
+
+				$statHeji['cnt'] = $statHeji['cnt'] + $row['cnt'];
+
+				$statHeji['bjg_cnt'] = $statHeji['bjg_cnt'] + $row['bjg_cnt'];
+
+				$statHeji['jg_cnt'] = $statHeji['jg_cnt'] + $row['jg_cnt'];
+					
+				$statHeji['lh_cnt'] = $statHeji['lh_cnt'] + $row['lh_cnt'];
+					
+				$statHeji['yx_cnt'] = $statHeji['yx_cnt'] + $row['yx_cnt'];
+					
+				$statData[] = $row;
+
+			}
+
+			if(!empty($statData)){
+				$statHeji['bjg_bfb'] = round($statHeji['bjg_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['jg_bfb'] = round($statHeji['jg_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['lh_bfb'] = round($statHeji['lh_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['yx_bfb'] = round($statHeji['yx_cnt']/$statHeji['cnt']*100,2).'%';
+
+				$statHeji['town_name'] = '合计';
+
+				array_push($statData,$statHeji);
+			}
+
+			$this->assign('statData',$statData);
+		}
+
 		$this->web_title = '区县成绩统计表';
 		$this->page_template = "Show:townStat";	
 	}
 	//审核学校上报情况
 	public function raterUpStatus(){
-		$this->web_title = '审核学校上报情况';
-		$this->page_template = "Show:raterUpStatus";	
+		$ac = I('ac','show');
+
+		$deal_status = I('deal_status','');
+
+		$this->assign('deal_status',$deal_status);
+
+		if($ac == 'show'){
+			$dictList = session('dictList');
+
+			$deal_status_list = $dictList['206'];
+
+			foreach($deal_status_list as $k=>$row){
+				if(intval($k) < 206000) unset($deal_status_list[$k]);
+			}
+
+			$this->assign('deal_status_list',$deal_status_list);
+
+
+			$s_status = D('SchoolStatus')->get_status_list($this->school_year,$this->town_id,$this->school_code,'show',$deal_status);
+
+			foreach($s_status['list'] as $k=>$row){
+				$s_status['list'][$k]['s_status_name'] = $deal_status_list[$row['s_status']]['dict_name'];
+				$s_status['list'][$k]['sub_time'] = $row['sub_time'] > 0 ? date('Y-m-d H:i:s',$row['sub_time']) : '';
+			}
+			// print_r($s_status);exit();
+			$this->assign('s_status',$s_status);
+			$this->web_title = '审核学校上报情况';
+			$this->page_template = "Show:raterUpStatus";	
+
+		}elseif($ac == 'check' && IS_AJAX){
+			$school_id = I('data');
+			$s_status = D('SchoolStatus')->where('school_id = %d',$school_id)->find();
+
+			if(empty($s_status))$this->ajaxReturn(array('errno'=>1,'errtitle'=>'没有这个学校的信息!'));
+
+			if($s_status['s_status'] == '206010' || $s_status['s_status'] == '206040'){
+				$this->ajaxReturn(array('errno'=>2,'errtitle'=>'当前状态为未上报,需要学校上报后方可进行审核或者撤销审核操作!'));
+			}
+
+			$data['s_status'] = $s_status['s_status'] == '206020' ? 206030 : 206040;
+			$data['suh_time'] = time();
+
+			$return = D('SchoolStatus')->where('school_id = %d',$school_id)->save($data);
+
+			if($return == true){
+				$this->ajaxReturn(array('errno'=>0,'errtitle'=>'操作成功!'));
+			}else{
+				$this->ajaxReturn(array('errno'=>5,'errtitle'=>'操作失败!'));
+			}
+		}
 	}
 	//查看区县上报情况
 	public function townUpStatus(){

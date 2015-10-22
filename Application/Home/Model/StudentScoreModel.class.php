@@ -347,5 +347,27 @@ class StudentScoreModel extends Model {
 
         return $data;
 	}
+
+	//区县成绩统计表
+	public function town_stat($year_year,$town_id){
+        $where = array();
+
+        $partition_field = intval($town_id . $year_year);
+
+        $where['sc.partition_field'] = $partition_field;
+
+        $where['sc.is_del'] = 0;
+
+        $where['sc.is_check'] = 1;
+
+
+		return $this->alias('sc')
+        			->field('sc.town_id,t.town_name,COUNT(sc.year_score_id) as cnt, sum(case sc.score_level when 203010 then 1 else 0 end) yx_cnt,sum(case sc.score_level when 203020 then 1 else 0 end) lh_cnt,sum(case sc.score_level when 203030 then 1 else 0 end) jg_cnt,sum(case sc.score_level when 203040 then 1 else 0 end) bjg_cnt')
+        			//->join('LEFT JOIN school s ON s.school_id = sc.school_id')
+					->join('LEFT JOIN town t ON t.town_id = sc.town_id')
+        			->where($where)
+        			->group('sc.town_id,t.town_name')
+        			->select();
+	}
 }
 ?>

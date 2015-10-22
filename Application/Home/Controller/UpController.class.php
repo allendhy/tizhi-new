@@ -153,10 +153,15 @@ class UpController extends PublicController {
 		//审核状态
 		$userinfo = session('userinfo');
 		$dictList = session('dictList');
+
 		if($userinfo['org_id'] != 110105 && $userinfo['user_kind'] != '109010'){
+
 			$s_status = D('SchoolStatus')->get_status_info_one($this->school_year,$this->school_code);
+
 			if($s_status['s_status'] == 206020 || $s_status['s_status'] == 206030){
-				$this->showAjaxMsg(array('error'=>'您当前上报状态为'.$dictList['206'][$s_status['s_status']]['dict_name'].',如需重新上报或修改请等待区县撤销！'));
+
+				$this->ajaxReturn(array('errno'=>109,'errtitle'=>'您当前上报状态为'.$dictList['206'][$s_status['s_status']]['dict_name'].',如需重新上报或修改请等待区县撤销！'));
+				
 			}
 		}
 

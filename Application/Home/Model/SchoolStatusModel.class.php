@@ -55,5 +55,31 @@ class SchoolStatusModel extends Model {
 		
 		return array('list'=>$list,'page'=>$show);
 	}
+	//学校上传情况列表
+	public function get_status_list($school_year,$town_id,$school_code,$ac='show',$deal_status=''){
+		$where['s.year_year'] = $school_year;
+		$where['s.town_id'] = $town_id;
+
+		if($school_code != 0){
+			$where['s.school_code'] = $school_code;
+		}
+
+		if($deal_status != '')
+			$where['ss.s_status'] = $deal_status;
+
+		$where['s.is_del'] = 0;
+
+		$count = $this->alias('ss')->join('LEFT JOIN school s ON s.school_id = ss.school_id')->where($where)->count();
+		//分页
+		$page = new \Think\Page($count,C('PAGE_LISTROWS'));
+
+		$limit = $ac == 'show' ? ($page->firstRow . ',' . $page->listRows) : '';
+
+		$list = $this->alias('ss')->field('s.school_name,ss.*')->join('LEFT JOIN school s ON s.school_id = ss.school_id')->where($where)->order('sub_time DESC')->limit($limit)->select();
+
+		$show = $page->show();
+		
+		return array('list'=>$list,'page'=>$show);
+	}
 }
 ?>

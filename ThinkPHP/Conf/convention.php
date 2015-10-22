@@ -82,7 +82,7 @@ return  array(
 
     /* 错误设置 */
     'ERROR_MESSAGE'         =>  '页面错误！请稍后再试～',//错误显示信息,非调试模式有效
-    'ERROR_PAGE'            =>  '',	// 错误定向页面
+    'ERROR_PAGE'            =>  '/404.html',	// 错误定向页面
     'SHOW_ERROR_MSG'        =>  false,    // 显示错误信息
     'TRACE_MAX_RECORD'      =>  100,    // 每个级别的错误信息 最大记录数
 
@@ -97,7 +97,7 @@ return  array(
     'SESSION_AUTO_START'    =>  true,    // 是否自动开启Session
     'SESSION_OPTIONS'       =>  array(), // session 配置数组 支持type name id path expire domain 等参数
     'SESSION_TYPE'          =>  '', // session hander类型 默认无需设置 除非扩展了session hander驱动
-    'SESSION_PREFIX'        =>  '', // session 前缀
+    'SESSION_PREFIX'        =>  'chzh_', // session 前缀
     //'VAR_SESSION_ID'      =>  'session_id',     //sessionID的提交变量
 
     /* 模板引擎设置 */
