@@ -104,6 +104,12 @@
 		<script src="__PUBLIC__/assets/js/is_chzh.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
+				document.onkeydown = function(e){ 
+			    var ev = document.all ? window.event : e;
+			    if(ev.keyCode==13) {
+			    //	$('#submitBtn').click();
+			     }
+				}
 				$('#submitBtn').click(function(){
 					$('#loginForm').ajaxSubmit({beforeSubmit:function(){
 						var result = allCheckForm(document.forms[0]);

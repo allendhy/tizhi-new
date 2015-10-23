@@ -257,6 +257,8 @@ class StudentScoreModel extends Model {
 
         $where['sc.is_check'] = 1;
 
+        $where['sc.is_avoid'] = 0;
+
         $where['i_sc.item_id'] = '27';
 
         if($year_year >= 2014) $import_tb = 'import_detail_new';
@@ -301,6 +303,8 @@ class StudentScoreModel extends Model {
         $where['sc.is_del'] = 0;
 
         $where['sc.is_check'] = 1;
+
+        $where['sc.is_avoid'] = 0;
 
         $joinadd = '';
 
@@ -359,6 +363,8 @@ class StudentScoreModel extends Model {
         $where['sc.is_del'] = 0;
 
         $where['sc.is_check'] = 1;
+
+        $where['sc.is_avoid'] = 0;
 
 
 		return $this->alias('sc')
