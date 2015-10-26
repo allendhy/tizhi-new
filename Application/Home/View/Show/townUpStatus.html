@@ -6,7 +6,7 @@
 					<div class="page-content">
 						<div class="page-header">
 							<form action="" method="get" id="showForm">
-								<input value="showPhyInfo" type="hidden" name="ac"/>
+								<input value="showStatus" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
 								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
 							&nbsp;&nbsp;&nbsp;
@@ -22,30 +22,27 @@
 													<tr>
 														<th>区域</th>
 														<th>应上报学校数</th>
-														<th class="hidden-480">实际上报学校数</th>
-														<th class="hidden-480">上报学校比例</th>
-														<th class="hidden-480">应上报学生数</th>
-														<th class="hidden-480">实际上报学生数</th>
-														<th class="hidden-480">实际有效学生数</th>
-														<th class="hidden-480">有效学生比例</th>
+														<th>实际上报学校数</th>
+														<th>上报学校比例</th>
+														<th>应上报学生数</th>
+														<th>实际上报学生数</th>
+														<th>实际有效学生数</th>
+														<th>有效学生比例</th>
 													</tr>
 												</thead>
 												<tbody>
-												<volist name="stuinfos['list']" id="vo">
+												<volist name="info" id="vo">
 													<tr>
 														<td>
-															{$vo.education_id}
+															{$vo.town_name}
 														</td>
-														<td>{$vo.name}</td>
-														<td class="hidden-480">{$vo.school_name}</td>
-
-														<td class="hidden-480">{$vo.grade_name}</td>
-														<td class="hidden-480">{$vo.class_name}</td>
-														<td class="hidden-480">{$vo.sex}</td>
-														<td class="hidden-480">{$vo.folk}</td>
-														<td class="hidden-480">{$vo.country_education_id}</td>
-														<td class="hidden-480">{$vo.student_source}</td>
-
+														<td>{$vo.ysbxx}</td>
+														<td>{$vo.sjsbxx}</td>
+														<td>{:round($vo['sjsbxx']/$vo['ysbxx'],4)*100}%</td>
+														<td>{$vo.s_cnt}</td>
+														<td>{$vo.s_phy_cnt}</td>
+														<td>{$vo['s_phy_cnt'] - ($vo['s_phynotinschool_cnt']+$vo['s_phynoceid']-$vo['s_phyn2_cnt'])}</td>
+														<td>{:round(($vo['s_phy_cnt'] - ($vo['s_phynotinschool_cnt']+$vo['s_phynoceid']-$vo['s_phyn2_cnt']))/$vo['s_cnt'],4)*100}%</td>
 													</tr>
 												</volist>
 												</tbody>

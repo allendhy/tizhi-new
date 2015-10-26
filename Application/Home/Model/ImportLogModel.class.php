@@ -10,8 +10,8 @@ class ImportLogModel extends Model {
 
         $where['s.school_code'] = $school_code;
 
-        if($is_error == 1 || $is_error == 0){
-        	$where['log.is_error'] = $is_error;
+        if($is_error != ''){
+                $where['log.is_error'] = $is_error;
         }
 
 		$count = $this->alias('log')->join('LEFT JOIN school s ON s.school_id = log.user_id')->where($where)->count();

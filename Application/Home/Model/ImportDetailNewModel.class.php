@@ -12,7 +12,7 @@ class ImportDetailNewModel extends Model {
 
         $nums = $this->alias('detail')->field('sum(1) total_rows,sum(CASE is_error when 1 then 1 else 0 end) error_rows')->where($where)->find();
 
-        if($is_error == 1 || $is_error == 0){
+        if($is_error!=''){
                 $where['detail.is_error'] = $is_error;
         }
 

@@ -81,5 +81,23 @@ class SchoolStatusModel extends Model {
 		
 		return array('list'=>$list,'page'=>$show);
 	}
+
+	//区县上报情况
+	public function get_town_status_list($school_year,$town_id){
+
+		$where['s.year_year'] = $school_year;
+		if($town_id != 0){
+			$where['s.town_id'] = $town_id;
+		}else{
+			$where['s.town_id'] > 100100;
+		}
+
+		$where['s.is_del'] = 0;
+		$where['s.join_test'] = 1;
+
+		$list = $this->alias('ss')->field('t.town_id,t.town_name,sum(1) as ysbxx,sum(case when ss.s_phy_cnt > 0 then 1 else 0 end) sjsbxx,sum(ss.s_cnt) s_cnt,sum(ss.s_notinschool_cnt) s_notinschool_cnt,sum(ss.s_noceid_cnt) s_noceid_cnt,sum(ss.s_n2_cnt) s_n2_cnt,sum(ss.s_phy_cnt) s_phy_cnt,sum(ss.s_phynotinschool_cnt) s_phynotinschool_cnt,sum(ss.s_phynoceid_cnt) s_phynoceid_cnt,sum(ss.s_phyn2_cnt) s_phyn2_cnt,sum(ss.s_phyavoid_cnt) s_phyavoid_cnt')->join('LEFT JOIN school s ON s.school_id = ss.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->group('t.town_id,t.town_name')->select();
+
+		return $list;
+	}
 }
 ?>

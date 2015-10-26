@@ -487,7 +487,7 @@ class ShowController extends PublicController {
 
 			$detail_tb = $this->school_year >= 2014 ? 'ImportDetailNew' : 'ImportDetail';
 			$details = D($detail_tb)->get_details($this->school_year,$this->town_id,$import_id);
-			//print_r($details);
+
 			$this->assign('details',$details);
 			$this->assign('gradeList',session('gradeList'));
 		}
@@ -799,6 +799,15 @@ class ShowController extends PublicController {
 	}
 	//查看区县上报情况
 	public function townUpStatus(){
+
+		$ac = I('ac','');
+
+		if($ac == 'showStatus'){
+			$info = D('SchoolStatus')->get_town_status_list($this->school_year,$this->town_id);
+
+			$this->assign('info',$info);
+		}
+
 		$this->web_title = '查看区县上报情况';
 		$this->page_template = "Show:townUpStatus";	
 	}
