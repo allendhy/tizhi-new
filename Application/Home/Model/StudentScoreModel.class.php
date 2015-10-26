@@ -275,6 +275,7 @@ class StudentScoreModel extends Model {
         	$groupadd = 'sc.sex ';
         	$fieldadd = $groupadd . 'AS sex,0 AS age,';	
 
+        	$orderadd = 'sex';
         }
 
         if($year_year >= 2014) $import_tb = 'import_detail_new';
@@ -334,18 +335,23 @@ class StudentScoreModel extends Model {
 
         	$fieldadd = $groupadd . 'AS sex,COUNT(sc.year_score_id) as cnt, sum(case sc.score_level when 203010 then 1 else 0 end) yx_cnt,sum(case sc.score_level when 203020 then 1 else 0 end) lh_cnt,sum(case sc.score_level when 203030 then 1 else 0 end) jg_cnt,sum(case sc.score_level when 203040 then 1 else 0 end) bjg_cnt';	
 
+
+        	$orderadd = 'sex';
         }elseif($show_type == 'level'){
 
         	$groupadd = 'case when sc.school_grade in (11,12,13,14,15,16) then \'小学\' when sc.school_grade in (21,22,23,24) then \'初中\' when sc.school_grade in (31,32,33) then \'高中\' end';
 
         	$fieldadd = $groupadd . ' AS levelname,COUNT(sc.year_score_id) as cnt, sum(case sc.score_level when 203010 then 1 else 0 end) yx_cnt,sum(case sc.score_level when 203020 then 1 else 0 end) lh_cnt,sum(case sc.score_level when 203030 then 1 else 0 end) jg_cnt,sum(case sc.score_level when 203040 then 1 else 0 end) bjg_cnt';	
 
+        	$orderadd = 'levelname';
         }elseif($show_type == 'item'){
 
         	$groupadd = 'case item.item_id when \'01\' then \'other\' when \'02\' then \'other\' when \'27\' then \'other\' else item.item_name end';
         	$fieldadd = $groupadd . ' AS itemname,count(sc.year_score_id) as cnt, sum(case i_sc.score_level when 203040 then 1 else 0 end) bjg_cnt,sum(case i_sc.score_level when 203030 then 1 else 0 end) jg_cnt,sum(case i_sc.score_level when 203020 then 1 else 0 end) lh_cnt,sum(case i_sc.score_level when 203010 then 1 else 0 end) yx_cnt';
 
         	$joinadd = 'LEFT JOIN item_score i_sc ON i_sc.year_score_id = sc.year_score_id AND i_sc.partition_field = sc.partition_field LEFT JOIN item ON item.item_id = i_sc.item_id';
+
+        	$orderadd = 'itemname';
 
         }
 
@@ -384,6 +390,7 @@ class StudentScoreModel extends Model {
 					->join('LEFT JOIN town t ON t.town_id = sc.town_id')
         			->where($where)
         			->group('sc.town_id,t.town_name')
+        			->order('town_id')
         			->select();
 	}
 }
