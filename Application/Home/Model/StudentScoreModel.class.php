@@ -264,12 +264,17 @@ class StudentScoreModel extends Model {
         if($year_year >= 2014) $import_tb = 'import_detail_new';
         else $import_tb = 'import_detail';
 
+        $orderadd = '';
+
         if($show_type == 'age'){
         	$fieldadd = 'sc.sex,DateDiff(year,sc.birthday,lo.import_time) AS age,';
 			$groupadd = 'DateDiff(year,sc.birthday,lo.import_time),sc.sex';
+
+			$orderadd = 'age';
         }else{
         	$groupadd = 'sc.sex ';
         	$fieldadd = $groupadd . 'AS sex,0 AS age,';	
+
         }
 
         if($year_year >= 2014) $import_tb = 'import_detail_new';
@@ -283,6 +288,7 @@ class StudentScoreModel extends Model {
 					->join('import_log lo ON lo.import_id = de.import_id AND lo.partition_field = sc.partition_field')
         			->where($where)
         			->group($groupadd)
+        			->order($orderadd)
         			->select();
 
         return $data;
@@ -308,6 +314,8 @@ class StudentScoreModel extends Model {
 
         $joinadd = '';
 
+        $orderadd = '';
+
         if($show_type == 'age'){
 
       	 	if($year_year >= 2014) $import_tb = 'import_detail_new';
@@ -318,6 +326,8 @@ class StudentScoreModel extends Model {
 			$fieldadd = 'DateDiff(year,sc.birthday,lo.import_time) AS age,sc.sex, COUNT(sc.year_score_id) as cnt, sum(case sc.score_level when 203010 then 1 else 0 end) yx_cnt,sum(case sc.score_level when 203020 then 1 else 0 end) lh_cnt,sum(case sc.score_level when 203030 then 1 else 0 end) jg_cnt,sum(case sc.score_level when 203040 then 1 else 0 end) bjg_cnt';
 
 			$joinadd = ' LEFT JOIN '.$import_tb.' de ON de.detail_id = sc.import_detail_id LEFT JOIN import_log lo ON lo.import_id = de.import_id AND lo.partition_field = sc.partition_field';
+
+			$orderadd = 'age';
         }elseif($show_type == 'sex'){
 
         	$groupadd = 'sc.sex ';
@@ -347,6 +357,7 @@ class StudentScoreModel extends Model {
 					->join($joinadd)
         			->where($where)
         			->group($groupadd)
+        			->order($orderadd)
         			->select();
 
         return $data;
