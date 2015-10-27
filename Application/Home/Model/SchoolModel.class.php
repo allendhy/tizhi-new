@@ -18,6 +18,7 @@ class SchoolModel extends Model {
 	}
 	//根据学校代码
 	public function get_list_by_schoolcode_year($school_code,$year_year,$type="list"){
+
 		if($year_year < 2015){
 			$where['year_year'] = array('exp','is null');
 		}else{
@@ -37,10 +38,11 @@ class SchoolModel extends Model {
 	//根据区县ID获取学校是否参测
 	public function get_list_by_jointest($year_year,$town_id,$school_code='',$show_type='',$ac='show'){
 		if($year_year < 2015){
-		//	$where['year_year'] = array('exp','is null');
+			$where['year_year'] = array('exp','is null');
 		}else{
 			$where['year_year'] = $year_year;
 		}
+		if($town_id != 0)
 		$where['t.town_id'] = $town_id;
 
 		if($school_code != 0){
