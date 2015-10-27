@@ -32,11 +32,41 @@ class ManageController extends PublicController {
 	}
 	//设置学校是否参测
 	public function setSchoolTest(){
-		$this->web_title = '设置学校是否参测';
-	   	$this->page_template = 'Manage:setSchoolTest';
+
+		$ac = I('ac','showList');
+
+		$show_type = I('show_type','');
+
+		if($ac == 'showList'){
+
+			$this->web_title = '设置学校是否参测';
+		   	$this->page_template = 'Manage:setSchoolTest';
+		   	$this->assign('show_type',$show_type);
+
+		   	$schools = D('School')->get_list_by_jointest($this->school_year,$this->town_id,$this->school_code,$show_type);
+
+		   	$this->assign('schools',$schools);
+
+		}elseif($ac == 'set' && IS_AJAX){
+			$school_code = I('id','');
+			$join_test = I('join','');
+
+			if(!$school_code || $join_test == '')$this->ajaxReturn(array('errno'=>1,'errtitle'=>'参数错误,设置失败!'));
+
+			$return = D('School')->set_in_school($school_code,$join_test);
+
+			if($return == false)$this->ajaxReturn(array('errno'=>2,'errtitle'=>'设置失败,请稍后重试'));
+
+			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'操作成功!'));
+		}
 	}
 	//不在测学校名单
 	public function noTestSchool(){
+		$ac = I('ac','showList');
+
+		$schools = D('School')->get_list_by_jointest($this->school_year,$this->town_id,'0',0);
+		$this->assign('schools',$schools);
+
 		$this->web_title = '不在测学校名单';
 	   	$this->page_template = 'Manage:noTestSchool';
 	}

@@ -510,7 +510,7 @@ class ShowController extends PublicController {
 		$show_type = I('show_type','');
 
 		if($ac == 'show'){
-			if($this->town_id == 0)$this->error('请选择区县!');
+			//if($this->town_id == 0)$this->error('请选择区县!');
 
 			if(!in_array($show_type,array('age','sex')))$this->error('请选择查看方式!');
 
@@ -585,7 +585,7 @@ class ShowController extends PublicController {
 		$show_type = I('show_type','');
 		
 		if($ac == 'show'){
-			if($this->town_id == 0)$this->error('请选择区县!');
+			//if($this->town_id == 0)$this->error('请选择区县!');
 
 			if(!in_array($show_type,array('age','sex','level','item')))$this->error('请选择查看方式!');
 
@@ -698,7 +698,7 @@ class ShowController extends PublicController {
 		$show_type = I('show_type','');
 		
 		if($ac == 'show'){
-			if($this->town_id == 0)$this->error('请选择区县!');
+			//if($this->town_id == 0)$this->error('请选择区县!');
 
 			$data = D('StudentScore')->town_stat($this->school_year,$this->town_id);
 			

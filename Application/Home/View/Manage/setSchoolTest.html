@@ -10,14 +10,14 @@
 					<hr/>
 						<div class="page-header">
 							<form action="" id="showForm" method="get">
-								<input value="showStuInfo" type="hidden" name="ac"/>
+								<input value="showList" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" disabled="disabled" class="select2 width-15">{$school_year_options}</select>
-								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
+								<select name="town_id" id="town_id"  class="select2 width-15">{$town_id_options}</select>
 								<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
 								<select name="show_type" id="show_type"  class="select2 width-15">
 								<option value="">是否参测</option>
-								<option value="1">是</option>
-								<option value="0">否</option>
+								<option value="1" <eq name="show_type" value="1">selected</eq>>是</option>
+								<option value="0" <eq name="show_type" value="0">selected</eq>>否</option>
 								</select>
 								&nbsp;&nbsp;&nbsp;
 								<input type="submit" class="btn btn-small btn-white" value="查看"/> 
@@ -33,13 +33,18 @@
 												</tr>
 											</thead>
 											<tbody>
-												<tr><td>东城区</td><td>北京市东城区文汇小学</td><td>0</td></tr>
-												<tr><td>东城区</td><td>北京市第二十四中学</td><td>0</td></tr>
-												<tr><td>东城区</td><td>东城区史家胡同小学</td><td>0</td></tr>
+											<volist name="schools['list']" id="vo">
+												<tr><td>{$vo.town_name}</td><td>{$vo.school_name}</td><td><select onchange="set_in_school(this,'{$vo.school_code}',this.value)"><option value="1" <eq name="vo['join_test']" value="1">selected</eq>>是</option><option value="0"  <eq name="vo['join_test']" value="0">selected</eq>>否</select></td></tr>
+											</volist>
 											</tbody>
 										</table>
 									</div><!-- /.table-responsive -->
 								</div><!-- /span -->
+								<!--page-->
+								<neq name="schools['page']" value="">
+								<div class="message-footer clearfix">{$schools.page}</div>
+								</neq>
+								<!--/page-->
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->
@@ -62,17 +67,21 @@
 				$('#town_id').change(function(){
 					ajaxSelectSchool('school','school_code');
 				});
-				//提交表单
-				$("input[type=button]").click(function(){
-					var dtype = $(this).attr('aname');
-					if(dtype == 'undefined' || dtype == ''){
-						alert('您的操作有误，请刷新页面后重试');
-						return false;
-					}
-					$('#dType').val(dtype);
-					$('#downForm').submit();
-				});
+
 			});
+			function set_in_school(obj,id,join){
+				if(!obj||!id||!join) return;
+				$.post('{:U(Home/Manage/setSchoolTest)}',{ac:'set',id:id,join:join},function(result){
+					if(result.errno != 0){
+						layer.alert(result.errtitle,{icon : 0});
+						return;
+					}else{
+						layer.alert(result.errtitle,{icon : 1},function(index){
+							window.location.reload();
+						});
+					}
+				},'json');
+			}
 		</script>
 
 <include file="Common:footer" />

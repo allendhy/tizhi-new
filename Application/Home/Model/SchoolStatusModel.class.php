@@ -23,7 +23,9 @@ class SchoolStatusModel extends Model {
 	public function get_up_num($school_year,$town_id,$school_code){
 
 		$where['s.year_year'] = $school_year;
+		if($town_id != 0)
 		$where['s.town_id'] = $town_id;
+	
 		if($school_code != 0){
 			$where['s.school_code'] = $school_code;
 		}

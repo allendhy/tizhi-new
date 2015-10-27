@@ -2,6 +2,7 @@
 namespace Home\Model;
 use Think\Model;
 class StudentScoreModel extends Model {
+
 	//根据schoolcode获取年级信息
 	public function get_grades($year_year,$town_id,$school_code,$type="school_code"){
 		$gradeListCache = session('gradeList');
@@ -87,24 +88,27 @@ class StudentScoreModel extends Model {
 		return $this->alias('sc')->field('school_grade,class_num,class_name,country_education_id,education_id,folk,name,(case sex when 106020 then 2 else 1 end) AS sex,birthday,student_source,idcardno,sc.address')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->order('school_grade,class_num')->select();
 	}
 	//获取是否有54制学生,如果有，返回54制学生的人数
-	public function get_school_length54_count($year_year,$town_id,$school_code,$school_grade = 0,$class_num = ''){
+	public function get_school_length54_count($year_year,$town_id,$school_code,$school_grade = 0,$class_num = 0){
 		$partition_field = intval($town_id . $year_year);
 		$where = array(
 			'partition_field' => $partition_field,
-			'school_code' =>	$school_code,
-			'is_del' => 0,
+			's.school_code' =>	$school_code,
+			'sc.is_del' => 0,
 			'in_school' => 1,
 			'school_length54' => 1,
 			//'country_education_id' => array('EXP', 'IS NOT NULL'),
 			);
+
+		//$where['school_code'] = $school_code;
+
 		if($this->school_grade > 0){
-			$where['school_grade'] = $this->school_grade;
+			$where['school_grade'] = $school_grade;
 		}
-		if($this->class_num != '' && $this->class_num > 0){
-			$where['class_num'] = $this->class_num;
+		if($this->class_num != '' && $class_num > 0){
+			$where['class_num'] = $class_num;
 		}
 
-		return $this->where($where)->count();
+		return $this->alias('sc')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->count();
 	}
 	//标识学生是否参测
 	public function set_in_school($year_score_id,$in_school){
@@ -204,7 +208,22 @@ class StudentScoreModel extends Model {
 	//返回受检未检人数
 	public function get_up_num($year_year,$town_id,$school_code,$school_grade,$class_num){
 
-		$where['sc.partition_field'] = intval($town_id . $year_year);
+        if($town_id != 0){
+       	 	$partition_field = intval($town_id . $year_year);
+        	$where['sc.partition_field'] = $partition_field;
+        }else{
+
+        	$townList = session('townList');
+
+        	$partition_fields = array();
+
+        	foreach($townList as $row){
+        		if($row['town_id'] == 110000)continue;
+        		$partition_fields[] = intval($row['town_id'] . $year_year);
+        	}
+        	$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
+        }
+
 		$where['s.school_code'] = $school_code;
 
 		if($school_grade != 0){
@@ -224,9 +243,21 @@ class StudentScoreModel extends Model {
 	public function get_up_num_infos($year_year,$town_id,$school_code,$school_grade,$class_num){
         $where = array();
 
-        $partition_field = intval($town_id . $year_year);
-        //条件
-        $where['sc.partition_field'] = $partition_field;
+        if($town_id != 0){
+       	 	$partition_field = intval($town_id . $year_year);
+        	$where['sc.partition_field'] = $partition_field;
+        }else{
+
+        	$townList = session('townList');
+
+        	$partition_fields = array();
+
+        	foreach($townList as $row){
+        		if($row['town_id'] == 110000)continue;
+        		$partition_fields[] = intval($row['town_id'] . $year_year);
+        	}
+        	$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
+        }
 
         $where['s.school_code'] = $school_code;
 
@@ -245,9 +276,22 @@ class StudentScoreModel extends Model {
 	public function weight_stat($year_year,$town_id,$school_code,$show_type = 'age'){
         $where = array();
 
-        $partition_field = intval($town_id . $year_year);
-        //条件
-        $where['sc.partition_field'] = $partition_field;
+        if($town_id != 0){
+       	 	$partition_field = intval($town_id . $year_year);
+        	$where['sc.partition_field'] = $partition_field;
+        }else{
+
+        	$townList = session('townList');
+
+        	$partition_fields = array();
+
+        	foreach($townList as $row){
+        		if($row['town_id'] == 110000)continue;
+        		$partition_fields[] = intval($row['town_id'] . $year_year);
+        	}
+        	$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
+        }
+
         if($school_code != 0){
         	$where['s.school_code'] = $school_code;
         }
@@ -299,9 +343,22 @@ class StudentScoreModel extends Model {
 	public function stat($year_year,$town_id,$school_code,$show_type = 'age'){
         $where = array();
 
-        $partition_field = intval($town_id . $year_year);
-        //条件
-        $where['sc.partition_field'] = $partition_field;
+        if($town_id != 0){
+       	 	$partition_field = intval($town_id . $year_year);
+        	$where['sc.partition_field'] = $partition_field;
+        }else{
+
+        	$townList = session('townList');
+
+        	$partition_fields = array();
+
+        	foreach($townList as $row){
+        		if($row['town_id'] == 110000)continue;
+        		$partition_fields[] = intval($row['town_id'] . $year_year);
+        	}
+        	$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
+        }
+
         if($school_code != 0){
         	$where['s.school_code'] = $school_code;
         }
@@ -371,11 +428,27 @@ class StudentScoreModel extends Model {
 
 	//区县成绩统计表
 	public function town_stat($year_year,$town_id){
+
+
         $where = array();
 
-        $partition_field = intval($town_id . $year_year);
+        if($town_id != 0){
+       	 	$partition_field = intval($town_id . $year_year);
+        	$where['sc.partition_field'] = $partition_field;
+        }else{
 
-        $where['sc.partition_field'] = $partition_field;
+        	$townList = session('townList');
+
+        	$partition_fields = array();
+
+        	foreach($townList as $row){
+        		if($row['town_id'] == 110000)continue;
+        		$partition_fields[] = intval($row['town_id'] . $year_year);
+        	}
+        	$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
+        }
+
+
 
         $where['sc.is_del'] = 0;
 

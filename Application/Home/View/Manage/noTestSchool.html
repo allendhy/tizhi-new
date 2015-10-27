@@ -10,10 +10,10 @@
 					<hr/>
 						<div class="page-header">
 							<form action="" id="showForm" method="get">
-								<input value="showStuInfo" type="hidden" name="ac"/>
+								<input value="showList" type="hidden" name="ac"/>
 								<select name="school_year" id="school_year" disabled="disabled" class="select2 width-15">{$school_year_options}</select>
-								<select name="town_id" id="town_id"  class="select2 width-10">{$town_id_options}</select>
-								<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
+								<select name="town_id" id="town_id"  class="select2 width-15">{$town_id_options}</select>
+								
 								&nbsp;&nbsp;&nbsp;
 								<input type="submit" class="btn btn-small btn-white" value="查看"/> 
 							</form>
@@ -28,13 +28,18 @@
 												</tr>
 											</thead>
 											<tbody>
-												<tr><td>东城区</td><td>北京市东城区文汇小学</td><td>不参测</td></tr>
-												<tr><td>东城区</td><td>北京市第二十四中学</td><td>不参测</td></tr>
-												<tr><td>东城区</td><td>东城区史家胡同小学</td><td>不参测</td></tr>
+											<volist name="schools['list']" id="vo">
+												<tr><td>{$vo.town_name}</td><td>{$vo.school_name}</td><td>{$vo.join_test}</td></tr>
+											</volist>
 											</tbody>
 										</table>
 									</div><!-- /.table-responsive -->
 								</div><!-- /span -->
+								<!--page-->
+								<neq name="schools['page']" value="">
+								<div class="message-footer clearfix">{$schools.page}</div>
+								</neq>
+								<!--/page-->
 							</div><!-- /row -->
 					</div><!-- /.page-content -->
 				</div><!-- /.main-content -->

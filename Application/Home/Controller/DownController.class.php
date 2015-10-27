@@ -194,10 +194,10 @@ class DownController extends PublicController {
 				//根据年级判断当前学校都包含哪些学段
 
 				$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$this->school_code,$this->school_grade);
-				
+
 				$grade = $this->school_grade;
 
-				if($this->school_grade > 0 && in_array(intval($this->school_grade),array(11,12,13,14,15,16,21,22,23,24,31,32,33,34,41,42,43,44))){
+				if($this->school_grade > 0){
 
 					if(in_array($this->school_grade,array(21,22,23,24)) && $school_length54_count > 0){
 						switch($this->school_grade){
