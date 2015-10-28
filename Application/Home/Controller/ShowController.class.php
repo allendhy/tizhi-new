@@ -813,6 +813,51 @@ class ShowController extends PublicController {
 	}
 	//分城郊区查看成绩统计
 	public function suburbStat(){
+		$ac = I('ac','');
+
+		if($ac == 'show'){
+
+			$data = D('StudentScore')->suburb_stat($this->school_year);
+			
+			foreach($data as $k=>$row){
+
+				$row['bjg_bfb'] = round($row['bjg_cnt']/$row['cnt']*100,2).'%';
+
+				$row['jg_bfb'] = round($row['jg_cnt']/$row['cnt']*100,2).'%';
+
+				$row['lh_bfb'] = round($row['lh_cnt']/$row['cnt']*100,2).'%';
+
+				$row['yx_bfb'] = round($row['yx_cnt']/$row['cnt']*100,2).'%';
+
+
+				$statHeji['cnt'] = $statHeji['cnt'] + $row['cnt'];
+
+				$statHeji['bjg_cnt'] = $statHeji['bjg_cnt'] + $row['bjg_cnt'];
+
+				$statHeji['jg_cnt'] = $statHeji['jg_cnt'] + $row['jg_cnt'];
+					
+				$statHeji['lh_cnt'] = $statHeji['lh_cnt'] + $row['lh_cnt'];
+					
+				$statHeji['yx_cnt'] = $statHeji['yx_cnt'] + $row['yx_cnt'];
+					
+				$statData[] = $row;
+
+			}
+
+			if(!empty($statData)){
+				$statHeji['bjg_bfb'] = round($statHeji['bjg_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['jg_bfb'] = round($statHeji['jg_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['lh_bfb'] = round($statHeji['lh_cnt']/$statHeji['cnt']*100,2).'%';
+				$statHeji['yx_bfb'] = round($statHeji['yx_cnt']/$statHeji['cnt']*100,2).'%';
+
+				$statHeji['town_name'] = '合计';
+
+				array_push($statData,$statHeji);
+			}
+
+			$this->assign('statData',$statData);
+		}
+
 		$this->web_title = '分城郊区查看成绩统计';
 		$this->page_template = "Show:suburbStat";	
 	}

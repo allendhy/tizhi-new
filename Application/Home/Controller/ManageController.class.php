@@ -72,8 +72,22 @@ class ManageController extends PublicController {
 	}
 	//测试项目设定
 	public function setItemTest(){
-		$this->web_title = '测试项目设定';
-	   	$this->page_template = 'Manage:setItemTest';
+		$ac = I('ac','show');
+
+		if($ac == 'show'){
+
+			$this->web_title = '测试项目设定';
+
+	   		$this->page_template = 'Manage:setItemTest';
+
+	   		$townItems = D('TownItem')->get_list($this->town_id);
+
+	   		$this->assign('townItems',$townItems);
+
+		}elseif($ac == 'set'){
+
+		}
+
 	}
 	//用户密码重置
 	public function resetUserPwd(){
@@ -82,7 +96,36 @@ class ManageController extends PublicController {
 	}
 	//学年设置
 	public function setSchoolYear(){
-		$this->web_title = '学年设置';
-	   	$this->page_template = 'Manage:setSchoolYear';
+		$ac = I('ac','show');
+
+		if($ac == 'show'){
+			$this->web_title = '学年设置';
+	   		$this->page_template = 'Manage:setSchoolYear';
+
+	   		$schoolYears = D('SchoolYear')->get_list();
+
+	   		$this->assign('schoolYears',$schoolYears);
+	   		// print_r($schoolYears);
+		}elseif($ac == 'edit'){
+
+	   		$year = I('year','');
+
+	   		$info = D('SchoolYear')->get_info($year);
+
+	   		if(empty($info))$this->error('参数错误,无法编辑学年!');
+
+	   		$dictList = session('dictList');
+
+	   		$info['state_name'] = $dictList['207'][$info['state']]['dict_name'];
+
+	   		$this->assign('info',$info);
+
+	   		$this->web_title = '学年设置';
+
+	   		$this->page_template = 'Manage:editSchoolYear';
+
+		}elseif($ac == 'editSave'){
+			echo "aaaaaaaaaaaaaaaaaaaaa";
+		}
 	}
 }

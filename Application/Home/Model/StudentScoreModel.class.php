@@ -190,6 +190,7 @@ class StudentScoreModel extends Model {
 
        // $where['s.is_del'] = 0;
         $where['sc.is_del'] = 0;
+        $where['sc.in_school'] = 1;
         $where['sc.is_check'] = 1;
 
         //查询
@@ -299,6 +300,8 @@ class StudentScoreModel extends Model {
 
         $where['sc.is_del'] = 0;
 
+        $where['sc.in_school'] = 1;
+
         $where['sc.is_check'] = 1;
 
         $where['sc.is_avoid'] = 0;
@@ -365,6 +368,8 @@ class StudentScoreModel extends Model {
         
 
         $where['sc.is_del'] = 0;
+
+        $where['sc.in_school'] = 1;
 
         $where['sc.is_check'] = 1;
 
@@ -452,6 +457,8 @@ class StudentScoreModel extends Model {
 
         $where['sc.is_del'] = 0;
 
+        $where['sc.in_school'] = 1;
+
         $where['sc.is_check'] = 1;
 
         $where['sc.is_avoid'] = 0;
@@ -464,6 +471,52 @@ class StudentScoreModel extends Model {
         			->where($where)
         			->group('sc.town_id,t.town_name')
         			->order('town_id')
+        			->select();
+	}
+
+	//分城郊区统计
+	//区县成绩统计表
+	public function suburb_stat($year_year){
+
+
+        $where = array();
+
+        $townList = session('townList');
+        //城区
+        $partition_fields_town = array();
+        //郊区
+        $partition_fields_suburb = array();
+
+        foreach($townList as $row){
+        	if($row['town_id'] == 110000)continue;
+
+        	$partition_fields[] = intval($row['town_id'] . $year_year);
+
+        	if($row['town_id'] < 110109)
+        		$partition_fields_town[] = intval($row['town_id'] . $year_year);
+        	else
+        		$partition_fields_suburb[] = intval($row['town_id'] . $year_year);
+        }
+
+        $chengqusql = implode(',',$partition_fields_town);
+
+        $jiaoqusql = implode(',',$partition_fields_suburb);
+
+		$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
+		
+        $where['sc.is_del'] = 0;
+
+        $where['sc.in_school'] = 1;
+
+        $where['sc.is_check'] = 1;
+
+        $where['sc.is_avoid'] = 0;
+
+       // echo "CASE WHEN sc.partition_field IN (".$chengqusql.") THEN '城区' ELSE '郊区' END AS town_name";
+		return $this->alias('sc')
+        			->field("CASE WHEN sc.partition_field IN (".$chengqusql.") THEN '城区' ELSE '郊区' END AS town_name,COUNT(sc.year_score_id) as cnt, sum(case sc.score_level when 203010 then 1 else 0 end) yx_cnt,sum(case sc.score_level when 203020 then 1 else 0 end) lh_cnt,sum(case sc.score_level when 203030 then 1 else 0 end) jg_cnt,sum(case sc.score_level when 203040 then 1 else 0 end) bjg_cnt")
+        			->where($where)
+        			->group("CASE WHEN sc.partition_field IN (".$chengqusql.") THEN '城区' ELSE '郊区' END")
         			->select();
 	}
 }

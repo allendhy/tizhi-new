@@ -16,8 +16,13 @@ class SchoolYearModel extends Model {
 		}
 		return $option;
 	}
+	//获取单条信息
 	public function get_info($school_year){
 		return $this->where('year_year = %d',$school_year)->find();
+	}
+	//获取列表信息
+	public function get_list(){
+		return $this->alias('y')->field('y.*,d.dict_name AS state_name')->join('LEFT JOIN sys_dict d ON d.dict_id = y.state')->order('year_year DESC')->select();
 	}
 }
 ?>

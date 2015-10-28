@@ -10,8 +10,8 @@
 					<hr/>
 						<div class="page-header">
 							<form action="" id="showForm" method="get">
-								<input value="showStuInfo" type="hidden" name="ac"/>
-								<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
+								<input value="show" type="hidden" name="ac"/>
+								<select name="school_year" id="school_year" class="select2 width-25">{$school_year_options}</select>
 								&nbsp;&nbsp;&nbsp;
 								<input type="submit" class="btn btn-small btn-white" value="查看"/> 
 							</form>
@@ -26,9 +26,20 @@
 												</tr>
 											</thead>
 											<tbody>
-												<tr><td>城区</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
-												<tr><td>郊区</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
-												<tr><td>合计</td><td>218</td><td>0</td><td>0%</td><td>8</td><td>3.67%</td><td>154</td><td>70.64%</td><td>24</td><td>11.01%</td></tr>
+											<volist name="statData" id="vo">
+												<tr>
+												<td>{$vo.town_name}</td>
+												<td>{$vo.cnt}</td>
+												<td>{$vo.bjg_cnt}</td>
+												<td>{$vo.bjg_bfb}</td>
+												<td>{$vo.jg_cnt}</td>
+												<td>{$vo.jg_bfb}</td>
+												<td>{$vo.lh_cnt}</td>
+												<td>{$vo.lh_bfb}</td>
+												<td>{$vo.yx_cnt}</td>
+												<td>{$vo.yx_bfb}</td>
+												</tr>
+											</volist>
 											</tbody>
 										</table>
 									</div><!-- /.table-responsive -->
