@@ -91,8 +91,29 @@ class ManageController extends PublicController {
 	}
 	//用户密码重置
 	public function resetUserPwd(){
-		$this->web_title = '用户密码重置';
-	   	$this->page_template = 'Manage:resetUserPwd';
+		$ac = I('ac','');
+
+		if($ac == 'show'){
+
+			$user = D('SysUser')->get_user_by_org($this->town_id,$this->school_code);
+			$this->assign('user',$user);
+			$this->web_title = '用户密码重置';
+	   		$this->page_template = 'Manage:resetUserPwd';
+		}elseif($ac == 'edit' && IS_POST){
+			$user_id = I('uid',0);
+			$new_pwd = I('new_pwd','');
+			$user = D('SysUser')->where('user_id = %d',$user_id)->find();
+			if(empty($user))$this->error('没有该用户!');
+			if($new_pwd == '')$this->error('新密码不能为空!');
+			if(md5($new_pwd) == $user['login_pwd'])$this->error('密码未改变!');
+
+			$return = D('SysUser')->where('user_id = %d',$user_id)->setField('login_pwd',md5($new_pwd));
+			if($return == true) $this->success('密码重置成功!');
+			else $this->error('密码重置失败!');
+		}else{
+			$this->web_title = '用户密码重置';
+	   		$this->page_template = 'Manage:resetUserPwd';
+		}
 	}
 	//学年设置
 	public function setSchoolYear(){
@@ -146,11 +167,14 @@ class ManageController extends PublicController {
 
 			D('SchoolYear')->startTrans();
 
-			if($info['used_year'] != $data['used_year'] && $data['used_year'] == 1 && (time() < strtotime($data['year_year']+1 . '-09-01') && time() > strtotime($data['year_year'] . '-08-31 23:59:59'))){
+			if($info['used_year'] != $data['used_year'] && $data['used_year'] == 1 && (time() < strtotime($info['year_year']+1 . '-09-01') && time() > strtotime($info['year_year'] . '-08-31 23:59:59'))){
 				$data['used_year'] = 1;
-				D('SchoolYear')->query('UPDATE school_year SET used_year = 0;');
+				D('SchoolYear')->where('used_year = 1')->setField('used_year',1);
 			}else{
-				if($data['used_year'] == 1)$this->ajaxReturn(array('errno'=>5,'errtitle'=>"您不能设置{$info['year_name']}为当前学年!"));
+				if($data['used_year'] == 1){
+					D('SchoolYear')->rollback();
+					$this->ajaxReturn(array('errno'=>5,'errtitle'=>"您不能设置{$info['year_name']}为当前学年!"));
+				}
 			}
 
 			$return = D('SchoolYear')->where('year_year = %d',$year)->save($data);

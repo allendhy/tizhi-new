@@ -36,5 +36,17 @@ class SysUserModel extends Model {
 		}
 
 	}
+	//
+	public function get_user_by_org($town_id,$school_code){
+		$where = array();
+		if($school_code != 0){
+			$where['user_kind'] = 109030;
+			$where['org_schoolcode'] = $school_code;
+		}elseif($town_id != 0){
+			$where['user_kind'] = 109020;
+			$where['org_id']	= $town_id;
+		}
+		return $this->where($where)->find();
+	}
 }
 ?>
