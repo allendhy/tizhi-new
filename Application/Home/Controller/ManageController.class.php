@@ -124,8 +124,38 @@ class ManageController extends PublicController {
 
 	   		$this->page_template = 'Manage:editSchoolYear';
 
-		}elseif($ac == 'editSave'){
-			echo "aaaaaaaaaaaaaaaaaaaaa";
+		}elseif($ac == 'editSave' && IS_AJAX){
+
+	   		$year = I('year','');
+
+	   		$info = D('SchoolYear')->get_info($year);
+
+	   		if(empty($info))$this->error('参数错误,无法编辑学年!');
+
+			if($info['state'] == 207030)$this->ajaxReturn(array('errno'=>3,'errtitle'=>'您设置的学年已经结束,不能再次设置!'));
+
+			$data['used_year'] = I('used_year','');
+
+			$data['not_upload_time'] = I('datepicker','') .' '. I('timepicker','');
+
+			$is_date=strtotime($data['not_upload_time'])?strtotime($data['not_upload_time']):false;
+			// 日期格式
+			if(!$is_date)$this->ajaxReturn(array('errno'=>'1','errtitle'=>'日期格式错误,请重新设置日期!'));
+			//日期设置
+			if(strtotime($data['not_upload_time']) < strtotime(date('Y-m-d')))$this->ajaxReturn(array('errno'=>2,'errtitle'=>'设置的封库日期不能小于今天!'));
+
+			if($info['used_year'] != $data['used_year'] && $data['used_year'] == 1 && (time() < strtotime($data['year_year']+1 . '-09-01') && time() > strtotime($data['year_year'] . '-08-31 23:59:59'))){
+				$data['used_year'] = 1;
+			}else{
+				if($data['used_year'] == 1)$this->ajaxReturn(array('errno'=>5,'errtitle'=>"您不能设置{$info['year_name']}为当前学年!"));
+			}
+
+			$return = D('SchoolYear')->where('year_year = %d',$year)->save($data);
+
+			if($return == false)$this->ajaxReturn(array('errno'=>9,'errtitle'=>'学年设置失败!请稍候重试!'));
+
+			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'设置成功!'));
+
 		}
 	}
 }

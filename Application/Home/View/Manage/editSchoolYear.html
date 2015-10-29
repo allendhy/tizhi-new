@@ -8,6 +8,7 @@
 							<div class="row">
 									<form action="{:U('Home/Manage/setSchoolYear')}" method="post" id="editForm">
 									<input type="hidden" name="ac" value="editSave" />
+									<input type="hidden" name="year" value="{$info.year_year}" />
 									<div class="col-xs-12">
 										<div class="table-responsive">
 
@@ -16,14 +17,14 @@
 													<tr><td class="width-30">项目名称</td><td><div class="col-sm-9">{$info.year_name}学年</div></td></tr>
 													<tr><td>是否当前学年</td>
 													<td><div class="col-sm-9">
-													<select name="used_year" <if condition="$info['used_year'] eq 1 OR $info['state'] eq 207030" >disabled</if>><option value="0">否</option><option value="1" <eq name="info['used_year']" value="1">selected</eq>>是</option></select>
+													<select name="used_year" id="used_year" <if condition="$info['used_year'] eq 1 OR $info['state'] eq 207030" >disabled</if>><option value="0">否</option><option value="1" <eq name="info['used_year']" value="1">selected</eq>>是</option></select>
 										</div></td></tr>
 													<tr><td>状态</td><td><div class="col-sm-9">
 											{$info.state_name}
 										</div></td></tr>
 													<tr><td>封库时间</td><td><div class="col-xs-8 col-sm-11">
 														<div class="input-group">
-															<input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="yyyy-mm-dd" name="datepicker"/>
+															<input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="yyyy-mm-dd" data-date-startdate="{:date('Y-m-d')}" data-date="{$info.not_upload_time}" name="datepicker"/>
 															<span class="input-group-addon">
 																<i class="icon-calendar bigger-110"></i>
 															</span>
@@ -94,7 +95,20 @@
 					},dataType:'json'});
 				});
 
-				$('.date-picker').datepicker({autoclose:true}).next().on(ace.click_event, function(){
+				$('#used_year').change(function(){
+					var obj = $(this);
+					if(obj.val() == 1)
+						layer.confirm('本操作不可逆,确定要设置{$info.year_name}学年为当前学年吗?', {
+						    btn: ['确定','取消'] //按钮
+						}, function(index){
+							layer.close(index);
+						    //return true;
+						}, function(){
+						    obj.val('0');
+						});
+					});
+
+				$('.date-picker').datepicker({autoclose:true,isRTL:true}).next().on(ace.click_event, function(){
 					$(this).prev().focus();
 				});
 				
