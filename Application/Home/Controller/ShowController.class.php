@@ -283,6 +283,9 @@ class ShowController extends PublicController {
 			case '下载':
 				$this->showPhyInfo('down');
 			break;
+			case 'showDetail':
+				$this->showPhyDetail();
+			break;
 			default:
 				$this->web_title = '查看学生体质成绩';
 				$this->page_template = "Show:phydata";
@@ -464,6 +467,108 @@ class ShowController extends PublicController {
 		$objWriter->save('php://output');
 		//PHPExcel::Destroy();
 		exit();
+	}
+	//查看学生体质详情
+	private function showPhyDetail(){
+		$year_score_id = I('id',0);
+		$partition_field = I('par',0);
+
+		$phyinfo = D('StudentScore')->get_info($partition_field,$year_score_id);
+
+		if(empty($phyinfo))$this->error('参数错误!找不到学生!');
+
+		$dictList = session('dictList');
+
+		$phyinfo['score_level'] = $dictList['203'][$phyinfo['score_level']]['dict_name'];
+
+		$phyinfo['score_level_ori'] = $dictList['203'][$phyinfo['score_level_ori']]['dict_name'];
+
+		$this->assign('stuScoreInfo',$phyinfo);
+
+		$stuItemScoreList =  D('ItemScore')->get_info_list($partition_field,$year_score_id);
+
+		if(!$stuItemScoreList){$this->error('没有找到该生体质健康成绩信息~');}
+
+		
+		//xt,zs,item
+		$xt = array();
+		$zs = array();
+		$item = array();
+		foreach($stuItemScoreList as $k=>$v){
+			if(intval($v['item_id'])==0||$v['kind_id']=='')continue;
+			//各项目评定
+			if($v['score_level']){
+				$v['score'] = intval($v['score']);
+				$v['score_level'] = substr($v['score_level'],0,3) == '205' ? $dictList['205'][$v['score_level']]['dict_name'] :$dictList['203'][$v['score_level']]['dict_name'];
+			}else{
+				$v['score'] = '未检查';
+			}
+			$v['exam_result_display']	 = stripslashes($v['exam_result_display']);
+			if(in_array($v['kind_id'],array('jn','xt'))){
+				array_push($xt,$v);
+			}elseif($v['kind_id']=='zs'){
+				array_push($zs,$v);
+			}else{
+				array_push($item,$v);
+			}
+		}
+
+		$stuItemScoreList  = array();
+		$stuItemScoreList['xt'] = $xt;
+		$stuItemScoreList['zs'] = $zs;
+		$stuItemScoreList['item'] = $item;
+
+		foreach($stuItemScoreList['item'] as $key=>$val){
+			if($val['item_id']=='08'&&intval($val['score'])==0)
+				$stuItemScoreList['item'][$key]['score']='';
+		}
+
+		$this->assign('stuItemScoreList',$stuItemScoreList);
+
+		//导入时间
+		/**
+			程序写到这里 2015-10-29
+		*/
+		if($this->school_year >= 2014){
+			$import_detail_t = 'import_detail_new';
+		}else{
+			$import_detail_t = 'import_detail';
+		}
+		
+		$import_log = M()->table('import_log')->field('import_log.import_time,import_log.user_id')->join($import_detail_t.' idd ON idd.import_id = import_log.import_id')->where('idd.detail_id = '.$stuScoreInfo['import_detail_id'])->find();
+		
+		if(is_object($import_log['import_time'])){
+			$impTimeObj = object2array($import_log['import_time']);
+			$import_time = date('Y-m-d H:i:s',strtotime($impTimeObj['date']));
+		}else{
+			$import_time = date('Y-m-d H:i:s',strtotime($import_log['import_time']));
+		}
+		$this->assign('import_time',$import_time);
+		/*
+		//导入历史
+		$import_detail =  M()->table($import_detail_t)->where('detail_id = '.$stuScoreInfo['import_detail_id'])->find();
+
+		if(!empty($import_detail)){
+			if(!intval($import_detail['vital_capacity']))$import_detail['vital_capacity']='';
+
+			if(is_object($import_detail['birthday'])){
+				$birthdayObj = object2array($import_detail['birthday']);
+				$import_detail['birthday'] = date('Y-m-d',strtotime($birthdayObj['date']));
+			}
+			$grade = M()->table('dict_grade')->where('grade_id = '.$import_detail['grade_num'])->find();
+			$import_detail['grade_num'] = $grade['grade_name'];
+			$this->assign('import_detail',$import_detail);
+			
+			//操作人
+			$login_name =  M()->table('sys_user')->where('user_id = '.$import_log['user_id'])->getField('login_name');
+			if(!$login_name)$login_name = M('school s')->join('sys_user u ON u.org_id = s.school_id')->where('s.school_id = '.$import_log['user_id'])->getField('u.login_name');
+			//$login_name = $sys_user['login_name'];
+			
+			$this->assign('login_name',$login_name);
+		}
+		*/
+		$this->web_title = '查看学生体质成绩详情';
+		$this->page_template = "Show:phyDetail2014";
 	}
 	//查看体质上传情况
 	public function phyUpStatus(){

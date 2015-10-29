@@ -1,0 +1,171 @@
+<include file="Common:header" />
+	<!-- navber -->
+	<!-- 加载页面 // -->
+	<include file="Common:navbar" />
+
+					<div class="page-content">
+					<!--
+					<div class="table-header"> 温馨提示：您可以点击 综合成绩 查看该学生的各项目成绩。</div>
+					++>
+						<div class="page-header">
+						</div><!-- /.page-header -->
+
+							<div class="row">
+									<div class="col-xs-12">
+										<div class="table-responsive">
+											<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+												<tbody>
+													<tr>
+													    <td width="7%"  height='25' align="right" bgcolor="#A6D8F1">姓名：</td>
+													    <td width="10%" bgcolor="#D0EBF6">{$stuScoreInfo['name']}</td>
+													    <td width="10%" align="right" bgcolor="#A6D8F1">综合成绩：</td>
+													    <td width="5%" bgcolor="#D0EBF6">{$stuScoreInfo['total_score']}</td>
+													    <td width="10%"  align="right" bgcolor="#A6D8F1">综合评定：</td>
+													    <td width="7%" bgcolor="#D0EBF6">{$stuScoreInfo['score_level']}</td>
+
+													    <td width="10%" align="right" bgcolor="#A6D8F1">测试成绩：</td>
+													    <td width="5%" bgcolor="#D0EBF6">{$stuScoreInfo['total_score_ori']}</td>
+													    <td width="10%"  align="right" bgcolor="#A6D8F1">测试成绩评定：</td>
+													    <td width="7%" bgcolor="#D0EBF6">{$stuScoreInfo['score_level_ori']}</td>
+														<td width="10%" align="right" bgcolor="#A6D8F1">附加分数：</td>
+														<td width="5%" bgcolor="#D0EBF6">{$stuScoreInfo['addach_score']}</td>
+													  </tr>
+												</tbody>
+											</table>
+											  <if condition="$stuItemScoreList[xt]">
+											  <table class="table table-striped table-bordered table-hover">
+											  	<tr>
+											 	<volist name='stuItemScoreList.xt' id='vo' mod='10'>
+											    <td  align="right" bgcolor="#A6D8F1">{$vo.item_name}：</td>
+											    <td  bgcolor="#D0EBF6"><gt name="vo.exam_result" value="0">{$vo.exam_result_display}<eq name="vo.item_id" value="04">({$vo.score} {$vo.score_level})</eq><else/>未检查</gt></td>
+												</volist>
+												</tr>
+												</table>
+											  </if>
+
+											  <if condition="$stuItemScoreList[zs]">
+											  <table class="table table-striped table-bordered table-hover">
+											  	<tr>
+											 	<volist name='stuItemScoreList.zs' id='vo' mod='10'>
+											    <td  align="right" bgcolor="#A6D8F1">{$vo.item_name}：</td>
+											    <td  bgcolor="#D0EBF6">{$vo.exam_result_display}   ({$vo.score} {$vo.score_level})</td>
+												</volist>
+												</tr>
+												</table>
+											  </if>
+
+											  <if condition="$stuItemScoreList[item]">
+											  <table class="table table-striped table-bordered table-hover">
+											  	<tr>
+											 	<volist name='stuItemScoreList.item' id='vo' mod='10'>
+											    <td  align="right" bgcolor="#A6D8F1">{$vo.item_name}：</td>
+											    <td  bgcolor="#D0EBF6">{$vo.exam_result_display} 	({$vo.score} {$vo.score_level})</td>
+												</volist>
+												</tr>
+												</table>
+											  </if>
+											<br />
+											<hr>
+											<br />
+
+											<table class="table table-striped table-bordered table-hover">
+											  	<tr  bgcolor="#A6D8F1">
+											    <td >导入时间：{$import_time}</td>
+											    <td>操作人：{$login_name}</td>
+												</tr>
+											</table>
+											<table class="table table-striped table-bordered table-hover">	<thead>
+											  	<tr>
+											    <th>教育ID</th>
+											    <th>年级编号</th>
+												<th>班号</th>
+												<th>班级</th>
+												<th>全国学籍号</th>
+												<th>姓名</th>
+												<th>性别</th>
+												<th>出生日期</th>
+												<th>身高</th>
+												<th>体重</th>
+												<th>肺活量</th>
+												<!--
+												<td bgcolor="#A6D8F1">耐力项目编号</td>
+												<td bgcolor="#A6D8F1">耐力项目成绩</td>
+												<td bgcolor="#A6D8F1">柔韧力量类项目编号</td>
+												<td bgcolor="#A6D8F1">柔韧力量类项目成绩</td>
+												<td bgcolor="#A6D8F1">速度灵巧类项目编号</td>
+												<td bgcolor="#A6D8F1">速度灵巧类项目成绩</td>
+												-->
+												<!--
+												<td bgcolor="#A6D8F1">50米跑</td>
+												<td bgcolor="#A6D8F1">坐位体前屈</td>
+												-->
+												<th>奖惩项目编号</th>
+												<th>是否免体</th>
+												</tr>
+												</thead>
+											  	<tr  >
+											    <td >{$import_detail['education_id']}</td>
+											    <td >{$import_detail['grade_num']}</td>
+												<td >{$import_detail['class_num']}</td>
+												<td >{$import_detail['class_name']}</td>
+												<td >{$import_detail['country_education_id']}</td>
+												<td >{$import_detail['name']}</td>
+												<td >{$import_detail['sex']}</td>
+												<td >{$import_detail['birthday']}</td>
+												<td >{$import_detail['body_height']}</td>
+												<td >{$import_detail['body_weight']}</td>
+												<td >{$import_detail['vital_capacity']}</td>
+												<!--
+												<td >{$import_detail['endurance_code']}</td>
+												<td >{$import_detail['endurance_result_display']}</td>
+												<td >{$import_detail['flexible_code']}</td>
+												<td >{$import_detail['flexible_result_display']}</td>
+												<td >{$import_detail['speed_code']}</td>
+												<td >{$import_detail['speed_result_display']}</td>
+												-->
+												<td >{$import_detail['rewards_code']}</td>
+												<td >{$import_detail['is_avoid']}</td>
+												</tr>
+											</table>
+										</div><!-- /.table-responsive -->
+									</div><!-- /span -->
+									<!--page-->
+									<neq name="phyinfos['page']" value="">
+									<div class="message-footer clearfix">{$phyinfos.page}</div>
+									</neq>
+									<!--/page-->
+							</div><!-- /row -->
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+			</div><!-- /.main-container-inner -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="icon-double-angle-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<!-- inline scripts related to this page -->
+		<script src="__PUBLIC__/assets/js/select2.min.js"></script>
+		<script src='__PUBLIC__/assets/js/jquery.form.js'></script>
+		<script src='__PUBLIC__/assets/js/is_chzh.js'></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				$(".select2").select2();
+
+				//学校下拉框
+				$('#town_id').change(function(){
+					ajaxSelectSchool('school','school_code');
+				});
+				//年级下拉框
+				$('#school_code').change(function(){
+					ajaxSelectSchool('grade','school_grade');
+				});
+				//班级下拉框
+				$('#school_grade').change(function(){
+					ajaxSelectSchool('class','class_num');
+				});
+
+			});
+		</script>
+
+<include file="Common:footer" />
