@@ -24,13 +24,13 @@
 										</div></td></tr>
 													<tr><td>封库时间</td><td><div class="col-xs-8 col-sm-11">
 														<div class="input-group">
-															<input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="yyyy-mm-dd" data-date-startdate="{:date('Y-m-d')}" data-date="{$info.not_upload_time}" name="datepicker"/>
+															<input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="yyyy-mm-dd" data-date-startdate="{:date('Y-m-d')}" value="{$info.not_upload_time|strtotime|date='Y-m-d',###}" name="datepicker"/>
 															<span class="input-group-addon">
 																<i class="icon-calendar bigger-110"></i>
 															</span>
 														</div>
 														<div class="input-group bootstrap-timepicker">
-															<input id="timepicker1" type="text" class="form-control input-small" name="timepicker"/>
+															<input id="timepicker1" type="text" class="form-control input-small" name="timepicker"  value="{$info.not_upload_time|strtotime|date='H:i:s',###}"/>
 															<span class="input-group-addon">
 																<i class="icon-time bigger-110"></i>
 															</span>

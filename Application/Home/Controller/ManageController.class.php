@@ -144,16 +144,22 @@ class ManageController extends PublicController {
 			//日期设置
 			if(strtotime($data['not_upload_time']) < strtotime(date('Y-m-d')))$this->ajaxReturn(array('errno'=>2,'errtitle'=>'设置的封库日期不能小于今天!'));
 
+			D('SchoolYear')->startTrans();
+
 			if($info['used_year'] != $data['used_year'] && $data['used_year'] == 1 && (time() < strtotime($data['year_year']+1 . '-09-01') && time() > strtotime($data['year_year'] . '-08-31 23:59:59'))){
 				$data['used_year'] = 1;
+				D('SchoolYear')->query('UPDATE school_year SET used_year = 0;');
 			}else{
 				if($data['used_year'] == 1)$this->ajaxReturn(array('errno'=>5,'errtitle'=>"您不能设置{$info['year_name']}为当前学年!"));
 			}
 
 			$return = D('SchoolYear')->where('year_year = %d',$year)->save($data);
 
-			if($return == false)$this->ajaxReturn(array('errno'=>9,'errtitle'=>'学年设置失败!请稍候重试!'));
-
+			if($return == false){
+				D('SchoolYear')->rollback();
+				$this->ajaxReturn(array('errno'=>9,'errtitle'=>'学年设置失败!请稍候重试!'));
+			}
+			D('SchoolYear')->commit();
 			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'设置成功!'));
 
 		}
