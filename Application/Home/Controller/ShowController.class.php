@@ -536,6 +536,8 @@ class ShowController extends PublicController {
 		}
 		
 		$import_log = M()->table('import_log')->field('import_log.import_time,import_log.user_id')->join($import_detail_t.' idd ON idd.import_id = import_log.import_id')->where('idd.detail_id = '.$stuScoreInfo['import_detail_id'])->find();
+
+		$import_log = D('ImportLog')->getInfo($this->school_year,$this->town_id);
 		
 		if(is_object($import_log['import_time'])){
 			$impTimeObj = object2array($import_log['import_time']);

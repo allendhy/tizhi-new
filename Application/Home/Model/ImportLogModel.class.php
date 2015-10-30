@@ -24,8 +24,4 @@ class ImportLogModel extends Model {
                 return array('list'=>$list,'page'=>$show);
 	}
 
-        public function getInfo($school_year,$town_id,$school_code,$import_id){
-                
-        }
-
 }

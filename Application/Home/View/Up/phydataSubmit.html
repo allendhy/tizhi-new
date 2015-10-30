@@ -32,9 +32,9 @@
 													<tr><td>其中不在学人数</td><td>{$sch_status.s_notinschool_cnt}</td></tr>
 													<tr><td>有全国学籍号人数</td><td>{$sch_status['s_cnt'] - $sch_status['s_noceid_cnt']}</td></tr>
 													<tr><td>没有全国学籍号人数</td><td>{$sch_status.s_noceid_cnt}</td></tr>
-													<tr><td>学校免体人数</td><td>{$sch_status.s_noceid_cnt}</td></tr>
+													<tr><td>学校免体人数</td><td>{$sch_status.s_phyavoid_cnt}</td></tr>
 													<tr><td>实际上传体质数据人数</td><td>{$sch_status.s_phy_cnt}</td></tr>
-													<tr><td>上传率</td><td>{:round($sch_status['s_phy_cnt'] / $sch_status['s_cnt'],4) * 100}%</td></tr>
+													<tr><td>上传率</td><td>{:round($sch_status['s_phy_cnt'] / ($sch_status['s_cnt'] - $sch_status['s_notinschool_cnt']),4) * 100}%</td></tr>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
