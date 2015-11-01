@@ -526,7 +526,8 @@ class ShowController extends PublicController {
 
 		$this->assign('stuItemScoreList',$stuItemScoreList);
 
-		$this->school_year = intval(substr($partition,7));
+		$this->school_year = intval(substr($partition_field,6));
+		//echo $this->school_year;
 		//导入时间
 		if($this->school_year >= 2014){
 			$import_detail_t = 'import_detail_new';
@@ -561,11 +562,11 @@ class ShowController extends PublicController {
 			
 			//操作人
 			$login_name =  D('SysUser')->where('user_id = '.$import_log['user_id'])->getField('login_name');
-			if(!$login_name)$login_name = D('School')->alias('s')->join('LEFT JOIN sys_user u ON u.org_id = s.school_id')->where('s.school_id = '.$import_log['user_id'])->getField('u.login_name');
-			
-			
+			if(!$login_name)$login_name = D('School')->alias('s')->join('LEFT JOIN sys_user u ON u.org_schoolcode = s.school_code')->where('s.school_id = '.$import_log['user_id'])->getField('u.login_name');
+			//echo M()->getlastsql();
 			$this->assign('login_name',$login_name);
 		}
+
 		$this->assign('school_year',$this->school_year);
 		$this->web_title = '查看学生体质成绩详情';
 		$this->page_template = "Show:phyDetail2014";

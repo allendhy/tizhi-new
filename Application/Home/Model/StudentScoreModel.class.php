@@ -49,6 +49,9 @@ class StudentScoreModel extends Model {
 
         //$where['s.is_del'] = 0;
         $where['sc.is_del'] = 0;
+        $where['s.join_test'] = 1;
+
+
 
         //查询
 		$count = $this->alias('sc')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->count();
@@ -75,6 +78,7 @@ class StudentScoreModel extends Model {
 			'partition_field' => $partition_field,
 			's.school_code' =>	$school_code,
 			'sc.is_del' => 0,
+			's.join_test' => 1,
 			'in_school' => 1,
 			'country_education_id' => array('EXP', $country_education_id_exp),
 			);
@@ -189,6 +193,7 @@ class StudentScoreModel extends Model {
         if($class_num != 0) $where['sc.class_num'] = $class_num;
 
        // $where['s.is_del'] = 0;
+        $where['s.join_test'] = 1;
         $where['sc.is_del'] = 0;
         $where['sc.in_school'] = 1;
         $where['sc.is_check'] = 1;
@@ -241,7 +246,7 @@ class StudentScoreModel extends Model {
 		if($class_num != 0){
 			$where['sc.class_num'] = $class_num;
 		}
-
+		$where['s.join_test'] = 1;
 		$where['sc.is_del'] = 0;
 
 		return $this->alias('sc')->field(' SUM(1) AS s_cnt,SUM(CASE sc.in_school WHEN 0 THEN 1 ELSE 0 END) AS s_notinschool_cnt,SUM(CASE WHEN sc.country_education_id is null THEN 1 ELSE 0 END) AS s_noceid_cnt,SUM(CASE WHEN sc.in_school = 0 AND sc.country_education_id is null THEN 1 ELSE 0 END) AS s_n2_cnt,SUM(CASE sc.is_check WHEN 1 THEN 1 ELSE 0 END ) AS s_phy_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.in_school = 0 THEN 1 ELSE 0 END) AS s_phynotinschool_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.country_education_id is null THEN 1 ELSE 0 END) AS s_phynoceid_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.country_education_id is null AND sc.in_school = 0 THEN 1 ELSE 0 END ) AS s_phyn2_cnt,SUM(CASE WHEN sc.is_check = 1 and sc.is_avoid = 1 THEN 1 ELSE 0 END) AS s_phyavoid_cnt')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->find();
@@ -273,6 +278,7 @@ class StudentScoreModel extends Model {
         if($school_grade != 0) $where['sc.school_grade'] = $school_grade;
         if($class_num != 0) $where['sc.class_num'] = $class_num;
 
+        $where['s.join_test'] = 1;
         $where['sc.is_del'] = 0;
         $where['sc.in_school'] = 1;
         //$where['sc.is_check'] = 1;
@@ -304,6 +310,7 @@ class StudentScoreModel extends Model {
         	$where['s.school_code'] = $school_code;
         }
         
+        $where['s.join_test'] = 1;
 
         $where['sc.is_del'] = 0;
 
@@ -372,7 +379,8 @@ class StudentScoreModel extends Model {
         if($school_code != 0){
         	$where['s.school_code'] = $school_code;
         }
-        
+
+		$where['s.join_test'] = 1;        
 
         $where['sc.is_del'] = 0;
 
@@ -460,7 +468,7 @@ class StudentScoreModel extends Model {
         	$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
         }
 
-
+        $where['s.join_test'] = 1;
 
         $where['sc.is_del'] = 0;
 
@@ -473,7 +481,7 @@ class StudentScoreModel extends Model {
 
 		return $this->alias('sc')
         			->field('sc.town_id,t.town_name,COUNT(sc.year_score_id) as cnt, sum(case sc.score_level when 203010 then 1 else 0 end) yx_cnt,sum(case sc.score_level when 203020 then 1 else 0 end) lh_cnt,sum(case sc.score_level when 203030 then 1 else 0 end) jg_cnt,sum(case sc.score_level when 203040 then 1 else 0 end) bjg_cnt')
-        			//->join('LEFT JOIN school s ON s.school_id = sc.school_id')
+        			->join('LEFT JOIN school s ON s.school_id = sc.school_id')
 					->join('LEFT JOIN town t ON t.town_id = sc.town_id')
         			->where($where)
         			->group('sc.town_id,t.town_name')
@@ -510,6 +518,8 @@ class StudentScoreModel extends Model {
         $jiaoqusql = implode(',',$partition_fields_suburb);
 
 		$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
+
+		$where['s.join_test'] = 1;
 		
         $where['sc.is_del'] = 0;
 
@@ -522,6 +532,7 @@ class StudentScoreModel extends Model {
        // echo "CASE WHEN sc.partition_field IN (".$chengqusql.") THEN '城区' ELSE '郊区' END AS town_name";
 		return $this->alias('sc')
         			->field("CASE WHEN sc.partition_field IN (".$chengqusql.") THEN '城区' ELSE '郊区' END AS town_name,COUNT(sc.year_score_id) as cnt, sum(case sc.score_level when 203010 then 1 else 0 end) yx_cnt,sum(case sc.score_level when 203020 then 1 else 0 end) lh_cnt,sum(case sc.score_level when 203030 then 1 else 0 end) jg_cnt,sum(case sc.score_level when 203040 then 1 else 0 end) bjg_cnt")
+        			->join('LEFT JOIN school s ON s.school_id = sc.school_id')
         			->where($where)
         			->group("CASE WHEN sc.partition_field IN (".$chengqusql.") THEN '城区' ELSE '郊区' END")
         			->select();

@@ -80,26 +80,25 @@
 											    <th>年级编号</th>
 												<th>班号</th>
 												<th>班级</th>
-												<lt name="$school_year" value="2014">
+												<if condition="$school_year lt 2014">
 												<th>学籍号</th>
 												<else/>
 												<th>全国学籍号</th>
-												</lt>
+												</if>
 												<th>姓名</th>
 												<th>性别</th>
 												<th>出生日期</th>
 												<th>身高</th>
 												<th>体重</th>
 												<th>肺活量</th>
-												<lt name="$school_year" value="2014">
-												
-												<td>耐力项目编号</td>
-												<td>耐力项目成绩</td>
-												<td>柔韧力量类项目编号</td>
-												<td>柔韧力量类项目成绩</td>
-												<td>速度灵巧类项目编号</td>
-												<td>速度灵巧类项目成绩</td>
-												</lt>
+												<if condition="$school_year lt 2014">
+												<th>耐力项目编号</th>
+												<th>耐力项目成绩</th>
+												<th>柔韧力量类项目编号</th>
+												<th>柔韧力量类项目成绩</th>
+												<th>速度灵巧类项目编号</th>
+												<th>速度灵巧类项目成绩</th>
+												</if>
 												<!--
 												<td bgcolor="#A6D8F1">50米跑</td>
 												<td bgcolor="#A6D8F1">坐位体前屈</td>
@@ -114,25 +113,25 @@
 												<td >{$import_detail['class_num']}</td>
 												<td >{$import_detail['class_name']}</td>
 												
-												<lt name="$school_year" value="2014">
+												<if condition="$school_year lt 2014">
 												<td >{$import_detail['student_no']}</td>
 												<else/>
 												<td >{$import_detail['country_education_id']}</td>
-												</lt>
+												</if>
 												<td >{$import_detail['name']}</td>
 												<td >{$import_detail['sex']}</td>
 												<td >{$import_detail['birthday']}</td>
 												<td >{$import_detail['body_height']}</td>
 												<td >{$import_detail['body_weight']}</td>
 												<td >{$import_detail['vital_capacity']}</td>
-												<lt name="$school_year" value="2014">
+												<if condition="$school_year lt 2014">
 												<td >{$import_detail['endurance_code']}</td>
 												<td >{$import_detail['endurance_result_display']}</td>
 												<td >{$import_detail['flexible_code']}</td>
 												<td >{$import_detail['flexible_result_display']}</td>
 												<td >{$import_detail['speed_code']}</td>
 												<td >{$import_detail['speed_result_display']}</td>
-												</lt>
+												</if>
 												<td >{$import_detail['rewards_code']}</td>
 												<td >{$import_detail['is_avoid']}</td>
 												</tr>

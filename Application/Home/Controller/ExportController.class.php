@@ -91,12 +91,12 @@ class ExportController extends PublicController {
 			$totalAvoid = $v['s_phyavoid_cnt'];
 			$totalAvoid = $totalAvoid>0?$totalAvoid:0;
 			//应受检人数
-			$totalStu2 = $v['s_cnt'] - $v['s_noceid_cnt'] - ($v['s_notinschool_cnt'] - $v['s_n2_cnt']);
+			$totalStu2 = $v['s_cnt'] - $v['s_notinschool_cnt'];
 			//已受检人数
-			$totalUp = $v['s_phy_cnt'] - $v['s_phynotinschool_cnt'] - ($v['s_phynoceid_cnt'] - $v['s_phyn2_cnt']);
+			$totalUp = $v['s_phy_cnt'] - $v['s_phynotinschool_cnt'];
 			$totalUp = $totalUp>0?$totalUp:0;
-			//$totalUp = $totalUp + $totalAvoid;
-			$v['s_noceid_cnt'] = $v['s_noceid_cnt'] - $v['s_n2_cnt'];
+
+			//$v['s_noceid_cnt'] = $v['s_noceid_cnt'] - $v['s_n2_cnt'];
 			//未受检人数
 			$noTotalUp = $totalStu2-$totalUp;
 			//上传率
