@@ -420,7 +420,7 @@ class UpController extends PublicController {
 			$errLogT3 = ' <br>';
 
 			if($errLogT2 != '') {$errorLog .= $errLogT1 . $errLogT2 . $errLogT3; continue;}
-					
+			//print_r($stuinfo);exit();
 			$data = array(
 				'import_id'				=>	$import_id,
 				'is_error'				=>	0,
@@ -435,7 +435,7 @@ class UpController extends PublicController {
 				'folk_code'				=>	str_replace("'","",$phyData[$row]['fork_code']),
 				'name'					=>	$stuinfo['name'],
 				'sex'					=>	$stuinfo['sex'] == '106020' ? '女' : '男',
-				'birthday'				=>	date('Y-m-d',strtotime($phyData[$row]['birthday'])),
+				'birthday'				=>	date('Y-m-d',strtotime($stuinfo['birthday'])),
 				'student_source'		=>	$stuinfo['student_source'],
 				'address'				=>	str_replace("'","",$phyData[$row]['address']),
 				'rewards_code'			=>	0,
@@ -445,7 +445,7 @@ class UpController extends PublicController {
 				'import_time'			=>  date('Y-m-d H:i:s'),
 				'is_avoid'				=>	'否'
 			);
-
+			
 			if($phyData[$row]['body_height'] === '免体'){
 				$data['is_avoid']	=	'是';
 			}else{
@@ -480,8 +480,8 @@ class UpController extends PublicController {
 				}
 			}
 					
-			$birObj = object2array($stuinfo['birthday']);
-			$data['birthday'] = date('Y-m-d H:i:s',strtotime($birObj['date']));
+			//$birObj = object2array($stuinfo['birthday']);
+			//$data['birthday'] = date('Y-m-d H:i:s',strtotime($birObj['date']));
 
 			$school_length54 = $stuinfo['school_length54'];
 

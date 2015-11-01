@@ -8,6 +8,7 @@ class IndexController extends PublicController {
 	}
     public function index(){
 
+        header('Location:' . U('Home/Show/stuInfo') .'');
         $show_type = I('ac','showlist');
 
         $own_part_name = '全部';

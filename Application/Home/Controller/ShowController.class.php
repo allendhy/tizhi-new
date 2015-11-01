@@ -351,7 +351,7 @@ class ShowController extends PublicController {
 			$this->assign('dtype',$dtype);
 			$this->assign('phyinfos',$phyinfos);
 
-			$this->web_title = '查看学生基础数据';
+			$this->web_title = '查看学生体质数据';
 		   	$this->page_template = 'Show:phydata';
 		}
 	}
@@ -470,6 +470,7 @@ class ShowController extends PublicController {
 	}
 	//查看学生体质详情
 	private function showPhyDetail(){
+
 		$year_score_id = I('id',0);
 		$partition_field = I('par',0);
 
@@ -525,19 +526,17 @@ class ShowController extends PublicController {
 
 		$this->assign('stuItemScoreList',$stuItemScoreList);
 
+		$this->school_year = intval(substr($partition,7));
 		//导入时间
-		/**
-			程序写到这里 2015-10-29
-		*/
 		if($this->school_year >= 2014){
 			$import_detail_t = 'import_detail_new';
+			
 		}else{
 			$import_detail_t = 'import_detail';
 		}
 		
-		$import_log = M()->table('import_log')->field('import_log.import_time,import_log.user_id')->join($import_detail_t.' idd ON idd.import_id = import_log.import_id')->where('idd.detail_id = '.$stuScoreInfo['import_detail_id'])->find();
 
-		$import_log = D('ImportLog')->getInfo($this->school_year,$this->town_id);
+		$import_log = D($import_detail_t)->get_detail_info($partition_field,$phyinfo['import_detail_id']);
 		
 		if(is_object($import_log['import_time'])){
 			$impTimeObj = object2array($import_log['import_time']);
@@ -546,31 +545,31 @@ class ShowController extends PublicController {
 			$import_time = date('Y-m-d H:i:s',strtotime($import_log['import_time']));
 		}
 		$this->assign('import_time',$import_time);
-		/*
+
+		
 		//导入历史
-		$import_detail =  M()->table($import_detail_t)->where('detail_id = '.$stuScoreInfo['import_detail_id'])->find();
+		if(!empty($import_log)){
+			if(!intval($import_log['vital_capacity']))$import_log['vital_capacity']='';
 
-		if(!empty($import_detail)){
-			if(!intval($import_detail['vital_capacity']))$import_detail['vital_capacity']='';
-
-			if(is_object($import_detail['birthday'])){
-				$birthdayObj = object2array($import_detail['birthday']);
-				$import_detail['birthday'] = date('Y-m-d',strtotime($birthdayObj['date']));
+			if(is_object($import_log['birthday'])){
+				$birthdayObj = object2array($import_log['birthday']);
+				$import_log['birthday'] = date('Y-m-d',strtotime($birthdayObj['date']));
 			}
-			$grade = M()->table('dict_grade')->where('grade_id = '.$import_detail['grade_num'])->find();
-			$import_detail['grade_num'] = $grade['grade_name'];
-			$this->assign('import_detail',$import_detail);
+			$gradeList = session('gradeList');
+			$import_log['grade_num'] = $gradeList[$import_log['grade_num']];
+			$this->assign('import_detail',$import_log);
 			
 			//操作人
-			$login_name =  M()->table('sys_user')->where('user_id = '.$import_log['user_id'])->getField('login_name');
-			if(!$login_name)$login_name = M('school s')->join('sys_user u ON u.org_id = s.school_id')->where('s.school_id = '.$import_log['user_id'])->getField('u.login_name');
-			//$login_name = $sys_user['login_name'];
+			$login_name =  D('SysUser')->where('user_id = '.$import_log['user_id'])->getField('login_name');
+			if(!$login_name)$login_name = D('School')->alias('s')->join('LEFT JOIN sys_user u ON u.org_id = s.school_id')->where('s.school_id = '.$import_log['user_id'])->getField('u.login_name');
+			
 			
 			$this->assign('login_name',$login_name);
 		}
-		*/
+		$this->assign('school_year',$this->school_year);
 		$this->web_title = '查看学生体质成绩详情';
 		$this->page_template = "Show:phyDetail2014";
+		
 	}
 	//查看体质上传情况
 	public function phyUpStatus(){

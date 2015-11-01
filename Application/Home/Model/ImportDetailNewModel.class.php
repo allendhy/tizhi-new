@@ -24,8 +24,10 @@ class ImportDetailNewModel extends Model {
                 return array('list'=>$list,'page'=>$show,'nums'=>$nums);
 	}
 
-        public function get_detail_info($school_year,$town_id,$detail_id){
-                
+        public function get_detail_info($partition_field,$detail_id){
+                $where['idd.partition_field'] = intval($partition_field);
+                $where['idd.detail_id'] = $detail_id;
+                return $this->alias('idd')->field('log.user_id,idd.*')->join('LEFT JOIN import_log log ON log.partition_field = idd.partition_field AND log.import_id = idd.import_id ')->where($where)->find();
         }
 
 }
