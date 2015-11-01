@@ -395,6 +395,7 @@ class DownController extends PublicController {
 			$loginfo = D('ImportLog')->where('import_id = %d',$import_id)->find();
 			if(empty($loginfo))$this->error('导入信息为空!');
 			//下载文件
+			//echo $loginfo['file_name'];exit();
 			down_file($loginfo['file_name'],$loginfo['file_path'],'application/vnd.ms-excel');
 		}else{
 			$this->web_title = '下载学生体质成绩回执单';

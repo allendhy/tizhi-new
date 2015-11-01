@@ -21,7 +21,7 @@ class SysUserModel extends Model {
 
 		$userinfo = session('userinfo');
 
-		if($userinfo['login_pwd'] != md5($new_pwd))return array('errno'=>3,'errtitle'=>'原密码错误！');
+		if($userinfo['login_pwd'] != md5($old_pwd))return array('errno'=>3,'errtitle'=>'原密码错误！');
 
 		if($new_pwd != $re_pwd)return array('errno'=>2,'errtitle'=>'两次密码输入不一致！');
 

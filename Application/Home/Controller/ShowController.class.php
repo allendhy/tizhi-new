@@ -174,7 +174,7 @@ class ShowController extends PublicController {
 			$objActSheet->setCellValueExplicit('D'.$rowNum, $row['country_education_id'],\PHPExcel_Cell_DataType::TYPE_STRING);
 			$objActSheet->getStyle('D'.$rowNum)->getNumberFormat()->setFormatCode("@");
 					
-			$objActSheet->setCellValueExplicit('E'.$rowNum, $row['folk_code'],\PHPExcel_Cell_DataType::TYPE_STRING);
+			$objActSheet->setCellValueExplicit('E'.$rowNum, $row['folk'],\PHPExcel_Cell_DataType::TYPE_STRING);
 			$objActSheet->getStyle('E'.$rowNum)->getNumberFormat()->setFormatCode("@");
 
 			$objActSheet->setCellValueExplicit('F'.$rowNum, $row['name'],\PHPExcel_Cell_DataType::TYPE_STRING);
@@ -299,6 +299,7 @@ class ShowController extends PublicController {
 		$this->assign('dtype','rank');
 		switch($ac){	
 			case '查看':
+				$this->web_title = '测试总成绩排名';
 				$this->showPhyInfo('rank');
 				$this->assign('dtype','rank');
 			break;
@@ -326,11 +327,11 @@ class ShowController extends PublicController {
 		$folkListCache = session('folkList');
 		$dictListCache = session('dictList');
 
-		$p = I('p',1);
+		
 
 		foreach($phyinfos['list'] as $key=>$row){
 
-			$phyinfos['list'][$key]['rank'] = (intval($p) - 1) * C('PAGE_LISTROWS') + $row['row_number'];
+			$phyinfos['list'][$key]['rank'] = $row['row_number'];
 			//print_r($phyinfos['list'][$key]);exit();
 			$phyinfos['list'][$key]['grade_name'] = $gradeListCache[$row['school_grade']];
 			//$stuinfos['list'][$key]['folk'] = $folkListCache[$row['folk']];
@@ -350,8 +351,10 @@ class ShowController extends PublicController {
 		}else{
 			$this->assign('dtype',$dtype);
 			$this->assign('phyinfos',$phyinfos);
-
-			$this->web_title = '查看学生体质数据';
+			if($dtype == 'rank')
+				$this->web_title = '查看学生体质成绩排名';
+			else
+				$this->web_title = '查看学生体质数据';
 		   	$this->page_template = 'Show:phydata';
 		}
 	}
@@ -595,6 +598,7 @@ class ShowController extends PublicController {
 			$detail_tb = $this->school_year >= 2014 ? 'ImportDetailNew' : 'ImportDetail';
 			$details = D($detail_tb)->get_details($this->school_year,$this->town_id,$import_id);
 
+			$this->assign('school_year',$this->school_year);
 			$this->assign('details',$details);
 			$this->assign('gradeList',session('gradeList'));
 		}
@@ -853,7 +857,7 @@ class ShowController extends PublicController {
 	}
 	//审核学校上报情况
 	public function raterUpStatus(){
-		$ac = I('ac','show');
+		$ac = I('ac','');
 
 		$deal_status = I('deal_status','');
 
@@ -872,7 +876,8 @@ class ShowController extends PublicController {
 
 
 			$s_status = D('SchoolStatus')->get_status_list($this->school_year,$this->town_id,$this->school_code,'show',$deal_status);
-
+			
+			if(empty($s_status['list']))$this->error('数据为空，请选择区县或学校查看');
 			foreach($s_status['list'] as $k=>$row){
 				$s_status['list'][$k]['s_status_name'] = $deal_status_list[$row['s_status']]['dict_name'];
 				$s_status['list'][$k]['sub_time'] = $row['sub_time'] > 0 ? date('Y-m-d H:i:s',$row['sub_time']) : '';
@@ -902,6 +907,9 @@ class ShowController extends PublicController {
 			}else{
 				$this->ajaxReturn(array('errno'=>5,'errtitle'=>'操作失败!'));
 			}
+		}else{
+			$this->web_title = '审核学校上报情况';
+			$this->page_template = "Show:raterUpStatus";	
 		}
 	}
 	//查看区县上报情况

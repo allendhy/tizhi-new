@@ -25,7 +25,8 @@
 														<th>excel行号</th>
 														<th>是否错误</th>
 														<th class="hidden-480">错误描述</th>
-														<th class="hidden-480">学籍号/教育ID号</th>
+														
+														<th class="hidden-480"><egt name="school_year" value="2014">全国学籍号<else/>教育ID号</egt></th>
 														<th class="hidden-480">姓名</th>
 														<th class="hidden-480">年级</th>
 														<th class="hidden-480">班级</th>
@@ -37,7 +38,7 @@
 														<td>{$vo.excel_num}</td>
 														<td><eq name="is_error" value='1'><span style="color:red">是</span><else/>否</eq></td>
 														<td>{$vo.error_desc}</td>
-														<td>{$vo.education_id}</td>
+														<td><egt name="school_year" value="2014">{$vo.country_education_id}<else/>{$vo.education_id}</egt></td>
 														<td>{$vo.name}</td>
 														<td>{$gradeList[$vo['grade_num']]}</td>
 														<td>{$vo.class_name}</td>

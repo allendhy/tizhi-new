@@ -247,7 +247,9 @@ class StudentScoreModel extends Model {
 			$where['sc.class_num'] = $class_num;
 		}
 		$where['s.join_test'] = 1;
+
 		$where['sc.is_del'] = 0;
+		$where['sc.in_school'] = 1;
 
 		return $this->alias('sc')->field(' SUM(1) AS s_cnt,SUM(CASE sc.in_school WHEN 0 THEN 1 ELSE 0 END) AS s_notinschool_cnt,SUM(CASE WHEN sc.country_education_id is null THEN 1 ELSE 0 END) AS s_noceid_cnt,SUM(CASE WHEN sc.in_school = 0 AND sc.country_education_id is null THEN 1 ELSE 0 END) AS s_n2_cnt,SUM(CASE sc.is_check WHEN 1 THEN 1 ELSE 0 END ) AS s_phy_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.in_school = 0 THEN 1 ELSE 0 END) AS s_phynotinschool_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.country_education_id is null THEN 1 ELSE 0 END) AS s_phynoceid_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.country_education_id is null AND sc.in_school = 0 THEN 1 ELSE 0 END ) AS s_phyn2_cnt,SUM(CASE WHEN sc.is_check = 1 and sc.is_avoid = 1 THEN 1 ELSE 0 END) AS s_phyavoid_cnt')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->find();
 	}
@@ -283,7 +285,7 @@ class StudentScoreModel extends Model {
         $where['sc.in_school'] = 1;
         //$where['sc.is_check'] = 1;
 
-        return $this->alias('sc')->field('sc.is_check,sc.year_score_id,sc.education_id,sc.name,sc.sex,sc.country_education_id,sc.birthday,sc.total_score,sc.school_grade,sc.class_num,sc.class_name,detail.folk_code,detail.body_height,detail.body_weight,detail.vital_capacity,detail.wsm,detail.zwtqq,detail.ldty,detail.wsmwfp,detail.yfzts,detail.bbm_yqm,detail.ywqz_ytxs,detail.is_avoid,detail.address')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN import_detail_new detail ON detail.detail_id = sc.import_detail_id')->where($where)->order('is_check ASC')->select();
+        return $this->alias('sc')->field('sc.is_check,sc.year_score_id,sc.education_id,sc.name,sc.sex,sc.country_education_id,sc.birthday,sc.total_score,sc.school_grade,sc.class_num,sc.class_name,sc.folk,detail.body_height,detail.body_weight,detail.vital_capacity,detail.wsm,detail.zwtqq,detail.ldty,detail.wsmwfp,detail.yfzts,detail.bbm_yqm,detail.ywqz_ytxs,detail.is_avoid,detail.address')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN import_detail_new detail ON detail.detail_id = sc.import_detail_id')->where($where)->order('is_check ASC')->select();
 	}
 
 	//身高标准体重统计表

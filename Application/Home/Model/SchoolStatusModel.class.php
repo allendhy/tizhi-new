@@ -97,7 +97,7 @@ class SchoolStatusModel extends Model {
 		}else{
 			$where['s.town_id'] > 100100;
 		}
-
+		//$where['ss.']
 		$where['s.is_del'] = 0;
 		$where['s.join_test'] = 1;
 

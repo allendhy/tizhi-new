@@ -47,7 +47,7 @@ class UpController extends PublicController {
 			case '204040':
 				$msg = "校验完毕";
 				if($importLog['is_error']==1){
-					$status = "校验完毕，数据有错误";
+					$msg = "校验完毕，数据有错误";
 					if($importLog['year_year'] >= 2014){
 						$errorList = D('import_detail_new')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,country_education_id,name,sex')->where("partition_field = %d AND import_id= %d AND is_error = 1",array($importLogData['partition_field'],$import_id))->select();
 					}else{
@@ -220,8 +220,6 @@ class UpController extends PublicController {
 		$gradeItem = C('GRADE_ITEM_FIELD');
 
 		
-
-
 				
 		//记录错误内容
 		$errorLog = '';
@@ -254,8 +252,11 @@ class UpController extends PublicController {
 			elseif($val == '一分钟跳绳')$titleArr[] = 'yfzts';
 			elseif(strpos($val,'800米跑') !== false)$titleArr[] = 'bbm_nv';
 			elseif(strpos($val,'1000米跑')  !== false)$titleArr[] = 'yqm_nan';
-			elseif(strpos($val,'一分钟仰卧起坐')  !== false ){					
+			elseif(strpos($val,'一分钟仰卧起坐')  !== false && strpos($val,'女')  !== false){
 				$titleArr[] = 'ywqz_nv';
+			}
+			elseif(strpos($val,'一分钟仰卧起坐')  !== false ){
+				$titleArr[] = 'ywqz_ytxs';
 			}
 			elseif(strpos($val,'引体向上')  !== false)$titleArr[] = 'ytxs_nan';
 			elseif(strpos($val,'立定跳远')  !== false)$titleArr[] = 'ldty';
@@ -263,7 +264,7 @@ class UpController extends PublicController {
 					
 			$columnNum ++;
 		}
-
+		
 		if(empty($titleArr)){
 			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
 			M()->rollback();
@@ -377,8 +378,10 @@ class UpController extends PublicController {
 						}
 								
 					}else{
-						if($va == 'ywqz_ytxs')$tmpStr=$phyData[$row]['ywqz_nv'];							
-						$titleErr = $tmpStr == '' ? 1 : 0; 
+						if($va == 'ywqz_ytxs'){
+							//$tmpStr=$phyData[$row]['ywqz_ytxs'];	
+							$titleErr = $tmpStr == '' ? 1 : 0; 
+						}
 					}
 							
 					if($titleErr == 1){
@@ -432,7 +435,7 @@ class UpController extends PublicController {
 				'grade_num'				=>	str_replace("'","",$phyData[$row]['grade_num']),
 				'class_num'				=>	str_replace("'","",$phyData[$row]['class_num']),
 				'class_name'			=>	str_replace("'","",$phyData[$row]['class_name']),
-				'folk_code'				=>	str_replace("'","",$phyData[$row]['fork_code']),
+				'folk_code'				=>	str_replace("'","",$stuinfo['fork_code']),
 				'name'					=>	$stuinfo['name'],
 				'sex'					=>	$stuinfo['sex'] == '106020' ? '女' : '男',
 				'birthday'				=>	date('Y-m-d',strtotime($stuinfo['birthday'])),
@@ -504,7 +507,7 @@ class UpController extends PublicController {
 			//朝阳区学校自动变更为已上报，无需点击上报按钮
 			if($userinfo['org_id'] == 110105 || $userinfo['user_kind'] == 109010){
 				$data = array('s_status'=>206020,'sub_time'=>time());
-				D('SchoolStatus')->where('year_year = %d AND school_id = %d',array($this->school_year,$importLogData['user_id']))->save($data);
+				D('SchoolStatus')->where('school_id = %d',array($importLogData['user_id']))->save($data);
 			}
 			//提交
 			M()->commit();

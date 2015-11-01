@@ -9,7 +9,7 @@
 					
 					<hr/>
 						<div class="page-header">
-							<form action="" id="showForm" method="get">
+							<form action="<eq name="dtype" value="rank">{:U('Home/Show/phydataRanking')}<else/>{:U('Home/Show/phydata')}</eq>" id="showForm" method="post">
 								<select name="school_year" id="school_year" class="select2 width-15">{$school_year_options}</select>
 								<select name="town_id" id="town_id"  class="select2 width-15">{$town_id_options}</select>
 								<select name="school_code" id="school_code"  class="select2 width-30">{$school_code_options}</select>

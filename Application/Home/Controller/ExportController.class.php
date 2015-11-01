@@ -30,7 +30,7 @@ class ExportController extends PublicController {
 		if($ac == 'export' && IS_POST){
 			
 			$data = D('SchoolStatus')->get_status_info_list($this->school_year,$this->town_id,$this->school_code);
-			if(empty($data['list']))$this->error('数据为空');
+			if(empty($data['list']))$this->error('数据为空，请选择要导出的区县或学校！');
 
 			$this->exportSchoolUpStatus($data['list']);
 
