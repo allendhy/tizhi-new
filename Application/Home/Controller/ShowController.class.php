@@ -117,9 +117,9 @@ class ShowController extends PublicController {
 			}
 
 			//应受检人数
-			$data['s_ysj_cnt'] = $data['s_cnt'] - ($data['s_notinschool_cnt'] + $data['s_noceid_cnt'] - $data['s_n2_cnt']);
+			$data['s_ysj_cnt'] = $data['s_cnt'] - $data['s_notinschool_cnt'];
 			//已受检人数
-			$data['s_sj_cnt'] = $data['s_phy_cnt'] - ($data['s_phynotinschool_cnt'] + $data['s_phynoceid_cnt'] - $data['s_phyn2_cnt']);
+			$data['s_sj_cnt'] = $data['s_phy_cnt'] - $data['s_phynotinschool_cnt'];
 			//未受检人数
 			$data['s_wsj_cnt'] = $data['s_ysj_cnt'] - $data['s_sj_cnt'];
 			//上传率
