@@ -3,6 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>{$web_title} - {:C('WEB_SITE')}</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=8" />
 		<meta name="keywords" content="体质检测,国家学生,体质健康信息" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -62,13 +63,11 @@
 		<script src="__PUBLIC__/assets/js/jquery-1.10.2.min.js"></script>
 		<![endif]-->
 
-		<!--[if !IE]> -->
-
+		<!--[if !IE]>
 		<script type="text/javascript">
 			window.jQuery || document.write("<script src='__PUBLIC__/assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
 		</script>
-
-		<!-- <![endif]-->
+		<![endif]-->
 
 		<!--[if IE]>
 		<script type="text/javascript">

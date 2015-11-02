@@ -40,6 +40,10 @@
 		<script type="text/javascript">
 			jQuery(function($) {
 				$(".select2").select2();
+				//学校下拉框
+				$('#town_id').change(function(){
+					ajaxSelectSchool('school','school_code');
+				});
 			});
 		</script>
 

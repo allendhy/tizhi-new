@@ -541,7 +541,7 @@ class ShowController extends PublicController {
 		
 
 		$import_log = D($import_detail_t)->get_detail_info($partition_field,$phyinfo['import_detail_id']);
-		
+
 		if(is_object($import_log['import_time'])){
 			$impTimeObj = object2array($import_log['import_time']);
 			$import_time = date('Y-m-d H:i:s',strtotime($impTimeObj['date']));
@@ -560,7 +560,7 @@ class ShowController extends PublicController {
 				$import_log['birthday'] = date('Y-m-d',strtotime($birthdayObj['date']));
 			}
 			$gradeList = session('gradeList');
-			$import_log['grade_num'] = $gradeList[$import_log['grade_num']];
+			$import_log['grade_name'] = $gradeList[$import_log['grade_num']];
 			$this->assign('import_detail',$import_log);
 			
 			//操作人
