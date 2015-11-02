@@ -98,6 +98,8 @@ class PublicController extends Controller {
 
 		$this->school_grade = I('school_grade',0);
 		$this->class_num = I('class_num','');
+
+		$this->assign('browser',getBrowser());
 	}
 
     public function _empty(){

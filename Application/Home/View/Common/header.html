@@ -12,9 +12,14 @@
 		<link href="__PUBLIC__/assets/css/bootstrap.min.css" rel="stylesheet" />
 		<link rel="stylesheet" href="__PUBLIC__/assets/css/font-awesome.min.css" />
 
-		<!--[if IE 7]>
-		  <link rel="stylesheet" href="__PUBLIC__/assets/css/font-awesome-ie7.min.css" />
-		<![endif]-->
+		<?php
+		if($browser[0] == 'Internet Explorer' && $browser[1] == '7'){
+			?>
+			<link rel="stylesheet" href="__PUBLIC__/assets/css/font-awesome-ie7.min.css" />
+			<?php
+		}
+		?>
+
 
 		<!-- page specific plugin styles -->
 
@@ -34,10 +39,13 @@
 		<!--<link rel="stylesheet" href="__PUBLIC__/assets/css/fileinput.min.css" />-->
 		<link rel="stylesheet" type="text/css" href="__PUBLIC__/assets/js/uploadify/uploadify.css">
 
-		<!--[if lte IE 8]>
-		  <link rel="stylesheet" href="__PUBLIC__/assets/css/ace-ie.min.css" />
-		<![endif]-->
-
+		<?php
+		if($browser[0] == 'Internet Explorer' && $browser[1] <= 8){
+			?>
+			 <link rel="stylesheet" href="__PUBLIC__/assets/css/ace-ie.min.css" />
+			<?php
+		}
+		?>
 		<!-- inline styles related to this page -->
 
 		<!-- ace settings handler -->
@@ -46,34 +54,37 @@
 
 		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 
-		<!--[if lt IE 9]>
+		<?php
+		if($browser[0] == 'Internet Explorer' && $browser[1] < 9){
+			?>
 		<script src="__PUBLIC__/assets/js/html5shiv.js"></script>
 		<script src="__PUBLIC__/assets/js/respond.min.js"></script>
-		<![endif]-->
-
+			<?php
+		}
+		?>
 		<!-- basic scripts -->
 
-		<!--[if !IE]> -->
-
+		<?php
+		if($browser[0] != 'Internet Explorer'){
+			?>
 		<script src="__PUBLIC__/assets/js/jquery-2.0.3.min.js"></script>
-
-		<!-- <![endif]-->
-
-		<!--[if IE]>
-		<script src="__PUBLIC__/assets/js/jquery-1.10.2.min.js"></script>
-		<![endif]-->
-
-		<!--[if !IE]>
 		<script type="text/javascript">
 			window.jQuery || document.write("<script src='__PUBLIC__/assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
 		</script>
-		<![endif]-->
-
-		<!--[if IE]>
+			<?php
+		}
+		?>
+		<?php
+		if($browser[0] == 'Internet Explorer'){
+			?>
+		<script src="__PUBLIC__/assets/js/jquery-1.10.2.min.js"></script>
 		<script type="text/javascript">
 		 window.jQuery || document.write("<script src='__PUBLIC__/assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
 		</script>
-		<![endif]-->
+			<?php
+		}
+		?>
+
 
 		<script type="text/javascript">
 			if("ontouchend" in document) document.write("<script src='__PUBLIC__/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
