@@ -1,8 +1,10 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=9;IE=EDGE">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>国家学生体质健康标准测试数据管理与报送系统</title>
+<title>{:C('WEB_SITE')}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
 <link href="__PUBLIC__/assets/css/login.css" type="text/css" rel="stylesheet">
 </head>
 
@@ -43,24 +45,24 @@
 
 
 
- <script src="__PUBLIC__/assets/js/jquery-2.0.3.min.js"></script>
 
-
-<!--[if IE]>
+<?php
+    if($browser[0] == 'Internet Explorer'){
+?>
 <script src="__PUBLIC__/assets/js/jquery-1.10.2.min.js"></script>
-<![endif]-->
-
-<!--[if !IE]>
-<script type="text/javascript">
-    window.jQuery || document.write("<script src='__PUBLIC__/assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
-</script>
-<![endif]-->
-
-<!--[if IE]>
 <script type="text/javascript">
     window.jQuery || document.write("<script src='__PUBLIC__/assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
 </script>
-<![endif]-->
+<?php
+    }else{
+?>
+<script src="__PUBLIC__/assets/js/jquery-2.0.3.min.js"></script>
+<script type="text/javascript">
+    window.jQuery || document.write("<script src='__PUBLIC__/assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
+</script>
+<?php
+    }
+?>
 
 <!-- inline scripts related to this page -->
 <script src="__PUBLIC__/assets/js/layer/layer.js"></script>
