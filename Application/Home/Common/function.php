@@ -3,7 +3,30 @@
     // 分析返回用户网页浏览器名称
     // --------------------------------------------------
     function getBrowser(){
+        $agent=$_SERVER["HTTP_USER_AGENT"];
+        if(strpos($agent,'MSIE')!==false || strpos($agent,'rv:11.0')) //ie11判断
+        //return "ie";
+        {
+           preg_match("/MSIE\s+([^;)]+)+/i", $sys, $ie);
+           $exp[0] = "Internet Explorer";
+           $exp[1] = $ie[1];
+           return $exp;
+        }
+        else if(strpos($agent,'Firefox')!==false)
+        return array("firefox");
+        else if(strpos($agent,'Chrome')!==false)
+        return array("chrome");
+        else if(strpos($agent,'Opera')!==false)
+        return array('opera');
+        else if((strpos($agent,'Chrome')==false)&&strpos($agent,'Safari')!==false)
+        return array('safari');
+        else
+        return array('unknown');
+    }
+    /*
+    function getBrowser(){
         $sys = $_SERVER['HTTP_USER_AGENT'];
+        print_r($sys);
         if(stripos($sys, "NetCaptor") > 0){
            $exp[0] = "NetCaptor";
            $exp[1] = "";
@@ -36,7 +59,7 @@
            $exp[1] = "";
         }
         return $exp;
-    }
+    }*/
     //文件下载,文件流
     function down_file($file_name,$file_path,$file_type = ''){
 
