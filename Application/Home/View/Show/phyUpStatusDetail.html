@@ -36,7 +36,7 @@
 												<volist name="details['list']" id="vo">
 													<tr>
 														<td>{$vo.excel_num}</td>
-														<td><eq name="is_error" value='1'><span style="color:red">是</span><else/>否</eq></td>
+														<td><eq name="vo['is_error']" value='1'><span style="color:red">是</span><else/>否</eq></td>
 														<td>{$vo.error_desc}</td>
 														<td><egt name="school_year" value="2014">{$vo.country_education_id}<else/>{$vo.education_id}</egt></td>
 														<td>{$vo.name}</td>
