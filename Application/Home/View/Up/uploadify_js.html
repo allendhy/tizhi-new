@@ -33,6 +33,7 @@
 			        	if($('#school_code').val() == '' || $('#school_code').val() == '0' || $('#school_code').val() == 'undefined'){
 			        		layer.alert('请选择要上传数据的学校!',{icon:0});
 			        		$('#file_upload').uploadify('cancel');
+			        		return false;
 			        	}
 			        	layerIndex = layer.load(1); //换了种风格
 			        	$('#file_upload').uploadify('disable',true);
