@@ -9,15 +9,15 @@
 
 							<div class="row">
 									<div class="col-xs-12">
-										<form action="" id="downForm" method="post">
-											<input value="showStuInfo" type="hidden" name="ac"/>
+										<form action="" id="downForm" method="post" onsubmit="return checkForm()">
+											<input value="down" type="hidden" name="ac"/>
 											<select name="school_year" id="school_year" class="select2 width-15" disabled>{$school_year_options}</select>
 											<select name="town_id" id="town_id"  class="select2 width-15">{$town_id_options}</select>
 											<select name="school_code" id="school_code"  class="select2 width-30">{$school_code_options}</select>
 											<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
 											<select name="class_num" id="class_num"  class="select2 width-10">{$class_num_options}</select>
 											&nbsp;&nbsp;&nbsp;
-											<input type="button" class="btn btn-small btn-white" value="下载"/> 
+											<input type="submit"  class="btn btn-small btn-white" value="下载"/> 
 										</form>
 									</div><!-- /span -->
 									<!--page-->
@@ -42,7 +42,6 @@
 		<script type="text/javascript">
 			jQuery(function($) {
 				$(".select2").select2();
-
 				//学校下拉框
 				$('#town_id').change(function(){
 					ajaxSelectSchool('school','school_code');
@@ -56,6 +55,29 @@
 					ajaxSelectSchool('class','class_num');
 				});
 			});
+			function checkForm(){
+				var town_id = $('#town_id').val();
+				var school_code = $('#school_code').val();
+				var school_grade = $('#school_grade').val();
+				var class_num = $('#class_num').val();
+
+				if(town_id == 0){
+					layer.alert('请选择区县!',{icon:0});return false;
+				}
+
+				if(school_code == 0){
+					layer.alert('请选择学校!',{icon:0});return false;
+				}
+
+				if(school_grade == 0){
+					layer.alert('请选择年级!',{icon:0});return false;
+				}
+
+				if(class_num == 0){
+					layer.alert('请选择班级!',{icon:0});return false;
+				}
+				return true;
+			}
 		</script>
 
 <include file="Common:footer" />

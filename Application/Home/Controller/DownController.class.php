@@ -388,15 +388,176 @@ class DownController extends PublicController {
 	public function receipt(){
 		
 		$ac = I('ac','phydata');
-		//下载学校上传的文件 
-		if($ac == 'import_log'){
-			$import_id = I('id',0);
 
-			$loginfo = D('ImportLog')->where('import_id = %d',$import_id)->find();
-			if(empty($loginfo))$this->error('导入信息为空!');
-			//下载文件
-			//echo $loginfo['file_name'];exit();
-			down_file($loginfo['file_name'],$loginfo['file_path'],'application/vnd.ms-excel');
+		if($ac == 'down' && IS_POST && $this->class_num != 0){
+
+			$stuScoreList = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num,'school_code','down');
+
+			$stuScoreList = $stuScoreList['list'];
+
+			if(!$stuScoreList){$this->error('无体质数据');}
+
+			$gradeList = session('gradeList');
+
+			$dictList = session('dictList');
+
+			//导入时间
+			if($this->school_year >= 2014){
+				$import_detail_t = 'import_detail_new';
+				
+			}else{
+				$import_detail_t = 'import_detail';
+			}
+
+			if($stuScoreList){
+				foreach($stuScoreList as $k=>$v){
+					$stuScoreList[$k]['grade_name'] = $gradeList[$v['school_grade']];
+
+					if($v['is_avoid']==1){
+						$stuScoreList[$k]['total_score'] = '免体';
+						$stuScoreList[$k]['score_level'] = '免体';
+						$stuScoreList[$k]['total_score_ori'] = '免体';
+						$stuScoreList[$k]['score_level_ori'] = '免体';
+					}else{
+						$stuScoreList[$k]['score_level'] = $dictList['203'][$v['score_level']]['dict_name'];
+						$stuScoreList[$k]['score_level_ori'] = $dictList['203'][$v['score_level_ori']]['dict_name'];
+						$stuScoreList[$k]['total_score'] = round($v['total_score']);
+						$stuScoreList[$k]['total_score_ori'] = round($v['total_score_ori']);
+
+						$stuScoreList[$k]['stuItemScoreList'] =  D('ItemScore')->get_info_list($v['partition_field'],$v['year_score_id']);
+
+						if(!$stuScoreList[$k]['stuItemScoreList']){$this->error('没有找到该生体质健康成绩信息~');}
+						//xt,zs,item
+						$xt = array();
+						$zs = array();
+						$item = array();
+						foreach($stuScoreList[$k]['stuItemScoreList'] as $k2=>$v2){
+							if(intval($v2['item_id'])==0||$v2['kind_id']=='')continue;
+							//各项目评定
+							if($v2['score_level']){
+								
+								$v2['score_level'] = substr($v2['score_level'],0,3) == '205' ? $dictList['205'][$v2['score_level']]['dict_name'] :$dictList['203'][$v2['score_level']]['dict_name'];
+
+							}else{
+								$v2['score'] = '未检查';
+							}
+
+							if(in_array($v2['kind_id'],array('jn','xt'))){
+								array_push($xt,$v2);
+							}elseif($v2['kind_id']=='zs'){
+								array_push($zs,$v2);
+							}else{
+								array_push($item,$v2);
+							}
+						}
+						$stuScoreList[$k]['stuItemScoreList']  = array();
+						$stuScoreList[$k]['stuItemScoreList']['xt'] = $xt;
+						$stuScoreList[$k]['stuItemScoreList']['zs'] = $zs;
+						$stuScoreList[$k]['stuItemScoreList']['item'] = $item;
+
+						foreach($stuScoreList[$k]['stuItemScoreList']['item'] as $key=>$val){
+							if($val['item_id']=='08'&&intval($val['score'])==0)
+								$stuScoreList[$k]['stuItemScoreList']['item'][$key]['score']='';
+						}
+					}
+					//导入时间
+
+					$import_log = D($import_detail_t)->get_detail_info($v['partition_field'],$v['import_detail_id']);
+
+					if(is_object($import_log['import_time'])){
+						$impTimeObj = object2array($import_log['import_time']);
+						$import_time = date('Y-m-d H:i:s',strtotime($impTimeObj['date']));
+					}else{
+						$import_time = date('Y-m-d H:i:s',strtotime($import_log['import_time']));
+					}
+
+					$stuScoreList[$k]['import_time'] = $import_time;
+						
+					if($import_log){
+						//操作人
+						$login_name =  D('SysUser')->where('user_id = '.$import_log['user_id'])->getField('login_name');
+						if(!$login_name)$login_name = D('School')->alias('s')->join('LEFT JOIN sys_user u ON u.org_schoolcode = s.school_code')->where('s.school_id = '.$import_log['user_id'])->getField('u.login_name');
+						$stuScoreList[$k]['login_name'] = $login_name;
+					}
+				}
+			}
+
+			
+			//输出文件
+			$filename = $stuScoreList[0]['town_name'].'_'.$stuScoreList[0]['school_name'].'_'.$stuScoreList[0]['grade_name'].'_'.$stuScoreList[0]['class_name'].'体质数据';
+
+			$filename = urlencode($filename);
+
+			header("Content-type: application/octet-stream; ");
+			header("Content-Disposition:   attachment;   filename=".$filename.".html");
+
+			$html = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printHeader.html');
+
+			foreach($stuScoreList as $key=>$val){
+				if($key%6==0)$html .= '<h2 style="margin-top:20px">体质数据打印单</h2>';
+				$html .= '
+					<table width="100%" cellpadding="5" cellspacing="1" border="0" bgcolor="#8ACBEE" class="tableStyle" style="margin-top:10px;">
+					  <tr>
+						<td width="7%"  height="25" align="right" bgcolor="#A6D8F1">姓名：</td>
+						<td width="10%" bgcolor="#D0EBF6">'.$val['name'].'</td>
+						<td width="10%" align="right" bgcolor="#A6D8F1">综合成绩：</td>
+						<td width="5%" bgcolor="#D0EBF6">'.$val['total_score'].'</td>
+						<td width="10%"  align="right" bgcolor="#A6D8F1">综合评定：</td>
+						<td width="7%" bgcolor="#D0EBF6">'.$val['score_level'].'</td>
+
+						<td width="10%" align="right" bgcolor="#A6D8F1">测试成绩：</td>
+						<td width="5%" bgcolor="#D0EBF6">'.$val['total_score_ori'].'</td>
+						<td width="10%"  align="right" bgcolor="#A6D8F1">测试成绩评定：</td>
+						<td width="7%" bgcolor="#D0EBF6">'.$val['score_level_ori'].'</td>
+						<td width="10%" align="right" bgcolor="#A6D8F1">附加分数：</td>
+						<td width="5%" bgcolor="#D0EBF6">'.$val['addach_score'].'</td>
+					  </tr>
+					</table>';
+					if($val['stuItemScoreList']['xt']){
+						$html .= '<table width="100%" cellpadding="5" cellspacing="1" border="0" bgcolor="#8ACBEE" class="tableStyle"><tr>';
+						foreach($val['stuItemScoreList']['xt'] as $xt){
+							$html .= '
+							<td  align="right" bgcolor="#A6D8F1">'.$xt['item_name'].'：</td>
+							<td  bgcolor="#D0EBF6">';
+							if($xt['exam_result']>0)$html .= $xt['exam_result_display'];
+							if($xt['score']>0)$html .= '('.$xt['score'].' ' .$xt['score_level'].')';
+							//else $html .= '未检查';
+
+							$html .= '</td>';
+						}
+						$html .= '</tr></table>';
+					}
+
+					if($val['stuItemScoreList']['zs']){
+					  $html .= '<table width="100%" cellpadding="5" cellspacing="1" border="0" bgcolor="#8ACBEE" class="tableStyle"><tr>';
+						foreach($val['stuItemScoreList']['zs'] as $zs){
+							$html .= '<td  align="right" bgcolor="#A6D8F1">'.$zs['item_name'].'：</td>
+						<td  bgcolor="#D0EBF6">'.$zs['exam_result'];
+						if($zs['score']>0)$html .= '('.$zs['score'].' ' .$zs['score_level'].')';
+						$html .= '</td>';
+						}
+						$html .= '</tr></table>';
+					}
+
+				  if($val['stuItemScoreList']['item']){
+				   $html .= '<table width="100%" cellpadding="5" cellspacing="1" border="0" bgcolor="#8ACBEE" class="tableStyle"><tr>';
+					foreach($val['stuItemScoreList']['item'] as $item){
+						$html .= '<td  align="right" bgcolor="#A6D8F1">'.$item['item_name'].'：</td><td  bgcolor="#D0EBF6">'.$item['exam_result_display'];
+						$html .= '('.$item['score'].' ' .$item['score_level'].')';
+						$html .= '</td>';
+					}
+					$html .= '</tr></table>';
+
+				  }
+				  $html .= '<table width="100%" cellpadding="5" cellspacing="1" border="0" bgcolor="#8ACBEE" class="tableStyle"><tr bgcolor="#A6D8F1"><td >导入时间：'.$val['import_time'].'</td><td>操作人：'.$val['login_name'].'</td></tr><tr><td style="line-height:32px;">家长签字：____________________</td><td>签收日期：</td></tr></table><br /><hr><br />';
+				  if($key%6==5)$html .= '<div style="page-break-before:always"></div>';
+
+			}
+			echo $html;
+			fclose($html);
+			exit;
+
+
 		}else{
 			$this->web_title = '下载学生体质成绩回执单';
 			$this->page_template = "Down:receipt";
