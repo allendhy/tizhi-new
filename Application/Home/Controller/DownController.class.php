@@ -553,6 +553,7 @@ class DownController extends PublicController {
 				  if($key%6==5)$html .= '<div style="page-break-before:always"></div>';
 
 			}
+			$html .= "</body></html>";
 			echo $html;
 			fclose($html);
 			exit;
