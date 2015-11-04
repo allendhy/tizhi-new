@@ -25,7 +25,7 @@
                  	<label><input type="checkbox" class="ace" name="remember" value="on" <neq name="login_name" value="">checked="checked"</neq>/><span>记住用户名</span></label>   
                  </div>
                
-             	<button type="button" class="btn" id="submitBtn"></button>
+             	<button type="submit" class="btn" id="submitBtn"></button>
                 </form>
             </div>
         </div>
@@ -62,38 +62,29 @@
 <script src='__PUBLIC__/assets/js/jquery.form.js'></script>
 <script src="__PUBLIC__/assets/js/is_chzh.js"></script>
 <script type="text/javascript">
+            var index = false;
             $(document).ready(function(){
                 var bw = $(window).width();
                 var bh = $(window).height();
                 var zh=bh-$('.footer').height();
                 $('.center').css('height',zh+'px');
 
-
-                document.onkeydown = function(e){ 
-                var ev = document.all ? window.event : e;
-                if(ev.keyCode==13) {
-                //  $('#submitBtn').click();
-                 }
-                }
-                $('#submitBtn').click(function(){
-                    $('#loginForm').ajaxSubmit({beforeSubmit:function(){
-                        var result = allCheckForm(document.forms[0]);
-                        return result;
-                    },success:function(data){
-                        if(data.errno == 0){
-                            console.log(data.url);
-                            layer.alert(data.errtitle,{icon : 1}, function(){
-                                window.location.href = data.url;
-                            });
-                        }else{
-                            layer.alert(data.errtitle,{icon : 0});
-                            return false;
-                        }
-                    },error:function(){
-                        layer.alert('服务器返回数据失败，请重试！',{icon : 2})
-                    },dataType:'json'});
-                });
-
+                $('#loginForm').ajaxForm({beforeSubmit:function(){
+                     var result = allCheckForm(document.forms[0]);
+                    return result;
+                },success:function(data){
+                    if(data.errno == 0){
+                        //  console.log(data.url);
+                        index = layer.alert(data.errtitle,{icon : 1}, function(){
+                            window.location.href = data.url;
+                         });
+                     }else{
+                           index = layer.alert(data.errtitle,{icon : 0});
+                          return false;
+                    }
+                },error:function(){
+                    index = layer.alert('服务器返回数据失败，请重试！',{icon : 2})
+                 },dataType:'json'});
             });
         </script>
 </body>
