@@ -14,12 +14,12 @@ class ImportLogModel extends Model {
                         $where['log.is_error'] = $is_error;
                 }
 
-        		$count = $this->alias('log')->join('LEFT JOIN school s ON s.school_id = log.user_id')->where($where)->count();
-        		//分页
-        		$page = new \Think\Page($count,C('PAGE_LISTROWS'));
-        		$limit = ($page->firstRow . ',' . $page->listRows);
+        	$count = $this->alias('log')->join('LEFT JOIN school s ON s.school_id = log.user_id')->where($where)->count();
+        	//分页
+        	$page = new \Think\Page($count,C('PAGE_LISTROWS'));
+        	$limit = ($page->firstRow . ',' . $page->listRows);
 
-                $list = $this->alias('log')->field('log.*')->join('LEFT JOIN school s ON s.school_id = log.user_id')->where($where)->order('import_time DESC')->select();
+                $list = $this->alias('log')->field('log.*')->join('LEFT JOIN school s ON s.school_id = log.user_id')->where($where)->order('import_time DESC')->limit($limit)->select();
                 $show = $page->show();
                 return array('list'=>$list,'page'=>$show);
 	}

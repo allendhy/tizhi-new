@@ -558,7 +558,18 @@ class DownController extends PublicController {
 			fclose($html);
 			exit;
 
+		//下载学校上传的文件 
+		}elseif($ac == 'import_log'){
+			$import_id = I('id',0);
 
+			$loginfo = D('ImportLog')->where('import_id = %d',$import_id)->find();
+			if(empty($loginfo))$this->error('导入信息为空!');
+			//下载文件
+
+			if(!is_file($_SERVER['DOCUMENT_ROOT'] . $file_path))$this->error('文件不存在!');
+
+			//echo $loginfo['file_name'];exit();
+			down_file($loginfo['file_name'],$loginfo['file_path'],'application/vnd.ms-excel');
 		}else{
 			$this->web_title = '下载学生体质成绩回执单';
 			$this->page_template = "Down:receipt";
