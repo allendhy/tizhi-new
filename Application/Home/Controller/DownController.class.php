@@ -389,7 +389,7 @@ class DownController extends PublicController {
 		
 		$ac = I('ac','phydata');
 
-		if($ac == 'down' && IS_POST && $this->class_num != 0){
+		if($ac == 'down' && IS_POST && $this->class_num != '0'){
 
 			$stuScoreList = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num,'school_code','down');
 

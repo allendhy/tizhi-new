@@ -45,7 +45,7 @@ class StudentScoreModel extends Model {
         }
 
         if($school_grade != 0) $where['sc.school_grade'] = $school_grade;
-        if($class_num != 0) $where['sc.class_num'] = $class_num;
+        if($class_num != '0') $where['sc.class_num'] = $class_num;
 
         //$where['s.is_del'] = 0;
         $where['sc.is_del'] = 0;
@@ -85,7 +85,7 @@ class StudentScoreModel extends Model {
 		if($school_grade > 0){
 			$where['school_grade'] = $school_grade;
 		}
-		if($class_num != '' && $class_num > 0){
+		if($class_num != '0'){
 			$where['class_num'] = $class_num;
 		}
 
@@ -108,7 +108,7 @@ class StudentScoreModel extends Model {
 		if($this->school_grade > 0){
 			$where['school_grade'] = $school_grade;
 		}
-		if($this->class_num != '' && $class_num > 0){
+		if($this->class_num != '0'){
 			$where['class_num'] = $class_num;
 		}
 
@@ -190,7 +190,7 @@ class StudentScoreModel extends Model {
         }
 
         if($school_grade != 0) $where['sc.school_grade'] = $school_grade;
-        if($class_num != 0) $where['sc.class_num'] = $class_num;
+        if($class_num != '0') $where['sc.class_num'] = $class_num;
 
        // $where['s.is_del'] = 0;
         $where['s.join_test'] = 1;
@@ -243,9 +243,10 @@ class StudentScoreModel extends Model {
 			$where['sc.school_grade'] = $school_grade;
 		}
 
-		if($class_num != 0){
+		if($class_num != '0'){
 			$where['sc.class_num'] = $class_num;
 		}
+
 		$where['s.join_test'] = 1;
 
 		$where['sc.is_del'] = 0;
@@ -278,7 +279,7 @@ class StudentScoreModel extends Model {
 
 
         if($school_grade != 0) $where['sc.school_grade'] = $school_grade;
-        if($class_num != 0) $where['sc.class_num'] = $class_num;
+        if($class_num != '0') $where['sc.class_num'] = $class_num;
 
         $where['s.join_test'] = 1;
         $where['sc.is_del'] = 0;
