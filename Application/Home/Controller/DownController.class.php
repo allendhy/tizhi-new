@@ -365,10 +365,10 @@ class DownController extends PublicController {
 			$ua = $_SERVER["HTTP_USER_AGENT"];
 			if (preg_match("/MSIE/", $ua)) {
 				header('Content-Disposition: attachment; filename="' . urlencode($fileName) . '.xlsx"');
-			//} else if (preg_match("/Firefox/", $ua)) {
-			//	header('Content-Disposition: attachment; filename*="utf8\'\'' . $fileName . '.xlsx"');
-			//} else if (preg_match("/rv:11.0/", $ua) || preg_match("/Chrome/", $ua)) {
-			//	header('Content-Disposition: attachment; filename="' . iconv('UTF-8','GB2312',$fileName) . '.xlsx"');
+			} else if (preg_match("/Firefox/", $ua)) {
+				header('Content-Disposition: attachment; filename*="utf8\'\'' . $fileName . '.xlsx"');
+			} else if (preg_match("/rv:11.0/", $ua) || preg_match("/Chrome/", $ua)) {
+				header('Content-Disposition: attachment; filename="' . iconv('UTF-8','GB2312',$fileName) . '.xlsx"');
 			} else {
 				header('Content-Disposition: attachment; filename="' . $fileName . '.xlsx"');
 			}
@@ -564,9 +564,10 @@ class DownController extends PublicController {
 
 			$loginfo = D('ImportLog')->where('import_id = %d',$import_id)->find();
 			if(empty($loginfo))$this->error('导入信息为空!');
-			//下载文件
 
-			if(!is_file($_SERVER['DOCUMENT_ROOT'] . $file_path))$this->error('文件不存在!');
+			//下载文件
+			//clearstatcache();//清除文件状态缓存
+			//if(is_file($_SERVER['DOCUMENT_ROOT'] . $file_path) == false)$this->error('文件不存在!');
 
 			//echo $loginfo['file_name'];exit();
 			down_file($loginfo['file_name'],$loginfo['file_path'],'application/vnd.ms-excel');

@@ -64,19 +64,24 @@
     function down_file($file_name,$file_path,$file_type = ''){
 
         header('Pragma:public');
-        header('Content-Type:application/x-msexecl;name='.$filfile_nameeName);
+        header('Content-Type:application/x-msexecl;name='.$file_name);
         header('Content-Disposition:inline;filename='.$file_name);
 
         Header("Accept-Length: ".filesize($_SERVER['DOCUMENT_ROOT'] . $file_path));
             
         $ua = $_SERVER["HTTP_USER_AGENT"];
+
         if (preg_match("/MSIE/", $ua)) {
-            header('Content-Disposition: attachment; filename="' . urlencode($file_name));
+            header('Content-Disposition: attachment; filename=' . urlencode($file_name));
         } else if (preg_match("/Firefox/", $ua)) {
-            header('Content-Disposition: attachment; filename*="utf8\'\'' . $file_name );
+            header('Content-Disposition: attachment; filename*=utf8\'\'' . $file_name);
+        } else if (preg_match("/rv:11.0/", $ua) || preg_match("/Chrome/", $ua)) {
+            header('Content-Disposition: attachment; filename=' . iconv('UTF-8','GB2312',$file_name));
         } else {
-            header('Content-Disposition: attachment; filename="' . $file_name);
+            header('Content-Disposition: attachment; filename=' . $file_name);
         }
+
+        header('Content-Disposition: attachment; filename=' . $file_name);
 
         readfile($_SERVER['DOCUMENT_ROOT'] . $file_path);
     }
