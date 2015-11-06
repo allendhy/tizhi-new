@@ -89,11 +89,6 @@ class ShowController extends PublicController {
 		$this->ajaxReturn($return);
 	}
 
-	//打印登记表
-	public function printRegister(){
-		$this->web_title = '登记卡打印';
-		$this->page_template = "Show:printRegister";
-	}
 	//查看受检未检人数
 	public function upNum(){
 		$ac = I('ac','');
@@ -975,6 +970,13 @@ class ShowController extends PublicController {
 
 		$this->web_title = '分城郊区查看成绩统计';
 		$this->page_template = "Show:suburbStat";	
+	}
+
+
+	//打印登记卡 2015-11-05 
+	public function printRegister(){
+		$this->web_title = '登记卡打印';
+		$this->page_template = "Show:printRegister";
 	}
 }
 ?>

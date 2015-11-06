@@ -349,7 +349,7 @@ class DownController extends PublicController {
 				
 			}
 			
-			$fileName = iconv('utf-8','gb2312',$fileName);
+			$fileName = iconv('utf-8','gbk',$fileName);
 			// Rename sheet
 			$objPHPExcel->getActiveSheet()->setTitle('studentData');
 			// Set active sheet index to the first sheet, so Excel opens this as the first sheet
@@ -357,18 +357,20 @@ class DownController extends PublicController {
 
 			//ob_end_clean ();
 			//输出到浏览器
+			
 			header('Pragma:public');
 			header('Content-Type: application/vnd.ms-excel');
 			header('Content-Type:application/x-msexecl;name='.$fileName.'.xlsx');
 			header('Content-Disposition:inline;filename='.$fileName.'.xlsx');
 			
 			$ua = $_SERVER["HTTP_USER_AGENT"];
-			if (preg_match("/MSIE/", $ua)) {
+
+			if (preg_match("/rv:11.0/", $ua) || preg_match("/MSIE/", $ua) ) {
 				header('Content-Disposition: attachment; filename="' . urlencode($fileName) . '.xlsx"');
 			} else if (preg_match("/Firefox/", $ua)) {
 				header('Content-Disposition: attachment; filename*="utf8\'\'' . $fileName . '.xlsx"');
-			} else if (preg_match("/rv:11.0/", $ua) || preg_match("/Chrome/", $ua)) {
-				header('Content-Disposition: attachment; filename="' . iconv('UTF-8','GB2312',$fileName) . '.xlsx"');
+			} else if (preg_match("/Chrome/", $ua)) {
+				header('Content-Disposition: attachment; filename="' . iconv('UTF-8','gbk',$fileName) . '.xlsx"');
 			} else {
 				header('Content-Disposition: attachment; filename="' . $fileName . '.xlsx"');
 			}
