@@ -343,10 +343,8 @@ class DownController extends PublicController {
 					}
 					
 				}
-				
 				//++++++++++++++++++++++++++
 				break;
-				
 			}
 			
 			$fileName = iconv('utf-8','gbk',$fileName);
@@ -362,19 +360,23 @@ class DownController extends PublicController {
 			header('Content-Type: application/vnd.ms-excel');
 			header('Content-Type:application/x-msexecl;name='.$fileName.'.xlsx');
 			header('Content-Disposition:inline;filename='.$fileName.'.xlsx');
-			
-			$ua = $_SERVER["HTTP_USER_AGENT"];
 
-			if (preg_match("/rv:11.0/", $ua) || preg_match("/MSIE/", $ua) ) {
-				header('Content-Disposition: attachment; filename="' . urlencode($fileName) . '.xlsx"');
-			} else if (preg_match("/Firefox/", $ua)) {
-				header('Content-Disposition: attachment; filename*="utf8\'\'' . $fileName . '.xlsx"');
-			} else if (preg_match("/Chrome/", $ua)) {
-				header('Content-Disposition: attachment; filename="' . iconv('UTF-8','gbk',$fileName) . '.xlsx"');
-			} else {
-				header('Content-Disposition: attachment; filename="' . $fileName . '.xlsx"');
+
+			$ua = isset ( $_SERVER ["HTTP_USER_AGENT"] ) ? $_SERVER ["HTTP_USER_AGENT"] : '';  
+
+			$file_name = $fileName . '.xlsx';
+
+			if (preg_match ( "/MSIE/", $ua )) {  
+				$file_name = rawurlencode ( $file_name );  
+				header ( 'Content-Disposition: attachment; filename="' . $file_name . '"' );  
+			} else if (preg_match ( "/Firefox/", $ua )) {  
+				header ( 'Content-Disposition: attachment; filename*="utf8' . $file_name . '"' );  
+			} elseif (stripos ( $ua, 'rv:' ) > 0 && stripos ( $ua, 'Gecko' ) > 0) {  
+				$file_name = rawurlencode ( $file_name );  
+				header ( 'Content-Disposition: attachment; filename="' . $file_name . '"' );  
+			} else {  
+				header ( 'Content-Disposition: attachment; filename="' . $file_name . '"' );  
 			}
-
 			// Redirect output to a client’s web browser (Excel5)
 			$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 			$objWriter->save('php://output');
