@@ -105,10 +105,10 @@ class StudentScoreModel extends Model {
 
 		//$where['school_code'] = $school_code;
 
-		if($this->school_grade > 0){
+		if($school_grade > 0){
 			$where['school_grade'] = $school_grade;
 		}
-		if($this->class_num != '0'){
+		if($class_num != '0' ){
 			$where['class_num'] = $class_num;
 		}
 

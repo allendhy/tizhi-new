@@ -196,7 +196,13 @@ class DownController extends PublicController {
 				$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$this->school_code,$this->school_grade);
 
 				$grade = $this->school_grade;
+				/*
+				echo "grade 		 = " . $grade . '<br />';
+				echo "length54_count = " . $school_length54_count . '<br />';
+				echo M()->getlastsql();
 
+				exit();
+				*/
 				if($this->school_grade > 0){
 
 					if(in_array($this->school_grade,array(21,22,23,24)) && $school_length54_count > 0){
