@@ -337,7 +337,6 @@ class DownController extends PublicController {
 				foreach($data as $k=>$row){
 					$g = $gradeItem[$row['school_grade']];
 					foreach($g as $val2){
-						
 						$objActSheet->setCellValue('A'.$rowNum, intval($row['school_grade']));
 						$objActSheet->setCellValueExplicit('B'.$rowNum, intval($row['school_grade'].$row['class_num']),\PHPExcel_Cell_DataType::TYPE_STRING);
 						$objActSheet->getStyle('B'.$rowNum)->getNumberFormat()->setFormatCode("@");
@@ -359,7 +358,7 @@ class DownController extends PublicController {
 			// Set active sheet index to the first sheet, so Excel opens this as the first sheet
 			$objPHPExcel->setActiveSheetIndex(0);
 
-			//ob_end_clean ();
+			ob_end_clean ();
 			//输出到浏览器
 			
 			header('Pragma:public');

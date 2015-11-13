@@ -29,7 +29,7 @@ class SchoolStatusModel extends Model {
 		if($school_code != 0){
 			$where['s.school_code'] = $school_code;
 		}
-		$where['s.is_del'] = 0;
+		// $where['s.is_del'] = 0;
 		$where['s.join_test'] = 1;
 
 		return $this->alias('ss')->field('sum(ss.s_cnt) s_cnt,sum(ss.s_notinschool_cnt) s_notinschool_cnt,sum(ss.s_noceid_cnt) s_noceid_cnt,sum(ss.s_n2_cnt) s_n2_cnt,sum(ss.s_phy_cnt) s_phy_cnt,sum(ss.s_phynotinschool_cnt) s_phynotinschool_cnt,sum(ss.s_phynoceid_cnt) s_phynoceid_cnt,sum(ss.s_phyn2_cnt) s_phyn2_cnt,sum(ss.s_phyavoid_cnt) s_phyavoid_cnt')->join('LEFT JOIN school s ON s.school_id = ss.school_id')->where($where)->find();

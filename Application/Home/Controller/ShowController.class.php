@@ -975,8 +975,48 @@ class ShowController extends PublicController {
 
 	//打印登记卡 2015-11-05 
 	public function printRegister(){
-		$this->web_title = '登记卡打印';
-		$this->page_template = "Show:printRegister";
+
+		$ac = I('ac','');
+
+		if($ac == 'showList'){
+			if($this->town_id == 0)$this->error('请选择区县！');
+
+			$phyinfos = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
+
+		
+			$gradeListCache = session('gradeList');
+			$folkListCache = session('folkList');
+			$dictListCache = session('dictList');
+
+		
+			foreach($phyinfos['list'] as $key=>$row){
+				$phyinfos['list'][$key]['rank'] = $row['row_number'];
+				//print_r($phyinfos['list'][$key]);exit();
+				$phyinfos['list'][$key]['grade_name'] = $gradeListCache[$row['school_grade']];
+				//$stuinfos['list'][$key]['folk'] = $folkListCache[$row['folk']];
+				if($row['is_avoid'] == '1'){
+					$phyinfos['list'][$key]['score_level'] = '免体';
+					$phyinfos['list'][$key]['score_level_ori'] = '免体';
+				}else{
+					$phyinfos['list'][$key]['score_level'] = $dictListCache['203'][$row['score_level']]['dict_name'];
+					$phyinfos['list'][$key]['score_level_ori'] = $dictListCache['203'][$row['score_level_ori']]['dict_name'];
+				}
+			}
+			$this->assign('stuinfos',$phyinfos);
+
+			$this->web_title = '登记卡打印';
+			$this->page_template = "Show:printRegister";
+
+		}elseif($ac == 'printOne'){
+
+
+		}elseif($ac == 'printList'){
+
+
+		}else{
+			$this->web_title = '登记卡打印';
+			$this->page_template = "Show:printRegister";
+		}
 	}
 }
 ?>
