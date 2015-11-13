@@ -1125,9 +1125,12 @@ class ShowController extends PublicController {
 
 			$html_head = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/' . $tempname . '_head.html');
 
+			$count = count($phyinfos);
+
 			foreach($phyinfos as $row){
 				$html_info .= $this->printRegisterOne($row,$tempname,$grades);
 
+				if($row['row_number'] < $count)
 				$html_info .= '<div style="page-break-before:always"></div>';
 			}
 			
