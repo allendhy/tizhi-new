@@ -42,14 +42,14 @@
 										<hr />
 										<div class="row">
 											<form action="" method="post" id="showForm">
-												<input value="showList" type="hidden" name="ac"/>
+												<input value="showList" type="hidden" id="ac" name="ac"/>
 												<select name="town_id" id="town_id"  class="select2 width-15">{$town_id_options}</select>
 												<select name="school_code" id="school_code"  class="select2 width-25">{$school_code_options}</select>
 												<select name="school_grade" id="school_grade"  class="select2 width-10">{$school_grade_options}</select>
 												<select name="class_num" id="class_num"  class="select2 width-15">{$class_num_options}</select>
 												&nbsp;&nbsp;&nbsp;
 												<input type="submit" class="btn btn-small btn-white" value="查看" />&nbsp;
-												<input type="submit" class="btn btn-small  btn-white" value="打印">
+												<input type="button" class="btn btn-small  btn-white" onclick="checkform()" value="打印">
 											</form>
 											<hr />
 											<div class="table-responsive">
@@ -146,6 +146,18 @@
 				});
 				*/
 			});
+			function checkform(){
+				var school_grade = $('#school_grade').val();
+				var class_num = $('#class_num').val();
+
+				if(school_grade == 0 || class_num == 0){
+					layer.alert('请选择要打印的班级',{icon:0});
+					return false;
+				}
+				$("#showForm").attr("target","_blank");
+				$('#ac').val('printList');
+				$('#showForm').submit();
+			}
 		</script>
 
 <include file="Common:footer" />

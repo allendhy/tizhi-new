@@ -1078,6 +1078,63 @@ class ShowController extends PublicController {
 
 		}elseif($ac == 'printList'){
 
+			if($this->school_grade == 0 || $this->class_num == 0)$this->error('请选择要打印的班级!');
+
+			$phyinfos = D('StudentScore')->get_phyinfos($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num,'school_code','list');
+
+			if(empty($phyinfos['list']))$this->error('您选择的班级暂时没有体质数据！');
+
+			$phyinfos = $phyinfos['list'];
+
+			//---------输出至浏览器
+
+			switch($this->school_grade){
+				case 11:
+				case 12:
+					$tempname = '1_2';
+					$grades = array(11,12);
+					break;
+				case 13:
+				case 14:
+					$tempname = '3_4';
+					$grades = array(13,14);
+					break;
+				case 15:
+				case 16:
+					$tempname = '5_6';
+					$grades = array(15,16);
+					break;
+				case 21:
+				case 22:
+				case 23:
+					$tempname = 'cz';
+					$grades = array(21,22,23);
+					break;
+				case 31:
+				case 32:
+				case 33:
+					$tempname = 'gz';
+					$grades = array(31,32,33);
+					break;
+				default:
+					$this->error('学生年级信息错误!');
+					break;
+			}
+
+			//输出并提供打印按钮
+
+			$html_head = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/' . $tempname . '_head.html');
+
+			foreach($phyinfos as $row){
+				$html_info .= $this->printRegisterOne($row,$tempname,$grades);
+
+				$html_info .= '<div style="page-break-before:always"></div>';
+			}
+			
+
+			$html_foot = "</body></html>";
+
+			print $html_head . $html_info . $html_foot;
 
 		}else{
 			$this->web_title = '登记卡打印';
