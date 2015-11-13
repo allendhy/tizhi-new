@@ -104,13 +104,13 @@ class ShowController extends PublicController {
 			$this->web_title = '查看受检未检人数';
 			$this->page_template = "Show:upNum";
 
-			if($this->school_grade != 0){
+			if($this->school_grade != 0 || $this->year < 2014){
 				$data = D('StudentScore')->get_up_num($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
 			}else{
 				//school_status
 				$data = D('SchoolStatus')->get_up_num($this->school_year,$this->town_id,$this->school_code);
 			}
-
+			//echo M()->getlastsql();
 			//应受检人数
 			$data['s_ysj_cnt'] = $data['s_cnt'] - $data['s_notinschool_cnt'];
 			//已受检人数
