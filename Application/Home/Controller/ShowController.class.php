@@ -2,6 +2,9 @@
 namespace Home\Controller;
 use Think\Controller;
 class ShowController extends PublicController {
+	private $dictList;
+	private $folkList;
+
 	public function _initialize(){
 		parent::_initialize();
 
@@ -22,6 +25,12 @@ class ShowController extends PublicController {
 			$this->assign('school_grade_options',$school_grade_options);
 			$this->assign('class_num_options',$class_num_options);
 		}
+
+		//系统定义参数
+
+		$this->folkList = session('folkList');
+
+		$this->dictList = session('dictList');
 	}
 	//查看学生基础数据
 	public function stuInfo(){
@@ -1048,14 +1057,19 @@ class ShowController extends PublicController {
 					break;
 			}
 
-			$html_head = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/');
-			$html_info .= $this->printRegisterOne($phyinfo,$tempname);
+			//输出并提供打印按钮
+
+			$html_head = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/' . $tempname . '_head.html');
+
+
+
+			$html_info = $this->printRegisterOne($phyinfo,$tempname);
 
 			//<div style="page-break-before:always"></div>
-			
+
 			$html_foot = "</body></html>";
 
-			print $html;
+			print $html_head . $html_info . $html_foot;
 
 		}elseif($ac == 'printList'){
 
@@ -1067,8 +1081,35 @@ class ShowController extends PublicController {
 	}
 
 	//单个打印
-	private function printRegisterOne($phyinfo){
+	private function printRegisterOne($phyinfo,$tempname){
 
+		
+
+		$phyinfo['folk'] = $this->folkList[$phyinfo['folk']];
+
+		$stuItemScoreList =  D('ItemScore')->get_info_list($phyinfo['partition_field'],$phyinfo['year_score_id']);
+
+		foreach($stuItemScoreList as $key=>$row){
+			$phyinfo['result_' . $row['item_id']] = $row['exam_result'];
+			$phyinfo['score_' . $row['item_id']] = $row['score'];
+			$phyinfo['score_level_' . $row['item_id']] = $row['score_level'];
+		}
+
+		unset($stuItemScoreList);
+
+		
+		//模版内容
+
+		$content = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/' . $tempname . '_info.html');
+
+		foreach($phyinfo as $key=>$value){
+			echo $key . '<br/>';
+			if(strpos($key,'score_level'))$value = substr($value,0,3) == '205' ? $this->dictList['205']['dict_name'] : $this->dictList['203']['dict_name'];
+
+			$content = str_replace("phyinfo['".$key."']",$value,$content);
+		}
+	
+		return $content;
 	}
 }
 ?>

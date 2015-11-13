@@ -1,22 +1,22 @@
 <div class="info">
 <h3>《国家学生体质健康标准》登记卡（小学1～2年级样表）</h3>
-<p style="float:right; margin-bottom:5px;">学    校_____________________ </p>
+<p style="float:right; margin-bottom:5px;">学    校_phyinfo['school_name']__ </p>
 <table width="100%" cellspacing="0" class="">
   <tr>
     <td width="10%"><strong>姓名</strong></td>
-    <td width="20%">&nbsp;</td>
+    <td width="20%">&nbsp;phyinfo['name']</td>
     <td width="10%"><strong>性别</strong></td>
-    <td width="20%">&nbsp;</td>
+    <td width="20%">&nbsp;phyinfo['sex']</td>
     <td width="12%"><strong>学号</strong></td>
-    <td width="18%">&nbsp;</td>
+    <td width="18%">&nbsp;phyinfo['country_education_id']</td>
   </tr>
   <tr class="tr_bottom">
     <td><strong>班级</strong></td>
-    <td>&nbsp;</td>
+    <td>&nbsp;phyinfo['class_name']</td>
     <td><strong>民族</strong></td>
-    <td>&nbsp;</td>
+    <td>&nbsp;phyinfo['folk']</td>
     <td><strong>出生日期</strong></td>
-    <td>&nbsp;</td>
+    <td>&nbsp;phyinfo['birthday']</td>
   </tr>
   <tr>
     <table width="100%" border="0" cellspacing="0" class="table1">
@@ -132,7 +132,7 @@
       </tr>
       <tr>
         <td><strong>学年总分</strong></td>
-        <td colspan="3">&nbsp;</td>
+        <td colspan="3">&nbsp;phyinfo['score_level']</td>
         <td><strong>学年总分</strong></td>
         <td colspan="3">&nbsp;</td>
         </tr>

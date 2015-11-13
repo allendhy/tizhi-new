@@ -204,7 +204,7 @@ class StudentScoreModel extends Model {
 		$page = new \Think\Page($count,C('PAGE_LISTROWS'));
 		$limit = $ac == 'show' ? ($page->firstRow . ',' . $page->listRows) : '';
 
-        $list = $this->alias('sc')->field("sc.partition_field,t.town_name,sc.year_score_id,sc.town_id,sc.school_id,s.school_code,s.school_name,sc.school_grade,sc.class_num,sc.class_name,sc.name,case sc.sex when 106020 then '女' when 106010 then '男' else '未知' end sex,sc.folk,sc.education_id,sc.country_education_id,sc.student_source,sc.in_school,sc.is_avoid,sc.total_score,sc.score_level,sc.total_score_ori,sc.score_level_ori,sc.addach_score,sc.import_detail_id")->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->order($order)->limit($limit)->select();
+        $list = $this->alias('sc')->field("sc.partition_field,t.town_name,sc.year_score_id,sc.town_id,sc.school_id,s.school_code,s.school_name,sc.school_grade,sc.class_num,sc.class_name,sc.name,case sc.sex when 106020 then '女' when 106010 then '男' else '未知' end sex,sc.folk,sc.education_id,sc.country_education_id,sc.student_source,sc.birthday,sc.in_school,sc.is_avoid,sc.total_score,sc.score_level,sc.total_score_ori,sc.score_level_ori,sc.addach_score,sc.import_detail_id")->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->order($order)->limit($limit)->select();
         
         $show = $page->show();
         
@@ -216,7 +216,7 @@ class StudentScoreModel extends Model {
 		$where['sc.partition_field'] = $partition_field;
 		$where['sc.year_score_id'] = $year_score_id;
 
-		return $this->alias('sc')->field("sc.partition_field,t.town_name,sc.year_score_id,sc.town_id,sc.school_id,s.school_code,s.school_name,sc.school_grade,sc.class_num,sc.class_name,sc.name,case sc.sex when 106020 then '女' when 106010 then '男' else '未知' end sex,sc.folk,sc.education_id,sc.country_education_id,sc.student_source,sc.in_school,sc.is_avoid,sc.total_score,sc.score_level,sc.total_score_ori,sc.score_level_ori,sc.addach_score,sc.import_detail_id")->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->find();
+		return $this->alias('sc')->field("sc.partition_field,t.town_name,sc.year_score_id,sc.town_id,sc.school_id,s.school_code,s.school_name,sc.school_grade,sc.class_num,sc.class_name,sc.name,case sc.sex when 106020 then '女' when 106010 then '男' else '未知' end sex,sc.folk,sc.education_id,sc.country_education_id,sc.student_source,sc.birthday,sc.in_school,sc.is_avoid,sc.total_score,sc.score_level,sc.total_score_ori,sc.score_level_ori,sc.addach_score,sc.import_detail_id")->join('LEFT JOIN school s ON s.school_id = sc.school_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->find();
 	}
 	//返回受检未检人数
 	public function get_up_num($year_year,$town_id,$school_code,$school_grade,$class_num){
