@@ -1,0 +1,64 @@
+<div class="noprint">
+        <input value="打印" type="button" onclick="javascript:window.print()" />
+        <OBJECT classid="CLSID:8856F961-340A-11D0-A96B-00C04FD705A2" height="0" id="wb" name="wb" width="0">
+        </OBJECT>
+        <input type=button name=button_print style="display:none;" value="打印本单据" onclick="javascript:printit()">
+       <!--<input type=button name=button_setup value="打印页面设置" onclick="javascript:printsetup();">
+        <input type=button name=button_show value="打印预览" onclick="javascript:printpreview();">-->
+        <input type="button" name="button" value="另存网页" onclick="wb.ExecWB(4,1)"/>
+        <input type=button name=button_fh value="关闭" onclick="javascript:window.close();">
+		</div>
+		<script language=javascript>     
+		function printsetup(){
+		    //  打印页面设置
+		    wb.execwb(8,1);   
+		}
+		function printpreview(){
+		    //  打印页面预览
+		    pagesetup_null();
+		    wb.execwb(7,1);
+		}
+		function printit(){
+		var hkey_root,hkey_path,hkey_key
+		hkey_root="HKEY_CURRENT_USER"
+		hkey_path="\\Software\\Microsoft\\Internet Explorer\\PageSetup\\"
+
+		function pagesetup_null(){
+		try{
+		var RegWsh = new ActiveXObject("WScript.Shell")
+		hkey_key="header" 
+		RegWsh.RegWrite(hkey_root+hkey_path+hkey_key,"")
+		hkey_key="footer"
+		RegWsh.RegWrite(hkey_root+hkey_path+hkey_key,"")
+		}catch(e){}
+		}
+		function pagesetup_default(){
+		try{
+		var RegWsh = new ActiveXObject("WScript.Shell")
+		hkey_key="header" 
+		RegWsh.RegWrite(hkey_root+hkey_path+hkey_key,"&w&b页码，&p/&P")
+		hkey_key="footer"
+		RegWsh.RegWrite(hkey_root+hkey_path+hkey_key,"&u&b&d")
+		}catch(e){}
+		}
+
+
+		  if (confirm('确定打印吗？')){
+		    wb.ExecWB(6,1)
+		    //wb.execwb(1,1)//打开
+		    //wb.ExecWB(2,1);//关闭现在所有的IE窗口，并打开一个新窗口
+		    //wb.ExecWB(4,1)//;保存网页
+		    //wb.ExecWB(6,1)//打印
+		    //wb.ExecWB(7,1)//打印预览
+		    //wb.ExecWB(8,1)//打印页面设置
+		    //wb.ExecWB(10,1)//查看页面属性
+		    //wb.ExecWB(15,1)//好像是撤销，有待确认
+		    //wb.ExecWB(17,1)//全选
+		    //wb.ExecWB(22,1)//刷新
+		    //wb.ExecWB(45,1)//关闭窗体无提示
+		  }
+		}
+		</script>
+
+
+
