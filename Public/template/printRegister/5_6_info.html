@@ -1,30 +1,30 @@
 <div class="info">
 <h3>《国家学生体质健康标准》登记卡（小学5～6年级样表）</h3>
-<p style="float:right; margin-bottom:5px;">学    校_____________________ </p>
+<p style="float:right; margin-bottom:5px;">学    校_phyinfo['school_name']_ </p>
 <table width="100%" cellspacing="0" class="">
   <tr>
     <td width="10%"><strong>姓名</strong></td>
-    <td width="20%">&nbsp;</td>
+    <td width="20%">&nbsp;phyinfo['name']</td>
     <td width="10%"><strong>性别</strong></td>
-    <td width="20%">&nbsp;</td>
+    <td width="20%">&nbsp;phyinfo['sex']</td>
     <td width="12%"><strong>学号</strong></td>
-    <td width="18%">&nbsp;</td>
+    <td width="18%">&nbsp;phyinfo['country_education_id']</td>
   </tr>
  <tr class="tr_bottom">
     <td><strong>班级</strong></td>
-    <td>&nbsp;</td>
+    <td>&nbsp;phyinfo['class_name']</td>
     <td><strong>民族</strong></td>
-    <td>&nbsp;</td>
+    <td>&nbsp;phyinfo['folk']</td>
     <td><strong>出生日期</strong></td>
-    <td>&nbsp;</td>
+    <td>&nbsp;phyinfo['birthday']</td>
   </tr>
   <tr>
     <table width="100%" border="0">
   <tr>
-    <td rowspan="2"><strong>单项指标</strong></td>
-    <td colspan="3"><strong>五年级</strong></td>
-    <td colspan="3"><strong>六年级</strong></td>
-    <td colspan="2"><strong>毕业成绩</strong></td>
+    <td rowspan="2" width="20%"><strong>单项指标</strong></td>
+    <td colspan="3" width="30%"><strong>五年级</strong></td>
+    <td colspan="3" width="20%"><strong>六年级</strong></td>
+    <td colspan="2" width="30%"><strong>毕业成绩</strong></td>
   </tr>
   <tr>
     <td><strong>成绩</strong></td>
@@ -38,12 +38,12 @@
   </tr>
   <tr>
     <td>体重指数（BMI）</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
+        <td rowspan="2">&nbsp;phyinfo['result_15_27']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_15_27']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_15_27']</td>
+        <td rowspan="2">&nbsp;phyinfo['result_16_27']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_16_27']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_16_27']</td>
     <td rowspan="20">&nbsp;</td>
     <td rowspan="20">&nbsp;</td>
   </tr>
@@ -52,80 +52,80 @@
   </tr>
   <tr>
     <td>肺活量</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
+        <td rowspan="2">&nbsp;phyinfo['result_15_04']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_15_04']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_15_04']</td>
+        <td rowspan="2">&nbsp;phyinfo['result_16_04']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_16_04']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_16_04']</td>
   </tr>
   <tr>
     <td><span style="font-size:12px;">（单位：毫升）</span></td>
   </tr>
   <tr>
     <td>50米跑</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
+        <td rowspan="2">&nbsp;phyinfo['result_15_05']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_15_05']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_15_05']</td>
+		<td rowspan="2">&nbsp;phyinfo['result_16_05']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_16_05']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_16_05']</td>
   </tr>
   <tr>
     <td><span style="font-size:12px;">（单位：秒）</span></td>
   </tr>
   <tr>
     <td>坐位体前屈</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
+        <td rowspan="2">&nbsp;phyinfo['result_15_07']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_15_07']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_15_07']</td>
+        <td rowspan="2">&nbsp;phyinfo['result_16_07']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_16_07']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_16_07']</td>
   </tr>
   <tr>
     <td><span style="font-size:12px;">（单位：厘米）</span></td> 
   </tr>
   <tr>
     <td>1分钟跳绳</td>
-   <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
+        <td rowspan="2">&nbsp;phyinfo['result_15_18']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_15_18']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_15_18']</td>
+        <td rowspan="2">&nbsp;phyinfo['result_16_18']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_16_18']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_16_18']</td>
   </tr>
   <tr>
     <td><span style="font-size:12px;">（单位：次）</span></td>
   </tr>
   <tr>
     <td>1分钟仰卧起坐</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
+        <td rowspan="2">&nbsp;phyinfo['result_15_12']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_15_12']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_15_12']</td>
+        <td rowspan="2">&nbsp;phyinfo['result_16_12']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_16_12']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_16_12']</td>
   </tr>
   <tr>
     <td><span style="font-size:12px;">（单位：次）</span></td>
   </tr>
   <tr>
     <td>50米×8往返跑</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
+        <td rowspan="2">&nbsp;phyinfo['result_15_09']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_15_09']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_15_09']</td>
+        <td rowspan="2">&nbsp;phyinfo['result_16_09']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_16_09']</td>
+        <td rowspan="2">&nbsp;phyinfo['score_level_16_09']</td>
   </tr>
   <tr>
     <td><span style="font-size:12px;">（单位：分·秒）</span></td>
   </tr>
   <tr>
     <td><strong>标准分</strong></td>
-    <td colspan="3">&nbsp;</td>
-    <td colspan="3">&nbsp;</td>
+    <td colspan="3">&nbsp;phyinfo['total_score_ori_15']</td>
+    <td colspan="3">&nbsp;phyinfo['total_score_ori_16']</td>
   </tr>
   <tr>
     <td><strong>加分指标</strong></td>
@@ -136,23 +136,23 @@
   </tr>
   <tr>
     <td>1分钟跳绳</td>
-    <td rowspan="2">&nbsp;</td>
-    <td colspan="2" rowspan="2">&nbsp;</td>
-    <td rowspan="2">&nbsp;</td>
-    <td colspan="2" rowspan="2">&nbsp;</td>
+        <td rowspan="2">&nbsp;phyinfo['result_15_18']</td>
+        <td colspan="2" rowspan="2">&nbsp;phyinfo['addach_score_15_18']</td>
+        <td rowspan="2">&nbsp;phyinfo['result_16_18']</td>
+        <td colspan="2" rowspan="2">&nbsp;phyinfo['addach_score_16_18']</td>
   </tr>
   <tr>
     <td><span style="font-size:12px;">（单位：次）</span></td>
   </tr>
   <tr>
     <td><strong>学年总分</strong></td>
-    <td colspan="3">&nbsp;</td>
-    <td colspan="3">&nbsp;</td>
+    <td colspan="3">&nbsp;phyinfo['total_score_15']</td>
+    <td colspan="3">&nbsp;phyinfo['total_score_16']</td>
   </tr>
   <tr>
     <td><strong>等级评定</strong></td>
-    <td colspan="3">&nbsp;</td>
-    <td colspan="3">&nbsp;</td>
+    <td colspan="3">&nbsp;phyinfo['score_level_15']</td>
+    <td colspan="3">&nbsp;phyinfo['score_level_16']</td>
   </tr>
   <tr>
     <td><strong>体育教师签字</strong></td>
@@ -177,5 +177,5 @@
 </table>
 <p style="float:right; margin:5px 15px 5px 0;">学校签章：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 <div class="clear"></div>
-<p style="float:right; margin:0px 25px 0px 0;">年	&nbsp;&nbsp;月&nbsp;&nbsp;	日	</p>
+<p style="float:right; margin:0px 25px 0px 0;">phyinfo['time']	</p>
 </div>
