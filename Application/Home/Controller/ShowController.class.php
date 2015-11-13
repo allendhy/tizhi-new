@@ -1066,7 +1066,7 @@ class ShowController extends PublicController {
 
 			$html_head = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/' . $tempname . '_head.html');
 
-
+			$html_script = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/print_script.html');
 
 			$html_info = $this->printRegisterOne($phyinfo,$tempname,$grades);
 
@@ -1074,7 +1074,7 @@ class ShowController extends PublicController {
 
 			$html_foot = "</body></html>";
 
-			print $html_head . $html_info . $html_foot;
+			print $html_head . $html_script . $html_info . $html_foot;
 
 		}elseif($ac == 'printList'){
 
@@ -1125,6 +1125,8 @@ class ShowController extends PublicController {
 
 			$html_head = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/' . $tempname . '_head.html');
 
+			$html_script = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/print_script.html');
+
 			$count = count($phyinfos);
 
 			foreach($phyinfos as $row){
@@ -1137,7 +1139,7 @@ class ShowController extends PublicController {
 
 			$html_foot = "</body></html>";
 
-			print $html_head . $html_info . $html_foot;
+			print $html_head . $html_script . $html_info . $html_foot;
 
 		}else{
 			$this->web_title = '登记卡打印';
