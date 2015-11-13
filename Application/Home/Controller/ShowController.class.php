@@ -1008,7 +1008,54 @@ class ShowController extends PublicController {
 			$this->page_template = "Show:printRegister";
 
 		}elseif($ac == 'printOne'){
+			$partition_field = I('par',0);
+			$year_score_id = I('id',0);
 
+			if(!$partition_field || !$year_score_id)$this->error('参数错误!');
+
+			$phyinfo = D('StudentScore')->get_info($partition_field,$year_score_id);
+
+			if(empty($phyinfo))$this->error('参数错误!找不到学生!');
+
+
+			//---------输出至浏览器
+
+			switch($phyinfo['school_grade']){
+				case 11:
+				case 12:
+					$tempname = '1_2';
+					break;
+				case 13:
+				case 14:
+					$tempname = '3_4';
+					break;
+				case 15:
+				case 16:
+					$tempname = '5_6';
+					break;
+				case 21:
+				case 22:
+				case 23:
+					$tempname = 'cz';
+					break;
+				case 31:
+				case 32:
+				case 33:
+					$tempname = 'gz';
+					break;
+				default:
+					$this->error('学生年级信息错误!');
+					break;
+			}
+
+			$html_head = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/');
+			$html_info .= $this->printRegisterOne($phyinfo,$tempname);
+
+			//<div style="page-break-before:always"></div>
+			
+			$html_foot = "</body></html>";
+
+			print $html;
 
 		}elseif($ac == 'printList'){
 
@@ -1017,6 +1064,11 @@ class ShowController extends PublicController {
 			$this->web_title = '登记卡打印';
 			$this->page_template = "Show:printRegister";
 		}
+	}
+
+	//单个打印
+	private function printRegisterOne($phyinfo){
+
 	}
 }
 ?>

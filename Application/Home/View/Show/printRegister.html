@@ -82,7 +82,7 @@
 																<td class="hidden-480">{$vo.country_education_id}</td>
 																<td class="hidden-480">{$vo.total_score}</td>
 																<td class="hidden-480">{$vo.score_level}</td>
-																<td>打印</td>
+																<td><a href="{:U('Home/Show/printRegister',array('ac'=>'printOne','par'=>$vo['partition_field'],'id'=>$vo['year_score_id']))}" class="printBtn" target="_blank" data="{$vo.partition_field}-{$vo.year_score_id}">打印</a></td>
 															</tr>
 															</volist>											
 														</tbody>
@@ -140,6 +140,11 @@
 				$('#school_grade').change(function(){
 					ajaxSelectSchool('class','class_num');
 				});
+				/**
+				$('.printBtn').click(function(){
+					window.open('http://www.baidu.com');
+				});
+				*/
 			});
 		</script>
 
