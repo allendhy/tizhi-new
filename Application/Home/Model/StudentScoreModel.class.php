@@ -237,7 +237,9 @@ class StudentScoreModel extends Model {
         	$where['sc.partition_field'] = array('IN',implode(',',$partition_fields));
         }
 
-		$where['s.school_code'] = $school_code;
+		if($school_code != 0){
+			$where['s.school_code'] = $school_code;
+		}
 
 		if($school_grade != 0){
 			$where['sc.school_grade'] = $school_grade;

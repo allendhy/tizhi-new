@@ -110,7 +110,7 @@ class ShowController extends PublicController {
 				//school_status
 				$data = D('SchoolStatus')->get_up_num($this->school_year,$this->town_id,$this->school_code);
 			}
-			//echo M()->getlastsql();
+			echo M()->getlastsql();
 			//应受检人数
 			$data['s_ysj_cnt'] = $data['s_cnt'] - $data['s_notinschool_cnt'];
 			//已受检人数
