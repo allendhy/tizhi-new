@@ -49,12 +49,13 @@ class UpController extends PublicController {
 				if($importLog['is_error']==1){
 					$msg = "校验完毕，数据有错误";
 					if($importLog['year_year'] >= 2014){
-						$errorList = D('import_detail_new')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,country_education_id,name,sex')->where("partition_field = %d AND import_id= %d AND is_error = 1",array($importLogData['partition_field'],$import_id))->select();
+						$errorList = D('import_detail_new')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,country_education_id,name,sex')->where("partition_field = %d AND import_id= %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
 					}else{
-						$errorList = D('import_detail')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,student_no,name,sex')->where("partition_field = %d AND import_id = %d AND is_error = 1",array($importLogData['partition_field'],$import_id))->select();
+						$errorList = D('import_detail')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,student_no,name,sex')->where("partition_field = %d AND import_id = %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
 					}
 				}
 				$errno = 1;
+
 			break;
 			case '204050':
 				$msg = "正在计算得分，请稍候...";
@@ -67,7 +68,7 @@ class UpController extends PublicController {
 			break;
 		}
 
-		if(is_array($errorList)){
+		if(!empty($errorList)){
 			$msg .= '';
 			foreach($errorList as $row){
 				$msg .= "<p>" . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
