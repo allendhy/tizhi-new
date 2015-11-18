@@ -1171,7 +1171,6 @@ class ShowController extends PublicController {
 		}
 		
 		foreach($stuItemScoreList as $key=>$row){
-
 			if($phyinfo['school_grade'] > 16){
 				if($row['item_id'] == '10' || $row['item_id'] == '11')
 					$row['item_id'] = 'bbm_yqm';
@@ -1181,10 +1180,10 @@ class ShowController extends PublicController {
 			}
 			//项目分数及评定
 			$phyinfo['result_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['exam_result'];
-			$phyinfo['score_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['score'];
+			$phyinfo['score_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['score'] != null ? intval($row['score']) : '';
 			$phyinfo['score_level_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['score_level'];
 			//附加分数
-			$phyinfo['addach_score_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['addach_score'];
+			$phyinfo['addach_score_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['addach_score'] != null ? intval($row['addach_score']) : '';
 			//页面其余年级信息显示为空
 			foreach($grades as $val){
 				$phyinfo['result_'.$val.'_' . $row['item_id']] = '';

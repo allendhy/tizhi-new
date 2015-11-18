@@ -20,11 +20,12 @@ class SchoolModel extends Model {
 	public function get_list_by_schoolcode_year($school_code,$year_year,$type="list"){
 
 		if($year_year < 2015){
-			$where['year_year'] = array('exp','is null');
+			$where['year_year'] = 2014;
 		}else{
 			$where['year_year'] = $year_year;
 		}
 		$where['school_code'] = $school_code;
+		
 		//$where['is_del'] = 0;
 
 		if($type == 'one'){

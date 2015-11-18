@@ -202,4 +202,15 @@
         }
         return $option;
     }
+
+    function get_item_dict(){
+        $itemDict = array();
+        $item = M('item')->field('item_id,kind_id')->where("kind_id IN ('nl','rr','sd')")->select();
+        if($item){
+            foreach($item as $k=>$v){
+               $itemDict[$v['kind_id']][] = $v['item_id'];
+            }
+         }
+        return $itemDict;
+    }
 ?>

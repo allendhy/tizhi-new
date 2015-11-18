@@ -91,13 +91,15 @@ class UpController extends PublicController {
 		}
 
 		if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
+
+			if($this->school_code == 0)$this->ajaxReturn(array('errno'=>98,'errtitle'=>'请选择学校!'));
 			//判断来源
 			if(!in_array($ac,array('phydata','phydata2','historyPhydata'))){
 				$this->ajaxReturn(array('errno'=>99,'errtitle'=>'请求来源错误!'));
 			}
 
 			$fileinfo = $this->upload('file_data');
-			//print_r($fileinfo);
+
 			if($fileinfo['errno'] != 0){
 				$this->ajaxReturn($fileinfo);
 			}
@@ -108,7 +110,7 @@ class UpController extends PublicController {
 					$this->_phydata($fileinfo,$ac);
 				break;
 				case 'historyPhydata':
-					$this->_historyPhydata();
+					$this->_historyPhydata($fileinfo);
 				break;
 			}
 			//读取文件并处理数据
@@ -147,9 +149,11 @@ class UpController extends PublicController {
 		if(empty($school_year_info) || $school_year_info['state'] == 207020){
 			$this->ajaxReturn(array('errno'=>101,'errtitle'=>'您选择的学年'.$this->school_year.'未开始,无法录入'));
 		}
+		//
 		if(!empty($school_year_info['not_upload_time']) && time() > strtotime($school_year_info['not_upload_time'])){
 			$this->ajaxReturn(array('errno'=>102,'errtitle'=>'数据上报截止时间为'.$school_year_info['not_upload_time']));
 		}
+
 
 		//审核状态
 		$userinfo = session('userinfo');
@@ -162,9 +166,10 @@ class UpController extends PublicController {
 			if($s_status['s_status'] == 206020 || $s_status['s_status'] == 206030){
 
 				$this->ajaxReturn(array('errno'=>109,'errtitle'=>'您当前上报状态为'.$dictList['206'][$s_status['s_status']]['dict_name'].',如需重新上报或修改请等待区县撤销！'));
-				
+					
 			}
 		}
+
 
 		//读取excel文件内容
 		$fPath = '/Upload/' . $fileinfo['info']['savepath'] . $fileinfo['info']['savename'];
@@ -202,6 +207,9 @@ class UpController extends PublicController {
 			'town_id'=>$this->town_id,
 			'partition_field'=>intval($this->town_id.$this->school_year),
 		);
+		//补录数据
+		if($ac == 'historyPhydata')$importLogData['is_examine'] = 0;
+
 		$titContent = array(
 			'body_height'=>'身高',
 			'body_weight'=>'体重',
@@ -449,6 +457,8 @@ class UpController extends PublicController {
 				'import_time'			=>  date('Y-m-d H:i:s'),
 				'is_avoid'				=>	'否'
 			);
+			//是否为补录数据
+			if($ac == 'historyPhydata')$data['examine'] = 0;
 			
 			if($phyData[$row]['body_height'] === '免体'){
 				$data['is_avoid']	=	'是';
@@ -515,6 +525,298 @@ class UpController extends PublicController {
 			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'文件上传成功,请等待系统校验...','import_id'=>$import_id));
 		}
 	}
+	//历史数据补录
+	private function _historyPhydata($fileinfo){
+
+		if($this->school_year >= 2014){
+			$this->_phydata($fileinfo,'historyPhydata');
+			die();
+		}
+		/**
+		///2014学年以前数据补录校验
+		*/
+		$this->school_id = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year,'one');
+		$this->school_id = $this->school_id['school_id'];
+
+		//查看是否截止上报
+		$school_year_info  = D('SchoolYear')->get_info($this->school_year);
+
+		if(empty($school_year_info) || $school_year_info['state'] == 207020){
+			$this->ajaxReturn(array('errno'=>101,'errtitle'=>'您选择的学年'.$this->school_year.'未开始,无法录入'));
+		}
+
+		//审核状态
+		$userinfo = session('userinfo');
+		$dictList = session('dictList');
+		$itemList = get_item_dict();
+
+		//读取excel文件内容
+		$fPath = '/Upload/' . $fileinfo['info']['savepath'] . $fileinfo['info']['savename'];
+		
+		import("Org.Util.PHPExcel");
+		import("Org.Util.PHPExcel.IOFactory");
+
+		//$PHPExcel = new \PHPExcel();
+		$reader = \PHPExcel_IOFactory::createReader('Excel2007');
+		$PHPExcel = \PHPExcel_IOFactory::load($_SERVER['DOCUMENT_ROOT']  . $fPath);
+		$reader->setReadDataOnly(true);
+
+		$sheet = $PHPExcel->getSheet(0);//sheet1
+		$highestRow = $sheet->getHighestRow();//总行数
+		$highestColumn = $sheet->getHighestColumn();//总列数,字母表示
+
+		//判断是否空文件
+		if($highestRow <= 1){
+			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+			$this->ajaxReturn(array('errno'=>103,'errtitle'=>'您上传的文件没有内容!'));
+		}
+		/**
+		之前学年的上传方法 
+		**/
+	
+		$importLogData = array(
+			'user_id'=>$this->school_id,
+			'year_year'=>$this->school_year,
+			'import_time'=>date('Y-m-d H:i:s'),
+			'file_name'=>$fileinfo['info']['name'],
+			'file_path'=>$fPath,
+			'deal_status'=>'204010',//文件上传状态
+			'is_error'=>'0',
+			'town_id'=>$this->town_id,
+			'partition_field'=>intval($this->town_id.$this->school_year),
+			'is_examine'=>0,
+		);
+
+		//启动事务
+		M()->startTrans();
+
+		$import_id = D('ImportLog')->add($importLogData);
+
+		if(!$import_id){
+			//删除文件
+			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+			M()->rollback();
+			$this->ajaxReturn(array('errno'=>102,'errtitle'=>'保存上传记录失败，请稍候重试！'));
+		}
+
+		$arr = array(1=>'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S');
+		/*
+		if($highestColumn!=$arr['18']){
+			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+			M()->rollback();
+			$this->ajaxReturn(array('errno'=>102,'errtitle'=>'文件列格式不正确！请严格按照数据格式上传!'));
+		}
+		*/
+		$keys = array('education_id','grade_num','class_num','class_name','student_no','name','sex','birthday','body_height','body_weight','vital_capacity','endurance_code','endurance_result_display','flexible_code','flexible_result','speed_code','speed_result','rewards_code','is_avoid');
+		
+		$errorLog = '';
+			
+		for($row=2;$row<=$highestRow;$row++){
+
+			for($column = 0;$arr[$column]!='S';$column++){
+
+				$val = $sheet->getCellByColumnAndRow($column,$row)->getValue();
+
+				if($val instanceof PHPExcel_RichText) {
+					//富文本转换字符串
+					$val = $val->__toString();
+				}
+
+				$val  =  trim($val);
+
+				$phyData[$row][$keys[$column]] = $val;
+
+				if($arr[$column]=='K'){//耐力项目成绩列
+					if($phyData[$row]['endurance_result_display']=='') continue;
+
+					$tmpStr =  $phyData[$row]['endurance_result_display'];
+
+					if(in_array($phyData[$row]['endurance_code'],array('11','13','10','09'))){
+
+						$phyData[$row]['endurance_result_display'] = strpos($phyData[$row]['endurance_result_display'],'.')?str_replace(".","′",$phyData[$row]['endurance_result_display']):(str_replace("'","′",$phyData[$row]['endurance_result_display']));
+
+						if(!strpos($phyData[$row]['endurance_result_display'],'′')){
+
+							if(!is_numeric($phyData[$row]['endurance_result_display'])){
+
+								$errorLog .= '第'.$row.'行耐力项目成绩格式错误。请以半角句号(.)或者半角引号(\')分隔。';
+
+							}else {
+
+								$phyData[$row]['endurance_result'] = floatval($tmpStr);
+
+								$phyData[$row]['endurance_result_display'] = $phyData[$row]['endurance_result_display'].'′00';
+							}
+
+						}else{
+
+							$tmpStr =  $phyData[$row]['endurance_result_display'];
+
+							$tmpFen = strpos($tmpStr,'′')?intval(substr($tmpStr,0,strpos($tmpStr,'′'))):(strpos($tmpStr,'\'')?intval(substr($tmpStr,0,strpos($tmpStr,'\''))):'0');
+
+							$tmpMiao = strpos($tmpStr,'′')?substr(strstr($tmpStr,'′'),3,strlen($tmpStr)-1):(strpos($tmpStr,'\'')?substr(strstr($tmpStr,'\''),1,strlen($tmpStr)-1):'00');
+
+							$end_result = floatval($tmpFen.'.'.$tmpMiao);
+
+							if(!$end_result||intval($tmpMiao)>59){
+								$errorLog .= "第".$row."行耐力项目成绩列格式错误或者秒数超出正常范围！";}
+							else{
+								$phyData[$row]['endurance_result'] = $end_result;
+							}
+						}
+
+					}else{
+
+						$phyData[$row]['endurance_result'] = floatval($tmpStr);
+
+					}
+
+				}else{
+
+					$phyData[$row][$keys[$column]] = $val;
+
+				}
+			}
+		}
+
+		if(!empty($errorLog)){
+
+			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+			//回滚
+			M()->rollback();
+
+			$this->ajaxReturn(array('errno'=>109,'errtitle'=>$errorLog));
+
+		}
+
+		//错误信息
+		$errLogT1 = '';
+		$errLogT2 = '';
+		$errLogT3 = '';
+
+		foreach($phyData as $k=>$v){
+
+			if(($v['studentno']==''||$v['studentno']==null)&&($v['name']==''||$v['name']==null)){
+				unset($phydata[$k]);
+				break;
+			}
+					
+			$v['student_source'] = '';
+					
+			// $v['sex'] = $sex%2==1?'男':'女';
+			//$sex_int = $sex%2==0?106020:106010;
+			//将grade_num转换成数字
+
+			$gradenum = M('dict_grade')->where("grade_name ='%s'",$v['grade_num'])->find();
+			
+			$stuinfo = M('student')->where("town_id = %d AND school_id=%d AND education_id = '%s' AND name = '%s' ",array($this->town_id,$this->school_id,$v['education_id'],$v['name']))->find();
+			
+			$errLogT1 .= "第{$k}行 ";
+
+			if(empty($stuinfo)){
+				$errLogT2 .= "非当前学校数据或者数据格式错误，请核对学生姓名、教育ID号是否有误；";
+			}
+
+			if(!is_numeric($gradenum['grade_num'])){
+				$errLogT2 .= "年级必须用中文表示，如一年级、初一、高一等;";
+			}
+
+			$detailData = array(
+				'import_id' 				=>$import_id,
+				'is_error' 					=>0,
+				'error_desc' 				=>'',
+				'excel_num'	 				=>$k,
+				'education_id'				=>$v['education_id'],
+				'grade_num'					=>$gradenum['grade_id'],
+				'class_num'					=>$v['class_num'],
+				'class_name'				=>$v['class_num'].'班',
+				'student_no'				=>$v['student_no'],
+				'folk_code'					=>'',
+				'name'						=>$v['name'],
+				'sex'						=>$v['sex'],
+				'birthday'					=>date('Y-m-d',strtotime($v['birthday'])),
+				'address'					=>'',
+				'body_height'				=>floatval($v['body_height']),
+				'body_weight'				=>floatval($v['body_weight']),
+				'vital_capacity'			=>floatval($v['vital_capacity']),
+				'endurance_code'			=>$v['endurance_code'],
+				'endurance_result'			=>floatval($v['endurance_result_display']),
+				'endurance_result_display'	=>$v['endurance_result_display'],
+				'flexible_code'				=>$v['flexible_code'],
+				'flexible_result'			=>floatval($v['flexible_result']),
+				'flexible_result_display'	=>$v['flexible_result'],
+				'speed_code'				=>$v['speed_code'],
+				'speed_result'				=>floatval($v['speed_result']),
+				'speed_result_display'		=>$v['speed_result'],
+				'rewards_code'				=>$v['rewards_code'],
+				'town_id'					=>$townId,
+				'partition_field'			=>$townId.$schoolYear,
+				'is_avoid'					=>trim($v['is_avoid'])!='是'?'否':'是',
+				'year_year'					=>$schoolYear,//这两个是后加的字段
+				'import_time'				=>date('Y-m-d H:i:s'),
+				'examine'  					=>0
+			);
+				
+
+			if(intval($detailData['endurance_code'])&&strlen($detailData['endurance_code'])==1){
+				$detailData['endurance_code'] = '0' . $detailData['endurance_code'];
+			}
+			if(intval($detailData['flexible_code'])&&strlen($detailData['flexible_code'])==1){
+				$detailData['flexible_code'] = '0' . $detailData['flexible_code'];
+			}
+			if(intval($detailData['speed_code'])&&strlen($detailData['speed_code'])==1){
+				$detailData['speed_code'] = '0' . $detailData['speed_code'];
+			}
+
+			if($detailData['endurance_code']!=''&&!in_array($detailData['endurance_code'],$itemList['nl'])){
+				$errLogT2 .= "耐力项目编号有误！";
+			}
+			if($detailData['flexible_code']!=''&&!in_array($detailData['flexible_code'],$itemList['rr'])){
+				$errLogT2 .= "柔韧力量项目编号有误！";
+			}
+			if($detailData['speed_code']!=''&&!in_array($detailData['speed_code'],$itemList['sd'])){
+				$errLogT2 .= "速度灵巧项目编号有误！";
+			}
+
+			//奖惩项目范围
+			if($detailData['rewards_code']!=''&&!in_array(intval($detailData['rewards_code']),array(61,62,63,64))){
+				$errLogT2 .= "奖惩项目数据错误，必须为61、62、63、64其中一项";
+			}
+
+			$detail_id = D('import_detail')->add($detailData);
+
+			if(!$detail_id){
+				$errLogT2 .= '添加学生记录失败！';
+			}
+			/*
+			if(!$detail_id){
+				$this->showAjaxMsg(array('error'=>"第{$k}行添加记录失败，所有时间类型成绩数据请以小数点进行分隔,如耐力成绩为1′22″,表示为1.22。速度成绩12″1表示为12.1"),$fpath,$import_id);
+			}
+			*/
+			if($errLogT2 != '') $errorLog .= $errLogT1 . $errLogT2 . $errLogT3;
+
+		}
+		print_r($phyData);exit();
+		//文件上传错误!
+		if(empty($phyData)){
+			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+			//回滚
+			M()->rollback();
+			$this->ajaxReturn(array('errno'=>'111','errtitle'=>'文件格式不正确或者内容为空!请确认!'));
+		}
+		//上传成功
+		if(!empty($errorLog)){
+			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+			//回滚
+			M()->rollback();
+			$this->ajaxReturn(array('errno'=>'109','errtitle'=>$errorLog));
+		}else{
+			//提交
+			M()->commit();
+			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'文件上传成功,请等待系统校验...','import_id'=>$import_id));
+		}
+
+	}
 	//上传体质信息，无全国学籍号
 	public function phydata2(){
 		$this->index('phydata2');
@@ -559,6 +861,12 @@ class UpController extends PublicController {
 
 	//历史数据修改（模板下载）
 	public function historyPhyData(){
+		$school_year_options = D('SchoolYear')->getOptions($this->school_year,'history');
+
+		$this->assign('school_year_options',$school_year_options);
+
+
+		$this->assign('ac','historyPhydata');
 		$this->web_title = '历史数据修改（模板下载）';
         $this->page_template = 'Up:historyPhyData';
 	}
