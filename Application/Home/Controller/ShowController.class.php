@@ -1154,42 +1154,49 @@ class ShowController extends PublicController {
 
 		$phyinfo['folk'] = $this->folkList[$phyinfo['folk']];
 
-		$stuItemScoreList =  D('ItemScore')->get_info_list($phyinfo['partition_field'],$phyinfo['year_score_id']);
+		if($phyinfo['is_avoid'] == 1){
+			$stuItemScoreList =  D('Item')->field('item_id')->select();
 
+			$phyinfo['score_level_'.$phyinfo['school_grade']] = '免体';
+			$phyinfo['total_score_'.$phyinfo['school_grade']] = '';
+			$phyinfo['total_score_ori_'.$phyinfo['school_grade']] = '';
+			$phyinfo['score_level_ori_'.$phyinfo['school_grade']] = '';
+		}else{
+
+			$stuItemScoreList =  D('ItemScore')->get_info_list($phyinfo['partition_field'],$phyinfo['year_score_id']);
+			$phyinfo['score_level_'.$phyinfo['school_grade']] = $phyinfo['score_level'];
+			$phyinfo['total_score_'.$phyinfo['school_grade']] = $phyinfo['total_score'];
+			$phyinfo['total_score_ori_'.$phyinfo['school_grade']] = $phyinfo['total_score_ori'];
+			$phyinfo['score_level_ori_'.$phyinfo['school_grade']] = $phyinfo['score_level_ori'];
+		}
+		
 		foreach($stuItemScoreList as $key=>$row){
-
-			//$phyinfo['item_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['item_name'];
 
 			if($phyinfo['school_grade'] > 16){
 				if($row['item_id'] == '10' || $row['item_id'] == '11')
 					$row['item_id'] = 'bbm_yqm';
-					
+						
 				if($row['item_id'] == '12' || $row['item_id'] == '14')
 					$row['item_id'] = 'ywqz_ytxs';
 			}
-
+			//项目分数及评定
 			$phyinfo['result_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['exam_result'];
-			$phyinfo['score_'.$phyinfo['school_grade'].'_' . $row['item_id']] = intval($row['score']);
+			$phyinfo['score_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['score'];
 			$phyinfo['score_level_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['score_level'];
-
-			$phyinfo['addach_score_'.$phyinfo['school_grade'].'_' . $row['item_id']] = intval($row['addach_score']);
-
+			//附加分数
+			$phyinfo['addach_score_'.$phyinfo['school_grade'].'_' . $row['item_id']] = $row['addach_score'];
+			//页面其余年级信息显示为空
 			foreach($grades as $val){
 				$phyinfo['result_'.$val.'_' . $row['item_id']] = '';
 				$phyinfo['score_'.$val.'_' . $row['item_id']] = '';
 				$phyinfo['score_level_'.$val.'_' . $row['item_id']] = '';
 				$phyinfo['addach_score_'.$val.'_' . $row['item_id']] = '';
 			}
+
 		}
 
 		unset($stuItemScoreList);
-
 		//
-		$phyinfo['score_level_'.$phyinfo['school_grade']] = $phyinfo['score_level'];
-		$phyinfo['total_score_'.$phyinfo['school_grade']] = $phyinfo['total_score'];
-		$phyinfo['total_score_ori_'.$phyinfo['school_grade']] = $phyinfo['total_score_ori'];
-		$phyinfo['score_level_ori_'.$phyinfo['school_grade']] = $phyinfo['score_level_ori'];
-
 		foreach($grades as $val){
 			$phyinfo['score_level_'.$val] = '';
 			$phyinfo['total_score_'.$val] = '';
@@ -1205,7 +1212,7 @@ class ShowController extends PublicController {
 
 		foreach($phyinfo as $key=>$value){
 		//	echo $key . '=====' . $value . '<br/>';
-			if(strpos($key,'score_level') !== false){
+			if(strpos($key,'score_level') !== false && $phyinfo['is_avoid'] == 0){
 				$value = substr($value,0,3) == '205' ? $this->dictList['205'][$value]['dict_name'] : $this->dictList['203'][$value]['dict_name'];
 			}
 
