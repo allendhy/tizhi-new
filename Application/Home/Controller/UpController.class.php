@@ -697,7 +697,7 @@ class UpController extends PublicController {
 		foreach($phyData as $k=>$v){
 
 			if(($v['studentno']==''||$v['studentno']==null)&&($v['name']==''||$v['name']==null)){
-				unset($phydata[$k]);
+				unset($phyData[$k]);
 				break;
 			}
 					
