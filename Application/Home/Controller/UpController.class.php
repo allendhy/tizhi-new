@@ -53,8 +53,13 @@ class UpController extends PublicController {
 					}else{
 						$errorList = D('import_detail')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,student_no,name,sex')->where("partition_field = %d AND import_id = %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
 					}
+					$errno = 1;
 				}
-				$errno = 1;
+				if($importLog['is_examine'] != ''){
+					$errno = 1;
+					$msg = '数据校验完毕,待区县审核完毕后进行计算分数';
+				}
+				
 
 			break;
 			case '204050':
@@ -149,27 +154,27 @@ class UpController extends PublicController {
 		if(empty($school_year_info) || $school_year_info['state'] == 207020){
 			$this->ajaxReturn(array('errno'=>101,'errtitle'=>'您选择的学年'.$this->school_year.'未开始,无法录入'));
 		}
-		//
-		if(!empty($school_year_info['not_upload_time']) && time() > strtotime($school_year_info['not_upload_time'])){
-			$this->ajaxReturn(array('errno'=>102,'errtitle'=>'数据上报截止时间为'.$school_year_info['not_upload_time']));
-		}
-
-
 		//审核状态
 		$userinfo = session('userinfo');
 		$dictList = session('dictList');
+		//非补录数据需要验证上报状态
+		if($ac != 'historyPhydata'){
+			if(!empty($school_year_info['not_upload_time']) && time() > strtotime($school_year_info['not_upload_time'])){
+				$this->ajaxReturn(array('errno'=>102,'errtitle'=>'数据上报截止时间为'.$school_year_info['not_upload_time']));
+			}
 
-		if($userinfo['org_id'] != 110105 && $userinfo['user_kind'] != '109010'){
 
-			$s_status = D('SchoolStatus')->get_status_info_one($this->school_year,$this->school_code);
+			if($userinfo['org_id'] != 110105 && $userinfo['user_kind'] != '109010'){
 
-			if($s_status['s_status'] == 206020 || $s_status['s_status'] == 206030){
+				$s_status = D('SchoolStatus')->get_status_info_one($this->school_year,$this->school_code);
 
-				$this->ajaxReturn(array('errno'=>109,'errtitle'=>'您当前上报状态为'.$dictList['206'][$s_status['s_status']]['dict_name'].',如需重新上报或修改请等待区县撤销！'));
-					
+				if($s_status['s_status'] == 206020 || $s_status['s_status'] == 206030){
+
+					$this->ajaxReturn(array('errno'=>109,'errtitle'=>'您当前上报状态为'.$dictList['206'][$s_status['s_status']]['dict_name'].',如需重新上报或修改请等待区县撤销！'));
+						
+				}
 			}
 		}
-
 
 		//读取excel文件内容
 		$fPath = '/Upload/' . $fileinfo['info']['savepath'] . $fileinfo['info']['savename'];
@@ -177,7 +182,6 @@ class UpController extends PublicController {
 		import("Org.Util.PHPExcel");
 		import("Org.Util.PHPExcel.IOFactory");
 
-		//$PHPExcel = new \PHPExcel();
 		$reader = \PHPExcel_IOFactory::createReader('Excel2007');
 		$PHPExcel = \PHPExcel_IOFactory::load($_SERVER['DOCUMENT_ROOT']  . $fPath);
 		$reader->setReadDataOnly(true);
@@ -600,18 +604,20 @@ class UpController extends PublicController {
 		}
 
 		$arr = array(1=>'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S');
+		//限制模版
 		/*
 		if($highestColumn!=$arr['18']){
 			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
 			M()->rollback();
 			$this->ajaxReturn(array('errno'=>102,'errtitle'=>'文件列格式不正确！请严格按照数据格式上传!'));
 		}
-		*/
+			*/
 		$keys = array('education_id','grade_num','class_num','class_name','student_no','name','sex','birthday','body_height','body_weight','vital_capacity','endurance_code','endurance_result_display','flexible_code','flexible_result','speed_code','speed_result','rewards_code','is_avoid');
 		
+		$titleErr = '';
 		$errorLog = '';
 			
-		for($row=2;$row<=$highestRow;$row++){
+		for($row=1;$row<=$highestRow;$row++){
 
 			for($column = 0;$arr[$column]!='S';$column++){
 
@@ -677,6 +683,25 @@ class UpController extends PublicController {
 
 				}
 			}
+
+			if($row == 1){
+				if($phyData[1]['education_id'] != '教育ID号' || $phyData[1]['is_avoid'] != '是否免体'){
+					$titleErr = '表头错误!请严格按照示例的表头进行填写!';
+					break;
+				}else{
+					unset($phyData[1]);
+				}
+			}
+		}
+
+		if(!empty($titleErr)){
+
+			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+			//回滚
+			M()->rollback();
+
+			$this->ajaxReturn(array('errno'=>107,'errtitle'=>$titleErr));
+
 		}
 
 		if(!empty($errorLog)){
@@ -685,18 +710,17 @@ class UpController extends PublicController {
 			//回滚
 			M()->rollback();
 
-			$this->ajaxReturn(array('errno'=>109,'errtitle'=>$errorLog));
+			$this->ajaxReturn(array('errno'=>108,'errtitle'=>$errorLog));
 
 		}
 
 		//错误信息
-		$errLogT1 = '';
-		$errLogT2 = '';
-		$errLogT3 = '';
 
 		foreach($phyData as $k=>$v){
 
-			if(($v['studentno']==''||$v['studentno']==null)&&($v['name']==''||$v['name']==null)){
+			$errLogT2 = '';
+
+			if(($v['student_no']==''||$v['student_no']==null)&&($v['name']==''||$v['name']==null)){
 				unset($phyData[$k]);
 				break;
 			}
@@ -707,12 +731,12 @@ class UpController extends PublicController {
 			//$sex_int = $sex%2==0?106020:106010;
 			//将grade_num转换成数字
 
-			$gradenum = M('dict_grade')->where("grade_name ='%s'",$v['grade_num'])->find();
+			$gradenum = D('DictGrade')->where("grade_name ='%s'",$v['grade_num'])->find();
 			
-			$stuinfo = M('student')->where("town_id = %d AND school_id=%d AND education_id = '%s' AND name = '%s' ",array($this->town_id,$this->school_id,$v['education_id'],$v['name']))->find();
+			$stuinfo = D('Student')->alias('st')->field('st.school_id')->join('LEFT JOIN school sc ON sc.school_id = st.school_id')->where("st.town_id = %d AND sc.school_code = '%s' AND education_id = '%s' AND name = '%s' ",array($this->town_id,$this->school_code,$v['education_id'],$v['name']))->find();
 			
-			$errLogT1 .= "第{$k}行 ";
-
+			$errLogT1 = "第{$k}行 ";
+			
 			if(empty($stuinfo)){
 				$errLogT2 .= "非当前学校数据或者数据格式错误，请核对学生姓名、教育ID号是否有误；";
 			}
@@ -749,8 +773,8 @@ class UpController extends PublicController {
 				'speed_result'				=>floatval($v['speed_result']),
 				'speed_result_display'		=>$v['speed_result'],
 				'rewards_code'				=>$v['rewards_code'],
-				'town_id'					=>$townId,
-				'partition_field'			=>$townId.$schoolYear,
+				'town_id'					=>$this->town_id,
+				'partition_field'			=>intval($this->town_id.$this->school_year),
 				'is_avoid'					=>trim($v['is_avoid'])!='是'?'否':'是',
 				'year_year'					=>$schoolYear,//这两个是后加的字段
 				'import_time'				=>date('Y-m-d H:i:s'),
@@ -793,10 +817,11 @@ class UpController extends PublicController {
 				$this->showAjaxMsg(array('error'=>"第{$k}行添加记录失败，所有时间类型成绩数据请以小数点进行分隔,如耐力成绩为1′22″,表示为1.22。速度成绩12″1表示为12.1"),$fpath,$import_id);
 			}
 			*/
+			$errLogT3 = '<br />';
 			if($errLogT2 != '') $errorLog .= $errLogT1 . $errLogT2 . $errLogT3;
 
 		}
-		print_r($phyData);exit();
+		//print_r($phyData);exit();
 		//文件上传错误!
 		if(empty($phyData)){
 			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
@@ -811,6 +836,7 @@ class UpController extends PublicController {
 			M()->rollback();
 			$this->ajaxReturn(array('errno'=>'109','errtitle'=>$errorLog));
 		}else{
+			D('ImportLog')->where('partition_field = %d AND import_id= %d',array(intval($this->town_id.$this->school_year),$import_id))->setField('deal_status','204020');
 			//提交
 			M()->commit();
 			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'文件上传成功,请等待系统校验...','import_id'=>$import_id));
@@ -861,14 +887,18 @@ class UpController extends PublicController {
 
 	//历史数据修改（模板下载）
 	public function historyPhyData(){
+
 		$school_year_options = D('SchoolYear')->getOptions($this->school_year,'history');
 
 		$this->assign('school_year_options',$school_year_options);
 
 
 		$this->assign('ac','historyPhydata');
+
 		$this->web_title = '历史数据修改（模板下载）';
+		
         $this->page_template = 'Up:historyPhyData';
+
 	}
 
 	//上传文件方法

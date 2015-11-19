@@ -89,6 +89,11 @@
 		<script src='__PUBLIC__/assets/js/is_chzh.js'></script>
 		<script type="text/javascript">
 			jQuery(function($) {
+
+				<neq name="status_tips" value="">
+				layer.alert('{$status_tips}{$up_tips}<br/><br/>如出现本系统学籍与学籍系统不符的情况,请先联系学籍管理员确认!',{area: ['560px', '210px'],icon:0});
+				</neq>
+
 				$(".select2").select2();
 
 				//学校下拉框

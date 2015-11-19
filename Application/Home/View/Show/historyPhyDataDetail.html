@@ -14,7 +14,7 @@
 										本次上传共 <span style="color:blue">{$details['nums']['total_rows']}</span> 条记录，其中出错的记录 <span style="color:red">{$details['nums']['error_rows']}</span>
 												</div>
 												<div class="col-sm-4">
-												<a class="btn btn-white" href="{:U('Home/Show/phyUpStatus',array('school_year'=>$school_year))}">返回上一页</a>
+												<a class="btn btn-white" href="<eq name='ac' value="historyPhyData">{:U('Home/Show/historyPhyData',array('ac'=>'showlist','school_year'=>$school_year))}<else/>{:U('Home/Show/historyUpStatus',array('ac'=>'showlist'))}</eq>">返回上一页</a>
 												</div>
 											</div>
 										</div>
@@ -68,16 +68,5 @@
 
 		<!-- inline scripts related to this page -->
 		<script src="__PUBLIC__/assets/js/select2.min.js"></script>
-		<script src='__PUBLIC__/assets/js/jquery.form.js'></script>
-		<script src='__PUBLIC__/assets/js/is_chzh.js'></script>
-		<script type="text/javascript">
-			jQuery(function($) {
-				$(".select2").select2();
-				//学校下拉框
-				$('#town_id').change(function(){
-					ajaxSelectSchool('school','school_code');
-				});
-			});
-		</script>
 
 <include file="Common:footer" />

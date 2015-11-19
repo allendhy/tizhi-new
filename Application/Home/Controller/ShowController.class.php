@@ -47,6 +47,34 @@ class ShowController extends PublicController {
 				$this->chooseInSchool();
 			break;
 			default:
+				$userinfo = session('userinfo');
+				if($userinfo['user_kind'] == 109030){
+					$sch_status = D('SchoolStatus')->get_status_info_one($this->school_year,$this->school_code);
+					//,上报截止日期:2015-12-31
+					switch($sch_status['s_status']){
+						case 206010:
+							$status_tips = '您所在学校数据还未上报,请进行上报,';
+						break;
+						case 206020:
+							$status_tips = '您所在学校数据已上报,请等待区县审核,';
+						break;
+						case 206030:
+							$status_tips = '您所在学校数据已上报,且区县审核已通过,';
+						break;
+						case 206040:
+							$status_tips = '您所在学校数据被区县进行撤销操作,请重新上报,';
+						break;
+						default:
+							$status_tips = '您所在学校数据还未上报,请进行上报,';
+						break;
+					}
+					$this_year_info = session('thisYear');
+					//print_r($this_year_info);
+					$up_tips = '上报截止日期' . date('Y-m-d',strtotime($this_year_info['not_upload_time']));
+
+					$this->assign('status_tips',$status_tips);
+					$this->assign('up_tips',$up_tips);
+				}
 				$this->web_title = '查看学生基础数据';
         		$this->page_template = 'Show:stuInfo';
 			break;
@@ -611,13 +639,77 @@ class ShowController extends PublicController {
 	}
 	//查看历史修改数据
 	public function historyUpStatus(){
-		$this->web_title = '查看历史修改数据';
-		$this->page_template = "Show:historyUpStatus";
+		$ac = I('ac','');
+
+		switch($ac){
+			case 'showlist':
+
+				if($this->town_id == 0)$this->error('请选择区县!');
+
+				$examine = I('examine','');
+
+				$data = D('ImportLog')->getHistoryList($this->school_year,$this->town_id,$this->school_code,$examine);
+				//echo M()->getlastsql();
+				$this->assign('data',$data);
+				$this->assign('examine',$examine);
+				$this->web_title = '查看历史修改数据';
+				$this->page_template = "Show:historyUpStatus";
+
+			break;
+			case 'showdetail':
+				$this->showHistoryDetail('historyUpStatus');
+			break;
+			default:
+				$this->web_title = '查看历史修改数据';
+				$this->page_template = "Show:historyUpStatus";
+			break;
+		}
 	}
 	//历史数据查询--上传记录
 	public function historyPhyData(){
-		$this->web_title = '历史数据查询';
-		$this->page_template = "Show:historyPhyData";
+		$school_year_options = D('SchoolYear')->getOptions($this->school_year,'history');
+		$this->assign('school_year_options',$school_year_options);
+
+		$ac = I('ac','');
+
+		switch($ac){
+			case 'showlist':
+
+				if($this->town_id == 0)$this->error('请选择区县!');
+
+				$data = D('ImportLog')->getHistoryList($this->school_year,$this->town_id,$this->school_code,'','historyPhyData');
+				//echo M()->getlastsql();
+				$this->assign('data',$data);
+
+				$this->web_title = '历史数据查询';
+				$this->page_template = "Show:historyPhyData";
+			break;
+			case 'showdetail':
+				$this->showHistoryDetail('historyPhyData');
+			break;
+			default:
+				$this->web_title = '历史数据查询';
+				$this->page_template = "Show:historyPhyData";
+			break;
+		}
+
+
+	}
+	//历史上传记录详情
+	private function showHistoryDetail($ac){
+		$import_id = I('id',0);
+	
+		$detail_tb = $this->school_year >= 2014 ? 'ImportDetailNew' : 'ImportDetail';
+		$details = D($detail_tb)->get_details($this->school_year,$this->town_id,$import_id);
+
+		$this->assign('school_year',$this->school_year);
+		$this->assign('details',$details);
+		$this->assign('gradeList',session('gradeList'));
+
+		$this->assign('ac',$ac);
+
+		$this->web_title = '历史数据查询-详情';
+		$this->page_template = "Show:historyPhyDataDetail";
 	}
 	//学生身高标准体重统计表
 	public function weightStat(){
