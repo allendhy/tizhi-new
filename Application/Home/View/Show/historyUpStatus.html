@@ -31,8 +31,8 @@
 							<input type="submit" class="btn btn-default" value="查看" />
 
 							<eq name="userinfo['user_kind']" value="109020">
-							<input type="button" class="btn btn-small btn-success" value="通过" />
-							<input type="button" class="btn btn-small btn-danger" value="不通过" />
+							<input type="button" data="check_2" class="btn btn-small btn-success check_btn" value="通过" />
+							<input type="button" data="check_1" class="btn btn-small btn-danger check_btn" value="不通过" />
 							</eq>
 
 							</form>
@@ -45,7 +45,7 @@
 												<thead>
 													<tr>
 														<eq name="userinfo['user_kind']" value="109020">
-														<input type="checkbox" />
+														<th><input type="checkbox" id="check_all"/></th>
 														</eq>
 														<th>上传记录ID</th>
 														<th>所属学年</th>
@@ -58,8 +58,11 @@
 													</tr>
 												</thead>
 												<tbody>
+												<form action="{:U('Home/Show/historyUpStatus',array('ac'=>'check'))}" id="checkForm">
+												<input type="hidden" name="check_type" value="" id="check_type"/> 
 												<volist name="data['list']" id="vo">
 													<tr>
+														<td><input type="checkbox" class="checkd_b" name="ids[]" value="{$vo.import_id}"/></td>
 														<td>
 															{$vo.import_id}
 														</td>
@@ -74,6 +77,7 @@
 														
 													</tr>
 												</volist>
+												</form>
 												</tbody>
 											</table>
 										</div><!-- /.table-responsive -->
@@ -104,6 +108,21 @@
 				$('#town_id').change(function(){
 					ajaxSelectSchool('school','school_code');
 				});
+				<eq name="userinfo['user_kind']" value="109020">
+				$('#check_all').click(function(){
+					$("[name = 'ids[]']:checkbox").prop("checked", $(this).prop('checked'));
+				});
+				$('.check_btn').bind('click',function(){
+					var check_type = $(this).attr('data');
+					//layer.alert(check_type);
+					$('#check_type').val(check_type);
+					if($("[name = 'ids[]']:checked").length == 0 ){
+						layer.alert('请选择您要操作的记录',{icon:0});
+						return false;
+					}
+					$('#checkForm').submit();
+				});
+				</eq>
 			});
 		</script>
 

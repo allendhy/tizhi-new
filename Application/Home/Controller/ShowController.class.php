@@ -659,11 +659,36 @@ class ShowController extends PublicController {
 			case 'showdetail':
 				$this->showHistoryDetail('historyUpStatus');
 			break;
+			case 'check':
+				$this->checkHistoryData();
+			break;
 			default:
 				$this->web_title = '查看历史修改数据';
 				$this->page_template = "Show:historyUpStatus";
 			break;
 		}
+	}
+	//审核历史记录
+	private function checkHistoryData(){
+
+		$userinfo = session('userinfo');
+
+		if($userinfo['user_kind'] != 109020)$this->error('权限不足，无法进行审核操作！');
+
+		$is_examine = I('check_type','');
+
+		if(!in_array($is_examine,array('check_2','check_1')))$this->error('审核类型有误！');
+
+		$is_examine = intval(substr($is_examine,6,1));
+
+		$ids = I('ids','');
+
+		if(empty($ids))$this->error('请选择要操作的记录！');
+
+		$return = D('ImportLog')->checkHistoryData($is_examine,$ids);
+
+		if($return['errno'] == 1)$this->error($return['errtitle']);
+		else $this->success($return['errtitle']);
 	}
 	//历史数据查询--上传记录
 	public function historyPhyData(){
@@ -692,8 +717,6 @@ class ShowController extends PublicController {
 				$this->page_template = "Show:historyPhyData";
 			break;
 		}
-
-
 	}
 	//历史上传记录详情
 	private function showHistoryDetail($ac){
