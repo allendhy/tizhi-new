@@ -542,5 +542,12 @@ class StudentScoreModel extends Model {
         			->group("CASE WHEN sc.partition_field IN (".$chengqusql.") THEN '城区' ELSE '郊区' END")
         			->select();
 	}
+	//根据partition_field获取学生平均成绩
+	public function get_avg_score($pars,$education_id){
+		$where['partition_field'] = array('in',$pars);
+		$where['education_id'] = $education_id;
+
+		return $this->where($where)->getField("avg(CASE is_avoid WHEN 1 THEN 60 ELSE total_score END) avg_score");
+	}
 }
 ?>

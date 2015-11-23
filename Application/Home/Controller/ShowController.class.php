@@ -1128,19 +1128,25 @@ class ShowController extends PublicController {
 			}
 			$this->assign('stuinfos',$phyinfos);
 
+			$this->assign('school_grade',$this->school_grade);
+
 			$this->web_title = '登记卡打印';
 			$this->page_template = "Show:printRegister";
 
 		}elseif($ac == 'printOne'){
+
 			$partition_field = I('par',0);
 			$year_score_id = I('id',0);
+			//是否打印毕业成绩
+			$chooseBtn = I('chooseBtn','');
+
+
 
 			if(!$partition_field || !$year_score_id)$this->error('参数错误!');
 
 			$phyinfo = D('StudentScore')->get_info($partition_field,$year_score_id);
 
 			if(empty($phyinfo))$this->error('参数错误!找不到学生!');
-
 
 			//---------输出至浏览器
 
@@ -1183,7 +1189,7 @@ class ShowController extends PublicController {
 
 			$html_script = @file_get_contents ($_SERVER['DOCUMENT_ROOT'] . '/Public/template/printRegister/print_script.html');
 
-			$html_info = $this->printRegisterOne($phyinfo,$tempname,$grades);
+			$html_info = $this->printRegisterOne($phyinfo,$tempname,$grades,$chooseBtn);
 
 			//<div style="page-break-before:always"></div>
 
@@ -1192,6 +1198,8 @@ class ShowController extends PublicController {
 			print $html_head . $html_script . $html_info . $html_foot;
 
 		}elseif($ac == 'printList'){
+			//是否打印毕业成绩
+			$chooseBtn = I('chooseBtn','');
 
 			if($this->school_grade == 0 || $this->class_num == 0)$this->error('请选择要打印的班级!');
 
@@ -1245,7 +1253,7 @@ class ShowController extends PublicController {
 			$count = count($phyinfos);
 
 			foreach($phyinfos as $row){
-				$html_info .= $this->printRegisterOne($row,$tempname,$grades);
+				$html_info .= $this->printRegisterOne($row,$tempname,$grades,$chooseBtn);
 
 				if($row['row_number'] < $count)
 				$html_info .= '<div style="page-break-before:always"></div>';
@@ -1263,7 +1271,7 @@ class ShowController extends PublicController {
 	}
 
 	//单个打印
-	private function printRegisterOne($phyinfo,$tempname,$grades){
+	private function printRegisterOne($phyinfo,$tempname,$grades,$chooseBtn = ''){
 
 		$grades = array_diff($grades,array($phyinfo['school_grade']));
 
@@ -1316,6 +1324,33 @@ class ShowController extends PublicController {
 			$phyinfo['total_score_'.$val] = '';
 			$phyinfo['total_score_ori_'.$val] = '';
 			$phyinfo['score_level_ori_'.$val] = '';
+		}
+
+		//是否打印毕业成绩 2015-11-23
+
+		$phyinfo['avg_score'] = '';
+
+		$phyinfo['avg_score_level'] = '';
+
+		if($chooseBtn == 'on' && in_array($phyinfo['school_grade'],array(16,23,33))){
+			//根据当前学年以及要打印的年级逐次取出当前学生历史学年成绩
+			switch($phyinfo['school_grade']){
+				case 16: $years = 6; break;
+				case 23:
+				case 33: $years = 3; break;
+			}
+			$pars = array();
+			for($i = $this->school_year - 1;$i > $this->school_year - 6;$i--){
+				$pars[] = intval($phyinfo['town_id'] . $i);
+			}
+
+			$this_year_score = $phyinfo['is_avoid'] == 1 ? 60 : $phyinfo['total_score'];
+			//除当前学年外的平均成绩
+			$avgScore = D('StudentScore')->get_avg_score($pars,$phyinfo['education_id']);
+
+			$phyinfo['avg_score'] = round(($this_year_score + $avgScore)/2);
+
+			$phyinfo['avg_score_level'] = $phyinfo['avg_score'] < 60 ? '203040' : ($phyinfo['avg_score'] < 80 && $phyinfo['avg_score'] >= 60 ? '203030' : ($phyinfo['avg_score'] < 90 && $phyinfo['avg_score'] >= 80 ? '203020' : '203010'));
 		}
 
 		$phyinfo['time'] = date('Y 年 m 月 d 日');
