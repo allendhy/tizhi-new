@@ -62,7 +62,7 @@
 												<input type="hidden" name="check_type" value="" id="check_type"/> 
 												<volist name="data['list']" id="vo">
 													<tr>
-														<td><input type="checkbox" class="checkd_b" name="ids[]" value="{$vo.import_id}"/></td>
+														<td><eq name="vo['is_error']" value="0"><input type="checkbox" class="checkd_b" name="ids[]" value="{$vo.import_id}"/></eq></td>
 														<td>
 															{$vo.import_id}
 														</td>
@@ -72,7 +72,7 @@
 														<td class="hidden-480">{$vo.deal_status_name}</td>
 														<td class="hidden-480"><eq name="vo['is_error']" value="1">是<else/>否</eq></td>
 														<td class="hidden-480"><a href="{:U('Home/Down/receipt',array('ac'=>'import_log','id'=>$vo['import_id']))}">下载</a></td>
-														<td class="hidden-480"><eq name="vo['is_examine']" value="1">审核未通过<else/><eq name="vo['is_examine']" value="2">审核已通过<else/>未审核</eq></eq></td>
+														<td class="hidden-480"><eq name="vo['is_error']" value="0"><eq name="vo['is_examine']" value="1">审核未通过<else/><eq name="vo['is_examine']" value="2">审核已通过<else/>未审核</eq></eq></eq></td>
 														<td class="hidden-480"><a href="{:U('Home/Show/historyUpStatus',array('ac'=>'showdetail','id'=>$vo['import_id'],'school_year'=>$vo['year_year'],'town_id'=>$vo['town_id']))}">查看</a></td>
 														
 													</tr>
