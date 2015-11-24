@@ -325,10 +325,16 @@ class StudentScoreModel extends Model {
 
         $where['sc.is_avoid'] = 0;
 
-        $where['i_sc.item_id'] = '27';
+        
 
-        if($year_year >= 2014) $import_tb = 'import_detail_new';
-        else $import_tb = 'import_detail';
+        if($year_year >= 2014) {
+        	$import_tb = 'import_detail_new';
+        	$where['i_sc.item_id'] = '27';
+        }
+        else {
+        	$import_tb = 'import_detail';
+        	$where['i_sc.item_id'] = '24';
+        }
 
         $orderadd = '';
 
