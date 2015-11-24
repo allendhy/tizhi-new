@@ -61,8 +61,9 @@
 												<form action="{:U('Home/Show/historyUpStatus',array('ac'=>'check'))}" id="checkForm">
 												<input type="hidden" name="check_type" value="" id="check_type"/> 
 												<volist name="data['list']" id="vo">
-													<tr>
+													<tr><eq name="userinfo['user_kind']" value="109020">
 														<td><eq name="vo['is_error']" value="0"><input type="checkbox" class="checkd_b" name="ids[]" value="{$vo.import_id}"/></eq></td>
+														</eq>
 														<td>
 															{$vo.import_id}
 														</td>
