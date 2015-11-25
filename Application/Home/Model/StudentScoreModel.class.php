@@ -252,7 +252,7 @@ class StudentScoreModel extends Model {
 		$where['s.join_test'] = 1;
 
 		$where['sc.is_del'] = 0;
-		$where['sc.in_school'] = 1;
+		//$where['sc.in_school'] = 1;
 
 		return $this->alias('sc')->field(' SUM(1) AS s_cnt,SUM(CASE sc.in_school WHEN 0 THEN 1 ELSE 0 END) AS s_notinschool_cnt,SUM(CASE WHEN sc.country_education_id is null THEN 1 ELSE 0 END) AS s_noceid_cnt,SUM(CASE WHEN sc.in_school = 0 AND sc.country_education_id is null THEN 1 ELSE 0 END) AS s_n2_cnt,SUM(CASE sc.is_check WHEN 1 THEN 1 ELSE 0 END ) AS s_phy_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.in_school = 0 THEN 1 ELSE 0 END) AS s_phynotinschool_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.country_education_id is null THEN 1 ELSE 0 END) AS s_phynoceid_cnt,SUM(CASE WHEN sc.is_check = 1 AND sc.country_education_id is null AND sc.in_school = 0 THEN 1 ELSE 0 END ) AS s_phyn2_cnt,SUM(CASE WHEN sc.is_check = 1 and sc.is_avoid = 1 THEN 1 ELSE 0 END) AS s_phyavoid_cnt')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->find();
 	}
