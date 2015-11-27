@@ -95,11 +95,11 @@ class StudentScoreModel extends Model {
 	public function get_school_length54_count($year_year,$town_id,$school_code,$school_grade = 0,$class_num = 0){
 		$partition_field = intval($town_id . $year_year);
 		$where = array(
-			'partition_field' => $partition_field,
+			'sc.partition_field' => $partition_field,
 			's.school_code' =>	$school_code,
 			'sc.is_del' => 0,
-			'in_school' => 1,
-			'school_length54' => 1,
+			'sc.in_school' => 1,
+			'sc.school_length54' => 1,
 			//'country_education_id' => array('EXP', 'IS NOT NULL'),
 			);
 

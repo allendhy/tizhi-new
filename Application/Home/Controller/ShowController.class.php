@@ -118,6 +118,7 @@ class ShowController extends PublicController {
 		$this->ajaxReturn(array('errno'=>0,'optionstr'=>$options));
 	}
 	//ajax 设置是否在学
+	// 2015-11-26 原标记不在学功能描述修改为标记不在测功能
 	private function chooseInSchool(){
 		$year_score_id = I('id',0);
 		$in_school = I('in_school','');

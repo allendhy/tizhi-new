@@ -265,9 +265,9 @@ class UpController extends PublicController {
 			elseif($val == '一分钟跳绳')$titleArr[] = 'yfzts';
 			elseif(strpos($val,'800米跑') !== false)$titleArr[] = 'bbm_nv';
 			elseif(strpos($val,'1000米跑')  !== false)$titleArr[] = 'yqm_nan';
-			elseif(strpos($val,'一分钟仰卧起坐')  !== false && strpos($val,'女')  !== false){
+			/*elseif(strpos($val,'一分钟仰卧起坐')  !== false && strpos($val,'女')  !== false){
 				$titleArr[] = 'ywqz_nv';
-			}
+			}*/
 			elseif(strpos($val,'一分钟仰卧起坐')  !== false ){
 				$titleArr[] = 'ywqz_ytxs';
 			}
@@ -381,7 +381,7 @@ class UpController extends PublicController {
 						}else{
 							if($phyData[$row]['sex'] == 2 && $va == 'bbm_nv' && $tmpStr == ''){
 								$titleErr = 1;
-							}elseif($phyData[$row]['sex'] == 2 && $va == 'ywqz_nv' && $tmpStr == ''){
+							}elseif($phyData[$row]['sex'] == 2 && $va == 'ywqz_ytxs' && $tmpStr == ''){
 								$titleErr = 1;
 							}elseif($phyData[$row]['sex'] == 1 && $va == 'yqm_nan' && $tmpStr == ''){
 								$titleErr = 1;
@@ -398,7 +398,7 @@ class UpController extends PublicController {
 					}
 							
 					if($titleErr == 1){
-						$errLogT2 .= $titContent[$va] . ' 不能为空！ ;';
+						$errLogT2 .= $titContent[$va] . ' 不能为空;';
 						$titleErr = 0;
 						continue;
 					}
@@ -418,17 +418,22 @@ class UpController extends PublicController {
 					if(!strpos($tmpStr,'′') && !strpos($tmpStr,'′′')){
 						$phyData[$row][$va] = floatval($tmpStr);
 					}else{
-						$tmpFen = strpos($tmpStr,'′') ? intval(substr($tmpStr,0,strpos($tmpStr,'′'))) : 0;
-						$tmpMiao = strpos($tmpStr,'′') ? substr(strstr($tmpStr,'′'),3,strlen($tmpStr)-1) : '00' ;
-								
-						$tmpMiao = strlen($tmpMiao) == 1 ? '0'.$tmpMiao : $tmpMiao;
-								
-						$end_result = $tmpFen == 0 ? intval($tmpMiao) : floatval($tmpFen.'.'.$tmpMiao);
+						//50米跑只能用小数点分隔
+						if($va == 'wsm')
+							$errLogT2 .= $titContent[$va] . "[".$tmpStr."] 必须使用小数点分隔; ";
+						else{
+							$tmpFen = strpos($tmpStr,'′') ? intval(substr($tmpStr,0,strpos($tmpStr,'′'))) : 0;
+							$tmpMiao = strpos($tmpStr,'′') ? substr(strstr($tmpStr,'′'),3,strlen($tmpStr)-1) : '00' ;
+									
+							$tmpMiao = strlen($tmpMiao) == 1 ? '0'.$tmpMiao : $tmpMiao;
+									
+							$end_result = $tmpFen == 0 ? intval($tmpMiao) : floatval($tmpFen.'.'.$tmpMiao);
 
-						if(!$end_result||intval($tmpMiao)>59){
-							$errLogT2 .= " 分秒时间格式错误或者秒大于59，请确认; ";
-						}else{
-							$phyData[$row][$va] = $end_result;
+							if(!$end_result||intval($tmpMiao)>59){
+								$errLogT2 .= " 分秒时间格式错误或者秒大于59，请确认; ";
+							}else{
+								$phyData[$row][$va] = $end_result;
+							}
 						}
 					}
 				}
@@ -490,8 +495,8 @@ class UpController extends PublicController {
 					if($phyData[$row]['ywqz_ytxs'] != '')
 					$data['ywqz_ytxs'] = (int)($phyData[$row]['ywqz_ytxs']);
 				}else{
-					if($stuinfo['sex'] == '106020' && $phyData[$row]['ywqz_nv'] != ''){
-						$data['ywqz_ytxs'] = (int)($phyData[$row]['ywqz_nv']);
+					if($stuinfo['sex'] == '106020' && $phyData[$row]['ywqz_ytxs'] != ''){
+						$data['ywqz_ytxs'] = (int)($phyData[$row]['ywqz_ytxs']);
 					}elseif($stuinfo['sex'] == '106010' && $phyData[$row]['ytxs_nan'] != ''){
 						$data['ywqz_ytxs'] = (int)($phyData[$row]['ytxs_nan']);
 					}

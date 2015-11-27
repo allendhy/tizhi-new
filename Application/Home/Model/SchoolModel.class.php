@@ -7,7 +7,8 @@ class SchoolModel extends Model {
 
 		//自2015学年后,school表增加year_year字段,之前的学年该字段为空
 		if($year_year < 2015){
-			$where['year_year'] = array('exp','is null');
+			//$where['year_year'] = array('exp','is null');
+			$where['year_year'] = 2014;
 		}else{
 			$where['year_year'] = $year_year;
 		}
@@ -39,7 +40,8 @@ class SchoolModel extends Model {
 	//根据区县ID获取学校是否参测
 	public function get_list_by_jointest($year_year,$town_id,$school_code='',$show_type='',$ac='show'){
 		if($year_year < 2015){
-			$where['year_year'] = array('exp','is null');
+			//$where['year_year'] = array('exp','is null');
+			$where['year_year'] = 2014;
 		}else{
 			$where['year_year'] = $year_year;
 		}

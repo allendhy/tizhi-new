@@ -71,7 +71,7 @@ class ExportController extends PublicController {
 
 		$objActSheet->setCellValueExplicit('A1', '学校名称',\PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('B1', '学籍总人数',\PHPExcel_Cell_DataType::TYPE_STRING);
-		$objActSheet->setCellValueExplicit('C1', '标记不在学人数',\PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('C1', '标记不参测人数',\PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('D1', '免体人数',\PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('E1', '受检人数',\PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('F1', '受检率（%）',\PHPExcel_Cell_DataType::TYPE_STRING);

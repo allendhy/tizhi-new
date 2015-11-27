@@ -173,6 +173,10 @@ class DownController extends PublicController {
 				$fileName .= '体测模板';
 				$objActSheet->setCellValueExplicit('A1', '年级编号',\PHPExcel_Cell_DataType::TYPE_STRING);
 				$objActSheet->getStyle('A1')->getNumberFormat()->setFormatCode("@");
+				/**
+$objPHPExcel->getActiveSheet()->getComment( 'A1')->setAuthor('PHPExcel' );     //设置作者
+$objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText()->createTextRun('PHPExcel:');  //添加批注
+				*/
 				$objActSheet->setCellValueExplicit('B1', '班级编号',\PHPExcel_Cell_DataType::TYPE_STRING);
 				$objActSheet->getStyle('B1')->getNumberFormat()->setFormatCode("@");
 				$objActSheet->setCellValueExplicit('C1', '班级名称',\PHPExcel_Cell_DataType::TYPE_STRING);
@@ -208,7 +212,7 @@ class DownController extends PublicController {
 					if(in_array($this->school_grade,array(21,22,23,24)) && $school_length54_count > 0){
 						switch($this->school_grade){
 							case 21:
-								$grade = 16;
+								$grade = 99;
 								break;
 							case 24:
 								$grade = 23;
@@ -218,6 +222,7 @@ class DownController extends PublicController {
 								break;
 						}
 					}
+
 				}else{
 					
 					$data = D('StudentScore')->get_grades($this->school_year,$this->town_id,$this->school_code);
@@ -363,13 +368,13 @@ class DownController extends PublicController {
 			
 			header('Pragma:public');
 			header('Content-Type: application/vnd.ms-excel');
-			header('Content-Type:application/x-msexecl;name='.$fileName.'.xlsx');
-			header('Content-Disposition:inline;filename='.$fileName.'.xlsx');
+			header('Content-Type:application/x-msexecl;name='.$fileName.'.xls');
+			header('Content-Disposition:inline;filename='.$fileName.'.xls');
 
 
 			$ua = isset ( $_SERVER ["HTTP_USER_AGENT"] ) ? $_SERVER ["HTTP_USER_AGENT"] : '';  
 
-			$file_name = $fileName . '.xlsx';
+			$file_name = $fileName . '.xls';
 
 			if (preg_match ( "/MSIE/", $ua )) {  
 				$file_name = rawurlencode ( $file_name );  
@@ -383,7 +388,7 @@ class DownController extends PublicController {
 				header ( 'Content-Disposition: attachment; filename="' . $file_name . '"' );  
 			}
 			// Redirect output to a client’s web browser (Excel5)
-			$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+			$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
 			$objWriter->save('php://output');
 			//PHPExcel::Destroy();
 			exit();
@@ -590,6 +595,5 @@ class DownController extends PublicController {
 
 		$this->web_title = '导出学生体质信息';
 		$this->page_template = "Down:phydata";
-
 	}
 }
