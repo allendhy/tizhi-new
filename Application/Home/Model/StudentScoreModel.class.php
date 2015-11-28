@@ -555,5 +555,28 @@ class StudentScoreModel extends Model {
 
 		return $this->where($where)->getField("avg(CASE is_avoid WHEN 1 THEN 60 ELSE total_score END) avg_score");
 	}
+
+	//上报的体质成绩
+	public function cshedu_data($year_year,$town_id,$school_code,$school_grade = 0,$class_num = 0){
+
+		$partition_field = intval($town_id . $year_year);
+		$where = array(
+			'partition_field' => $partition_field,
+			's.school_code' =>	$school_code,
+			'sc.is_del' => 0,
+			's.join_test' => 1,
+			'sc.in_school' => 1,
+			'sc.is_check' => 1,
+			'sc.is_avoid' => 0,
+			);
+		if($school_grade > 0){
+			$where['school_grade'] = $school_grade;
+		}
+		if($class_num != '0'){
+			$where['class_num'] = $class_num;
+		}
+
+		return $this->alias('sc')->field('partition_field,year_score_id,school_grade,class_num,class_name,country_education_id,education_id,folk,name,(case sex when 106020 then 2 else 1 end) AS sex,birthday,student_source,idcardno,sc.address')->join('LEFT JOIN school s ON s.school_id = sc.school_id')->where($where)->order('school_grade,class_num')->select();
+	}
 }
 ?>
