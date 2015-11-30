@@ -977,7 +977,7 @@ class ShowController extends PublicController {
 	}
 	//审核学校上报情况
 	public function raterUpStatus(){
-		$ac = I('ac','');
+		$ac = I('ac','show');
 
 		$deal_status = I('deal_status','');
 
