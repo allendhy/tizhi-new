@@ -43,7 +43,7 @@
 														<td class="hidden-480">{$vo.sub_time}</td>
 														<td class="hidden-480">
 														<if condition="$vo['s_status'] eq 206020">
-														<a href="javascript:void(0);" data="{$vo.school_id}" style="font-weight:bold;color:blue;">审核通过</a>
+														<a href="javascript:void(0);" data="{$vo.school_id}" style="font-weight:bold;color:blue;" class="check">审核通过</a>
 														<elseif condition="$vo['s_status'] eq 206030" />
 														<a href="javascript:void(0);" data="{$vo.school_id}" class="check text-danger">撤销审核</a>
 														<else />

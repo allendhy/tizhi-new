@@ -90,7 +90,7 @@
 																<td class="hidden-480">{$vo.country_education_id}</td>
 																<td class="hidden-480">{$vo.total_score}</td>
 																<td class="hidden-480">{$vo.score_level}</td>
-																<td><form method="post" action="{:U('Home/Show/printRegister')}" target="_blank"><input type="hidden" name="ac" value="printOne" /><input type="hidden" name="par" value="{$vo.partition_field}" /><input type="hidden" name="id" value="{$vo.year_score_id}" /><input type="submit" class="printBtn btn btn-small  btn-white" value="打印"/><br /><input type="checkbox" value="on" name="chooseBtn" id="i_{$vo.year_score_id}">是否计算毕业成绩</form></td>
+																<td><form method="post" action="{:U('Home/Show/printRegister')}" target="_blank"><input type="hidden" name="ac" value="printOne" /><input type="hidden" name="par" value="{$vo.partition_field}" /><input type="hidden" name="id" value="{$vo.year_score_id}" /><input type="submit" class="printBtn btn btn-small  btn-white" value="打印"/><br /><if condition="in_array($vo['school_grade'],array(16,23,33))"><input type="checkbox" value="on" name="chooseBtn" id="i_{$vo.year_score_id}">是否计算毕业成绩</if></form></td>
 															</tr>
 															</volist>											
 														</tbody>

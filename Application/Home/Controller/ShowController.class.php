@@ -977,7 +977,7 @@ class ShowController extends PublicController {
 	}
 	//审核学校上报情况
 	public function raterUpStatus(){
-		$ac = I('ac','show');
+		$ac = I('ac','');
 
 		$deal_status = I('deal_status','');
 
@@ -1140,8 +1140,6 @@ class ShowController extends PublicController {
 			$year_score_id = I('id',0);
 			//是否打印毕业成绩
 			$chooseBtn = I('chooseBtn','');
-
-
 
 			if(!$partition_field || !$year_score_id)$this->error('参数错误!');
 
