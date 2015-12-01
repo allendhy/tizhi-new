@@ -556,7 +556,7 @@ class StudentScoreModel extends Model {
 		return $this->where($where)->getField("avg(CASE is_avoid WHEN 1 THEN 60 ELSE total_score END) avg_score");
 	}
 
-	//上报的体质成绩
+	//上报的体质成绩,不能导出全国学籍号为空的数据
 	public function cshedu_data($year_year,$town_id,$school_code,$school_grade = 0,$class_num = 0){
 
 		$partition_field = intval($town_id . $year_year);
@@ -568,6 +568,7 @@ class StudentScoreModel extends Model {
 			'sc.in_school' => 1,
 			'sc.is_check' => 1,
 			'sc.is_avoid' => 0,
+			'sc.country_education_id' => array('exp','IS NOT NULL'),
 			);
 		if($school_grade > 0){
 			$where['school_grade'] = $school_grade;
