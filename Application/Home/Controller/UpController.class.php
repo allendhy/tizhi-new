@@ -163,6 +163,10 @@ class UpController extends PublicController {
 				$this->ajaxReturn(array('errno'=>102,'errtitle'=>'数据上报截止时间为'.$school_year_info['not_upload_time']));
 			}
 
+			//朝阳区功能
+			if($userinfo['org_id'] == 110105){
+				$this->ajaxReturn(array('errno'=>109,'errtitle'=>'功能暂未开放!'));
+			}
 
 			if($userinfo['org_id'] != 110105 && $userinfo['user_kind'] != '109010'){
 

@@ -1039,7 +1039,6 @@ class ShowController extends PublicController {
 
 		if($ac == 'showStatus'){
 			$info = D('SchoolStatus')->get_town_status_list($this->school_year,$this->town_id);
-
 			$this->assign('info',$info);
 		}
 

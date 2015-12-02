@@ -173,7 +173,6 @@ class StudentScoreModel extends Model {
 			$this->rollback();
 			return array('errno'=>3,'errtitle'=>'状态设置失败！');
 		}
-		
 	}
 
 	//返回体质信息列表
