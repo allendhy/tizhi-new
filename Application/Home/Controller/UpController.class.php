@@ -164,9 +164,9 @@ class UpController extends PublicController {
 			}
 
 			//朝阳区功能
-			if($userinfo['org_id'] == 110105){
-				$this->ajaxReturn(array('errno'=>109,'errtitle'=>'功能暂未开放!'));
-			}
+			//if($userinfo['org_id'] == 110105){
+			//	$this->ajaxReturn(array('errno'=>109,'errtitle'=>'功能暂未开放!'));
+			//}
 
 			if($userinfo['org_id'] != 110105 && $userinfo['user_kind'] != '109010'){
 

@@ -721,12 +721,12 @@ $objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText
 				
 			$n = 0;
 			for($i = 'j';$i < 'z';$i++){
+				if($n == count($gradeItem[$grade]))break;
 				$objActSheet->setCellValueExplicit($i.'1', $gradeItem[$grade][$n],\PHPExcel_Cell_DataType::TYPE_STRING);
 				$objActSheet->getStyle($i.'1')->getNumberFormat()->setFormatCode("@");
-				if($n == count($gradeItem[$grade]) - 1)break;
 				$n++;
 			}
-			
+
 			$country_education_id_exp = ' is not null';
 
 			$data = D('StudentScore')->cshedu_data($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
@@ -782,19 +782,17 @@ $objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText
 							$v['exam_result_display'] = intval($v['exam_result_display']);
 							break;
 					}
-					
-
+				
 					$ItemScore[$v['item_id']] = $v;
 				}
 
 				$n = 0;
 				for($i = 'j';$i < 'z';$i++){
+					if($n == count($gradeItem[$grade]))break;
 					$objActSheet->setCellValueExplicit($i.$rowNum, $ItemScore[$item_no[$gradeItemField[$grade][$n]]]['exam_result_display'],\PHPExcel_Cell_DataType::TYPE_STRING);
 					$objActSheet->getStyle($i.$rowNum)->getNumberFormat()->setFormatCode("@");
-					if($n == count($gradeItem[$grade]) - 1)break;
 					$n++;
 				}
-
 				$rowNum++;
 			}
 				

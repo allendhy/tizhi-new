@@ -42,7 +42,7 @@
 														<td>{$vo['s_cnt'] - $vo['s_notinschool_cnt']}</td>
 														<td>{$vo['s_phy_cnt'] - $vo['s_phynotinschool_cnt']}</td>
 														<td>{$vo['s_phy_cnt'] - $vo['s_phynotinschool_cnt'] - $vo['s_phyavoid_cnt']}</td>
-														<td>{:round(($vo['s_phy_cnt'] - ($vo['s_phynotinschool_cnt']+$vo['s_phynoceid']-$vo['s_phyn2_cnt']))/$vo['s_cnt'],4)*100}%</td>
+														<td>{:round(($vo['s_phy_cnt'] - ($vo['s_phynotinschool_cnt']+$vo['s_phynoceid']-$vo['s_phyn2_cnt']))/($vo['s_cnt'] - $vo['s_notinschool_cnt']),4)*100}%</td>
 													</tr>
 												</volist>
 												</tbody>
