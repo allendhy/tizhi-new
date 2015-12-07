@@ -327,7 +327,7 @@ class UpController extends PublicController {
 				if(empty($stuinfo)){
 					$errLogT2 .=  " 非当前学校数据或者数据格式错误，请核对学生姓名、".$fieldTitle."是否有误；";
 				}elseif($stuinfo['in_school'] == 0){
-					$errLogT2 .=  " 当前学生已设置为不在学,如需上报体质信息请设置该生在学状态为'是';";
+					$errLogT2 .=  " 当前学生已设置为不在测,如需上报体质信息请设置该生是否在测为'是';";
 				}
 				
 			}else{

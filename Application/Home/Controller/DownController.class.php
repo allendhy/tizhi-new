@@ -174,8 +174,8 @@ class DownController extends PublicController {
 				$objActSheet->setCellValueExplicit('A1', '年级编号',\PHPExcel_Cell_DataType::TYPE_STRING);
 				$objActSheet->getStyle('A1')->getNumberFormat()->setFormatCode("@");
 				/**
-$objPHPExcel->getActiveSheet()->getComment( 'A1')->setAuthor('PHPExcel' );     //设置作者
-$objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText()->createTextRun('PHPExcel:');  //添加批注
+				$objPHPExcel->getActiveSheet()->getComment( 'A1')->setAuthor('PHPExcel' );     //设置作者
+				$objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText()->createTextRun('PHPExcel:');  //添加批注
 				*/
 				$objActSheet->setCellValueExplicit('B1', '班级编号',\PHPExcel_Cell_DataType::TYPE_STRING);
 				$objActSheet->getStyle('B1')->getNumberFormat()->setFormatCode("@");
@@ -207,6 +207,7 @@ $objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText
 
 				exit();
 				*/
+				/*
 				if($this->school_grade > 0){
 
 					if(in_array($this->school_grade,array(21,22,23,24)) && $school_length54_count > 0){
@@ -224,7 +225,7 @@ $objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText
 					}
 
 				}else{
-					
+				*/
 					$data = D('StudentScore')->get_grades($this->school_year,$this->town_id,$this->school_code);
 					$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$this->school_code);
 
@@ -255,7 +256,7 @@ $objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText
 					}elseif(!isset($grades['xx']) && isset($grades['zx'])){
 						$grade = 21;
 					}
-				}
+			//	}
 				
 				$n = 0;
 				for($i = 'j';$i < 'z';$i++){
@@ -668,7 +669,7 @@ $objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText
 			$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$this->school_code,$this->school_grade);
 
 			$grade = $this->school_grade;
-
+			/*
 			if($this->school_grade > 0){
 
 				if(in_array($this->school_grade,array(21,22,23,24)) && $school_length54_count > 0){
@@ -686,7 +687,7 @@ $objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText
 				}
 
 			}else{
-					
+			*/		
 				$data = D('StudentScore')->get_grades($this->school_year,$this->town_id,$this->school_code);
 				$school_length54_count = D('StudentScore')->get_school_length54_count($this->school_year,$this->town_id,$this->school_code);
 
@@ -717,7 +718,7 @@ $objCommentRichText = $objPHPExcel->getActiveSheet()->getComment('A1' )->getText
 				}elseif(!isset($grades['xx']) && isset($grades['zx'])){
 					$grade = 21;
 				}
-			}
+			//}
 				
 			$n = 0;
 			for($i = 'j';$i < 'z';$i++){
