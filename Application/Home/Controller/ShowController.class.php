@@ -141,8 +141,8 @@ class ShowController extends PublicController {
 		}else{
 			$this->web_title = '查看受检未检人数';
 			$this->page_template = "Show:upNum";
-
-			if($this->school_grade != 0 || $this->year < 2014){
+			//echo dump($this->school_grade);
+			if($this->school_grade != '0' || $this->school_year < 2014){
 				$data = D('StudentScore')->get_up_num($this->school_year,$this->town_id,$this->school_code,$this->school_grade,$this->class_num);
 			}else{
 				//school_status

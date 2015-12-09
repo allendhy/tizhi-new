@@ -132,6 +132,8 @@ class UpController extends PublicController {
 			$this->assign('is_upload',$is_upload);
 			$this->assign('ac',$ac);
 			$this->assign('timestamp',time());
+
+
 			if($ac == 'phydata2'){
 				$this->web_title = '上传学生体质信息(无全国学籍号)';
 			}else{
@@ -145,9 +147,6 @@ class UpController extends PublicController {
 	//有全国学籍号:phydata, 无全国学籍号:phydata2
 	private function _phydata($fileinfo,$ac='phydata'){
 		//$this->ajaxReturn($fileinfo);
-
-		$this->school_id = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year,'one');
-		$this->school_id = $this->school_id['school_id'];
 
 		//查看是否截止上报
 		$school_year_info  = D('SchoolYear')->get_info($this->school_year);
@@ -190,34 +189,31 @@ class UpController extends PublicController {
 		$PHPExcel = \PHPExcel_IOFactory::load($_SERVER['DOCUMENT_ROOT']  . $fPath);
 		$reader->setReadDataOnly(true);
 
-		$sheet = $PHPExcel->getSheet(0);//sheet1
-		$highestRow = $sheet->getHighestRow();//总行数
-		$highestColumn = $sheet->getHighestColumn();//总列数,字母表示
 
-		//判断是否空文件
-		if($highestRow <= 1){
-			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
-			$this->ajaxReturn(array('errno'=>103,'errtitle'=>'您上传的文件没有内容!'));
+		$PHPReader = new \PHPExcel_Reader_Excel2007();
+		//为了可以读取所有版本Excel文件
+		if(!$PHPReader->canRead($_SERVER['DOCUMENT_ROOT']  . $fPath))
+		{						
+			$PHPReader = new \PHPExcel_Reader_Excel5();	
+			if(!$PHPReader->canRead($_SERVER['DOCUMENT_ROOT']  . $fPath))
+			{						
+				@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+				$this->ajaxReturn(array('errno'=>104,'errtitle'=>'未发现excel文件!'));
+			}
 		}
 
-		$keys = array('grade_num','class_num','class_name','country_education_id','folk_code','name','sex','birthday','address');
-		//将导入记录插入到导入历史表
-		//上传状态为初始状态204010 上传中
-		//is_error 初始状态为正确，待数据校验完毕后更改该列值
-		$importLogData = array(
-			'user_id'=>$this->school_id,
-			'year_year'=>$this->school_year,
-			'import_time'=>date('Y-m-d H:i:s'),
-			'file_name'=>$fileinfo['info']['name'],
-			'file_path'=>$fPath,
-			'deal_status'=>'204010',//文件上传状态
-			'is_error'=>'0',
-			'town_id'=>$this->town_id,
-			'partition_field'=>intval($this->town_id.$this->school_year),
-		);
-		//补录数据
-		if($ac == 'historyPhydata')$importLogData['is_examine'] = 0;
+		////不需要读取整个Excel文件而获取所有工作表数组的函数
+		$sheetNames  = $PHPReader->listWorksheetNames($_SERVER['DOCUMENT_ROOT']  . $fPath);
 
+		if($userinfo['org_id'] != 110105)$sheetNames = array($this->school_code);
+		else{
+			if(empty($sheetNames)){
+				@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+				$this->ajaxReturn(array('errno'=>1115,'errtitle'=>'excel内容为空!'));
+			}
+		}
+		/*表头*/
+		$keys = array('grade_num','class_num','class_name','country_education_id','folk_code','name','sex','birthday','address');
 		$titContent = array(
 			'body_height'=>'身高',
 			'body_weight'=>'体重',
@@ -235,291 +231,345 @@ class UpController extends PublicController {
 		);
 
 		$gradeItem = C('GRADE_ITEM_FIELD');
+		/*表头end*/
 
-		
-				
+		//循环sheet
 		//记录错误内容
+
 		$errorLog = '';
 		//启动事务
 		M()->startTrans();
 
-		$import_id = D('ImportLog')->add($importLogData);
-		if(!$import_id){
-			//删除文件
-			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
-			M()->rollback();
-			$this->ajaxReturn(array('errno'=>102,'errtitle'=>'保存上传记录失败，请稍候重试！'));
-		}
+		foreach($sheetNames as $sk=>$sname){
 
-		$titleArr = array();
-		//从第九列开始
-		$columnNum = 9;
-		for($column = 'J';$column <= $highestColumn;$column++){
-			$val = $sheet->getCellByColumnAndRow($columnNum,1)->getValue();
-			if($val instanceof PHPExcel_RichText) {
-				//富文本转换字符串
-				$val = $val->__toString();
+			$this->school_code = $sname;
+			$this->school_id = D('School')->get_list_by_schoolcode_year($this->school_code,$this->school_year,'one');
+
+			if(empty($this->school_id)){
+				@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+				$this->ajaxReturn(array('errno'=>1116,'errtitle'=>'sheet名称为' . $sname . '的学校代码错误,找不到该学校'));
+				break;
 			}
-			$val  =  trim($val);
-			if($val == '身高')$titleArr[] = 'body_height';
-			elseif($val == '体重')$titleArr[] = 'body_weight';
-			elseif($val == '肺活量')$titleArr[] = 'vital_capacity';
-			elseif($val == '50米跑')$titleArr[] = 'wsm';
-			elseif($val == '坐位体前屈')$titleArr[] = 'zwtqq';
-			elseif($val == '一分钟跳绳')$titleArr[] = 'yfzts';
-			elseif(strpos($val,'800米跑') !== false)$titleArr[] = 'bbm_nv';
-			elseif(strpos($val,'1000米跑')  !== false)$titleArr[] = 'yqm_nan';
-			/*elseif(strpos($val,'一分钟仰卧起坐')  !== false && strpos($val,'女')  !== false){
-				$titleArr[] = 'ywqz_nv';
-			}*/
-			elseif(strpos($val,'一分钟仰卧起坐')  !== false ){
-				$titleArr[] = 'ywqz_ytxs';
-			}
-			elseif(strpos($val,'引体向上')  !== false)$titleArr[] = 'ytxs_nan';
-			elseif(strpos($val,'立定跳远')  !== false)$titleArr[] = 'ldty';
-			elseif(strpos($val,'往返跑')  !== false)$titleArr[] = 'wsmwfp';
-					
-			$columnNum ++;
-		}
+			$this->school_id = $this->school_id['school_id'];
+
+			$schoolids[] = $this->school_id;
 		
-		if(empty($titleArr)){
-			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
-			M()->rollback();
-			$this->ajaxReturn(array('errno'=>105,'errtitle'=>'请务必使用本系统或者国家体质检测系统下载的上报模板并不要更改列格式！'));
-		}
+			/*读取每一页内容*/
+	
+			$sheet = $PHPExcel->getSheet($sk);//sheet1
+			$highestRow = $sheet->getHighestRow();//总行数
+			$highestColumn = $sheet->getHighestColumn();//总列数,字母表示
 
-		//合并表头
-		$keys = array_merge($keys,$titleArr);
-		$titleCount = count($keys);
+			//判断是否空文件
+			if($highestRow <= 1){
+				@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+				$this->ajaxReturn(array('errno'=>103,'errtitle'=>'您上传的文件没有内容!'));
+			}
 
-		if($ac == 'phydata2'){
-			$field = 'education_id';
-			$fieldTitle = '教育ID号';
-		}else{
-			$field = 'country_education_id';
-			$fieldTitle = '全国学籍号';
-		}
+			//将导入记录插入到导入历史表
+			//上传状态为初始状态204010 上传中
+			//is_error 初始状态为正确，待数据校验完毕后更改该列值
+			$importLogData = array(
+				'user_id'=>$this->school_id,
+				'year_year'=>$this->school_year,
+				'import_time'=>date('Y-m-d H:i:s'),
+				'file_name'=>$fileinfo['info']['name'],
+				'file_path'=>$fPath,
+				'deal_status'=>'204010',//文件上传状态
+				'is_error'=>'0',
+				'town_id'=>$this->town_id,
+				'partition_field'=>intval($this->town_id.$this->school_year),
+			);
 
-		$phyData = array();
+			//补录数据
+			if($ac == 'historyPhydata')$importLogData['is_examine'] = 0;
 
-		for($row=2;$row<=$highestRow;$row++){
-			for($column = 0;$column < $titleCount;$column++){
-				$val = $sheet->getCellByColumnAndRow($column,$row)->getValue();
+			$import_id = D('ImportLog')->add($importLogData);
+
+			$importids[] = $import_id;
+
+
+			if(!$import_id){
+				//删除文件
+				@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+				M()->rollback();
+				$this->ajaxReturn(array('errno'=>102,'errtitle'=>'保存上传记录失败，请稍候重试！'));
+			}
+
+			$titleArr = array();
+			//从第九列开始
+			$columnNum = 9;
+
+			for($column = 'J';$column <= $highestColumn;$column++){
+				$val = $sheet->getCellByColumnAndRow($columnNum,1)->getValue();
 				if($val instanceof PHPExcel_RichText) {
 					//富文本转换字符串
 					$val = $val->__toString();
 				}
 				$val  =  trim($val);
-				$phyData[$row][$keys[$column]] = $val;
+				if($val == '身高')$titleArr[] = 'body_height';
+				elseif($val == '体重')$titleArr[] = 'body_weight';
+				elseif($val == '肺活量')$titleArr[] = 'vital_capacity';
+				elseif($val == '50米跑')$titleArr[] = 'wsm';
+				elseif($val == '坐位体前屈')$titleArr[] = 'zwtqq';
+				elseif($val == '一分钟跳绳')$titleArr[] = 'yfzts';
+				elseif(strpos($val,'800米跑') !== false)$titleArr[] = 'bbm_nv';
+				elseif(strpos($val,'1000米跑')  !== false)$titleArr[] = 'yqm_nan';
+				/*elseif(strpos($val,'一分钟仰卧起坐')  !== false && strpos($val,'女')  !== false){
+					$titleArr[] = 'ywqz_nv';
+				}*/
+				elseif(strpos($val,'一分钟仰卧起坐')  !== false ){
+					$titleArr[] = 'ywqz_ytxs';
+				}
+				elseif(strpos($val,'引体向上')  !== false)$titleArr[] = 'ytxs_nan';
+				elseif(strpos($val,'立定跳远')  !== false)$titleArr[] = 'ldty';
+				elseif(strpos($val,'往返跑')  !== false)$titleArr[] = 'wsmwfp';
+						
+				$columnNum ++;
+			}
+			
+			if(empty($titleArr)){
+				@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+				M()->rollback();
+				$this->ajaxReturn(array('errno'=>105,'errtitle'=>'请务必使用本系统或者国家体质检测系统下载的上报模板并不要更改列格式！'));
 			}
 
-			if($phyData[$row]['country_education_id'] == '' && $phyData[$row]['name'] == '')break;
-					
-			$errLogT1 = '第 '.$row.' 行';
-			$errLogT2 = '';
+			//合并表头
+			$keys = array_merge($keys,$titleArr);
+			$titleCount = count($keys);
 
-			if($phyData[$row]['country_education_id'] == '')$errLogT2 .= $fieldTitle . '不能为空；';
-			if($phyData[$row]['name'] == '')$errLogT2 .= '姓名不能为空；';
-
-			$stuinfo = D('StudentScore')->where("partition_field = %d AND school_id= %d AND ".$field." = '%s' AND name = '%s' AND is_del = 0",array($importLogData['partition_field'],$this->school_id,$phyData[$row]['country_education_id'],$phyData[$row]['name']))->find();
-			
-			if(empty($stuinfo) || $stuinfo['in_school'] == 0){
-				if(empty($stuinfo)){
-					$errLogT2 .=  " 非当前学校数据或者数据格式错误，请核对学生姓名、".$fieldTitle."是否有误；";
-				}elseif($stuinfo['in_school'] == 0){
-					$errLogT2 .=  " 当前学生已设置为不在测,如需上报体质信息请设置该生是否在测为'是';";
-				}
-				
+			if($ac == 'phydata2'){
+				$field = 'education_id';
+				$fieldTitle = '教育ID号';
 			}else{
-				$realGrade = $phyData[$row]['grade_num'];
-				if($stuinfo['school_length54'] == 1){
-					switch($stuinfo['school_grade']){
-						case 21:
-							$realGrade = 16;
-							break;
-						case 22:
-							$realGrade = 21;
-							break;
-						case 23:
-							$realGrade = 22;
-							break;
-						case 24:
-							$realGrade = 23;
-							break;
-						default:
-							$realGrade = $stuinfo['school_grade'];
-							break;
-					}
-				}
-				if(!in_array($realGrade,array('11','12','13','14','15','16','21','22','23','24','31','32','33','34')))$errLogT2 .= ' 年级编号错误 ;';
-						
-				if(in_array($realGrade,array('11','12'))){
-					$titles = $gradeItem[11];
-				}elseif(in_array($realGrade,array('13','14'))){
-					$titles = $gradeItem[13];
-				}elseif(in_array($realGrade,array('15','16'))){
-					$titles = $gradeItem[15];
-				}else{
-					$titles = $gradeItem[21];
-				}
-						
-				if(!in_array($phyData[$row]['sex'],array(1,2))){
-					$errLogT2 .= ' 性别列用数字1和2表示 ;';
-				}
-				if($phyData[$row]['sex']!= substr($stuinfo['sex'],4,1)){
-					$errLogT2 .= ' 学生性别与cmis信息不一致 ;';
-				}
-						
-						
-				$titleErr = 0;
-				
-				foreach($titles as $va){
-					$tmpStr 	= $phyData[$row][$va];
-					if($phyData[$row]['body_height'] == '免体'){
-						break;
-					}
+				$field = 'country_education_id';
+				$fieldTitle = '全国学籍号';
+			}
 
-					if($realGrade > 16){
-						if($tmpStr == '' && in_array($va,array('body_height','body_weight','vital_capacity','wsm','ldty','zwtqq'))){
-							$titleErr = 1;
+			$phyData = array();
+
+			$sheetErr = $sname . '页 ';
+
+			for($row=2;$row<=$highestRow;$row++){
+				for($column = 0;$column < $titleCount;$column++){
+					$val = $sheet->getCellByColumnAndRow($column,$row)->getValue();
+					if($val instanceof PHPExcel_RichText) {
+						//富文本转换字符串
+						$val = $val->__toString();
+					}
+					$val  =  trim($val);
+					$phyData[$row][$keys[$column]] = $val;
+				}
+
+				if($phyData[$row]['country_education_id'] == '' && $phyData[$row]['name'] == '')break;
+				
+				$errLogT1 = '第 '.$row.' 行';
+				$errLogT2 = '';
+
+				if($phyData[$row]['country_education_id'] == '')$errLogT2 .= $fieldTitle . '不能为空；';
+				if($phyData[$row]['name'] == '')$errLogT2 .= '姓名不能为空；';
+
+				$stuinfo = D('StudentScore')->where("partition_field = %d AND school_id= %d AND ".$field." = '%s' AND name = '%s' AND is_del = 0",array($importLogData['partition_field'],$this->school_id,$phyData[$row]['country_education_id'],$phyData[$row]['name']))->find();
+		
+				if(empty($stuinfo) || $stuinfo['in_school'] == 0){
+					if(empty($stuinfo)){
+						$errLogT2 .=  " 非当前学校数据或者数据格式错误，请核对学生姓名、".$fieldTitle."是否有误；";
+					}elseif($stuinfo['in_school'] == 0){
+						$errLogT2 .=  " 当前学生已设置为不在测,如需上报体质信息请设置该生是否在测为'是';";
+					}
+					
+				}else{
+					$realGrade = $phyData[$row]['grade_num'];
+					if($stuinfo['school_length54'] == 1){
+						switch($stuinfo['school_grade']){
+							case 21:
+								$realGrade = 16;
+								break;
+							case 22:
+								$realGrade = 21;
+								break;
+							case 23:
+								$realGrade = 22;
+								break;
+							case 24:
+								$realGrade = 23;
+								break;
+							default:
+								$realGrade = $stuinfo['school_grade'];
+								break;
+						}
+					}
+					if(!in_array($realGrade,array('11','12','13','14','15','16','21','22','23','24','31','32','33','34')))$errLogT2 .= ' 年级编号错误 ;';
+							
+					if(in_array($realGrade,array('11','12'))){
+						$titles = $gradeItem[11];
+					}elseif(in_array($realGrade,array('13','14'))){
+						$titles = $gradeItem[13];
+					}elseif(in_array($realGrade,array('15','16'))){
+						$titles = $gradeItem[15];
+					}else{
+						$titles = $gradeItem[21];
+					}
+							
+					if(!in_array($phyData[$row]['sex'],array(1,2))){
+						$errLogT2 .= ' 性别列用数字1和2表示 ;';
+					}
+					if($phyData[$row]['sex']!= substr($stuinfo['sex'],4,1)){
+						$errLogT2 .= ' 学生性别与cmis信息不一致 ;';
+					}
+							
+							
+					$titleErr = 0;
+					
+					foreach($titles as $va){
+						$tmpStr 	= $phyData[$row][$va];
+						if($phyData[$row]['body_height'] == '免体'){
+							break;
+						}
+
+						if($realGrade > 16){
+							if($tmpStr == '' && in_array($va,array('body_height','body_weight','vital_capacity','wsm','ldty','zwtqq'))){
+								$titleErr = 1;
+							}else{
+								if($phyData[$row]['sex'] == 2 && $va == 'bbm_nv' && $tmpStr == ''){
+									$titleErr = 1;
+								}elseif($phyData[$row]['sex'] == 2 && $va == 'ywqz_ytxs' && $tmpStr == ''){
+									$titleErr = 1;
+								}elseif($phyData[$row]['sex'] == 1 && $va == 'yqm_nan' && $tmpStr == ''){
+									$titleErr = 1;
+								}elseif($phyData[$row]['sex'] == 1 && $va == 'ytxs_nan' && $tmpStr == ''){
+									$titleErr = 1;
+								}
+							}
+									
 						}else{
-							if($phyData[$row]['sex'] == 2 && $va == 'bbm_nv' && $tmpStr == ''){
-								$titleErr = 1;
-							}elseif($phyData[$row]['sex'] == 2 && $va == 'ywqz_ytxs' && $tmpStr == ''){
-								$titleErr = 1;
-							}elseif($phyData[$row]['sex'] == 1 && $va == 'yqm_nan' && $tmpStr == ''){
-								$titleErr = 1;
-							}elseif($phyData[$row]['sex'] == 1 && $va == 'ytxs_nan' && $tmpStr == ''){
-								$titleErr = 1;
+							if($va == 'ywqz_ytxs'){
+								//$tmpStr=$phyData[$row]['ywqz_ytxs'];	
+								$titleErr = $tmpStr == '' ? 1 : 0; 
 							}
 						}
 								
-					}else{
-						if($va == 'ywqz_ytxs'){
-							//$tmpStr=$phyData[$row]['ywqz_ytxs'];	
-							$titleErr = $tmpStr == '' ? 1 : 0; 
+						if($titleErr == 1){
+							$errLogT2 .= $titContent[$va] . ' 不能为空;';
+							$titleErr = 0;
+							continue;
 						}
-					}
-							
-					if($titleErr == 1){
-						$errLogT2 .= $titContent[$va] . ' 不能为空;';
-						$titleErr = 0;
-						continue;
-					}
-							
-					if(!is_numeric($tmpStr) && $tmpStr != ''){
-						if(!preg_match("('|’|”|′|\")",$tmpStr)){
-							$errLogT2 .= $titContent[$va] . "[".$tmpStr."] 不是有效的体质健康数据，请确认; ";
-						}else{
-							$tmpStr = str_replace("’",'′',$tmpStr);
-							$tmpStr = str_replace("”",'′′',$tmpStr);
-							$tmpStr = str_replace("'",'′',$tmpStr);
-							$tmpStr = str_replace("''",'′′',$tmpStr);
-							$tmpStr = str_replace("\"",'′′',$tmpStr);
-						}
-					}
-
-					if(!strpos($tmpStr,'′') && !strpos($tmpStr,'′′')){
-						$phyData[$row][$va] = floatval($tmpStr);
-					}else{
-						//50米跑只能用小数点分隔
-						if($va == 'wsm')
-							$errLogT2 .= $titContent[$va] . "[".$tmpStr."] 必须使用小数点分隔; ";
-						else{
-							$tmpFen = strpos($tmpStr,'′') ? intval(substr($tmpStr,0,strpos($tmpStr,'′'))) : 0;
-							$tmpMiao = strpos($tmpStr,'′') ? substr(strstr($tmpStr,'′'),3,strlen($tmpStr)-1) : '00' ;
-									
-							$tmpMiao = strlen($tmpMiao) == 1 ? '0'.$tmpMiao : $tmpMiao;
-									
-							$end_result = $tmpFen == 0 ? intval($tmpMiao) : floatval($tmpFen.'.'.$tmpMiao);
-
-							if(!$end_result||intval($tmpMiao)>59){
-								$errLogT2 .= " 分秒时间格式错误或者秒大于59，请确认; ";
+								
+						if(!is_numeric($tmpStr) && $tmpStr != ''){
+							if(!preg_match("('|’|”|′|\")",$tmpStr)){
+								$errLogT2 .= $titContent[$va] . "[".$tmpStr."] 不是有效的体质健康数据，请确认; ";
 							}else{
-								$phyData[$row][$va] = $end_result;
+								$tmpStr = str_replace("’",'′',$tmpStr);
+								$tmpStr = str_replace("”",'′′',$tmpStr);
+								$tmpStr = str_replace("'",'′',$tmpStr);
+								$tmpStr = str_replace("''",'′′',$tmpStr);
+								$tmpStr = str_replace("\"",'′′',$tmpStr);
+							}
+						}
+
+						if(!strpos($tmpStr,'′') && !strpos($tmpStr,'′′')){
+							$phyData[$row][$va] = floatval($tmpStr);
+						}else{
+							//50米跑只能用小数点分隔
+							if($va == 'wsm')
+								$errLogT2 .= $titContent[$va] . "[".$tmpStr."] 必须使用小数点分隔; ";
+							else{
+								$tmpFen = strpos($tmpStr,'′') ? intval(substr($tmpStr,0,strpos($tmpStr,'′'))) : 0;
+								$tmpMiao = strpos($tmpStr,'′') ? substr(strstr($tmpStr,'′'),3,strlen($tmpStr)-1) : '00' ;
+										
+								$tmpMiao = strlen($tmpMiao) == 1 ? '0'.$tmpMiao : $tmpMiao;
+										
+								$end_result = $tmpFen == 0 ? intval($tmpMiao) : floatval($tmpFen.'.'.$tmpMiao);
+
+								if(!$end_result||intval($tmpMiao)>59){
+									$errLogT2 .= " 分秒时间格式错误或者秒大于59，请确认; ";
+								}else{
+									$phyData[$row][$va] = $end_result;
+								}
 							}
 						}
 					}
 				}
-			}
-			$errLogT3 = ' <br>';
+				$errLogT3 = ' <br>';
 
-			if($errLogT2 != '') {$errorLog .= $errLogT1 . $errLogT2 . $errLogT3; continue;}
-			//print_r($stuinfo);exit();
-			$data = array(
-				'import_id'				=>	$import_id,
-				'is_error'				=>	0,
-				'error_desc'			=>	'',
-				'excel_num'				=>	$row,
-				'education_id'			=>	$stuinfo['education_id'],
-				'country_education_id'	=>	$stuinfo['country_education_id'],
-				'student_no'			=>	$stuinfo['studentno'],
-				'grade_num'				=>	str_replace("'","",$phyData[$row]['grade_num']),
-				'class_num'				=>	str_replace("'","",$phyData[$row]['class_num']),
-				'class_name'			=>	str_replace("'","",$phyData[$row]['class_name']),
-				'folk_code'				=>	str_replace("'","",$stuinfo['fork_code']),
-				'name'					=>	$stuinfo['name'],
-				'sex'					=>	$stuinfo['sex'] == '106020' ? '女' : '男',
-				'birthday'				=>	date('Y-m-d',strtotime($stuinfo['birthday'])),
-				'student_source'		=>	$stuinfo['student_source'],
-				'address'				=>	str_replace("'","",$phyData[$row]['address']),
-				'rewards_code'			=>	0,
-				'town_id'				=>	$importLogData['town_id'],
-				'partition_field'		=>	$importLogData['partition_field'],
-				'year_year'				=>  $importLogData['year_year'],
-				'import_time'			=>  date('Y-m-d H:i:s'),
-				'is_avoid'				=>	'否'
-			);
-			//是否为补录数据
-			if($ac == 'historyPhydata')$data['examine'] = 0;
-			
-			if($phyData[$row]['body_height'] === '免体'){
-				$data['is_avoid']	=	'是';
-			}else{
-				$data['body_height']	=	floatval($phyData[$row]['body_height']);
-				$data['body_weight']	=	floatval($phyData[$row]['body_weight']);
-				$data['vital_capacity']	=	floatval($phyData[$row]['vital_capacity']);
-
-				$data['wsm'] 			= 	floatval($phyData[$row]['wsm']);
-				$data['ldty']			= 	floatval($phyData[$row]['ldty']);
-				$data['zwtqq'] 			= 	floatval($phyData[$row]['zwtqq']);
-
-				if($phyData[$row]['wsmwfp'] != ''){
-					$data['wsmwfp'] = floatval($phyData[$row]['wsmwfp']);
-				}
-				if($phyData[$row]['yfzts'] != ''){
-					$data['yfzts'] = (int)($phyData[$row]['yfzts']);
-				}
-				if($stuinfo['sex'] == '106020' && $phyData[$row]['bbm_nv']!=''){
-					$data['bbm_yqm'] = floatval($phyData[$row]['bbm_nv']);
-				}elseif($stuinfo['sex'] == '106010' && $phyData[$row]['yqm_nan']!=''){
-					$data['bbm_yqm'] = floatval($phyData[$row]['yqm_nan']);
-				}
-				if($realGrade < 21){
-					if($phyData[$row]['ywqz_ytxs'] != '')
-					$data['ywqz_ytxs'] = (int)($phyData[$row]['ywqz_ytxs']);
+				if($errLogT2 != '') {$errorLog .= $sheetErr . $errLogT1 . $errLogT2 . $errLogT3; continue;}
+				
+				$data = array(
+					'import_id'				=>	$import_id,
+					'is_error'				=>	0,
+					'error_desc'			=>	'',
+					'excel_num'				=>	$row,
+					'education_id'			=>	$stuinfo['education_id'],
+					'country_education_id'	=>	$stuinfo['country_education_id'],
+					'student_no'			=>	$stuinfo['studentno'],
+					'grade_num'				=>	str_replace("'","",$phyData[$row]['grade_num']),
+					'class_num'				=>	str_replace("'","",$phyData[$row]['class_num']),
+					'class_name'			=>	str_replace("'","",$phyData[$row]['class_name']),
+					'folk_code'				=>	str_replace("'","",$stuinfo['fork_code']),
+					'name'					=>	$stuinfo['name'],
+					'sex'					=>	$stuinfo['sex'] == '106020' ? '女' : '男',
+					'birthday'				=>	date('Y-m-d',strtotime($stuinfo['birthday'])),
+					'student_source'		=>	$stuinfo['student_source'],
+					'address'				=>	str_replace("'","",$phyData[$row]['address']),
+					'rewards_code'			=>	0,
+					'town_id'				=>	$importLogData['town_id'],
+					'partition_field'		=>	$importLogData['partition_field'],
+					'year_year'				=>  $importLogData['year_year'],
+					'import_time'			=>  date('Y-m-d H:i:s'),
+					'is_avoid'				=>	'否'
+				);
+				//是否为补录数据
+				if($ac == 'historyPhydata')$data['examine'] = 0;
+				
+				if($phyData[$row]['body_height'] === '免体'){
+					$data['is_avoid']	=	'是';
 				}else{
-					if($stuinfo['sex'] == '106020' && $phyData[$row]['ywqz_ytxs'] != ''){
+					$data['body_height']	=	floatval($phyData[$row]['body_height']);
+					$data['body_weight']	=	floatval($phyData[$row]['body_weight']);
+					$data['vital_capacity']	=	floatval($phyData[$row]['vital_capacity']);
+
+					$data['wsm'] 			= 	floatval($phyData[$row]['wsm']);
+					$data['ldty']			= 	floatval($phyData[$row]['ldty']);
+					$data['zwtqq'] 			= 	floatval($phyData[$row]['zwtqq']);
+
+					if($phyData[$row]['wsmwfp'] != ''){
+						$data['wsmwfp'] = floatval($phyData[$row]['wsmwfp']);
+					}
+					if($phyData[$row]['yfzts'] != ''){
+						$data['yfzts'] = (int)($phyData[$row]['yfzts']);
+					}
+					if($stuinfo['sex'] == '106020' && $phyData[$row]['bbm_nv']!=''){
+						$data['bbm_yqm'] = floatval($phyData[$row]['bbm_nv']);
+					}elseif($stuinfo['sex'] == '106010' && $phyData[$row]['yqm_nan']!=''){
+						$data['bbm_yqm'] = floatval($phyData[$row]['yqm_nan']);
+					}
+					if($realGrade < 21){
+						if($phyData[$row]['ywqz_ytxs'] != '')
 						$data['ywqz_ytxs'] = (int)($phyData[$row]['ywqz_ytxs']);
-					}elseif($stuinfo['sex'] == '106010' && $phyData[$row]['ytxs_nan'] != ''){
-						$data['ywqz_ytxs'] = (int)($phyData[$row]['ytxs_nan']);
+					}else{
+						if($stuinfo['sex'] == '106020' && $phyData[$row]['ywqz_ytxs'] != ''){
+							$data['ywqz_ytxs'] = (int)($phyData[$row]['ywqz_ytxs']);
+						}elseif($stuinfo['sex'] == '106010' && $phyData[$row]['ytxs_nan'] != ''){
+							$data['ywqz_ytxs'] = (int)($phyData[$row]['ytxs_nan']);
+						}
 					}
 				}
+						
+				//$birObj = object2array($stuinfo['birthday']);
+				//$data['birthday'] = date('Y-m-d H:i:s',strtotime($birObj['date']));
+
+				$school_length54 = $stuinfo['school_length54'];
+
+				$detail_id = D('import_detail_new')->add($data);
+						
+				if(!$detail_id){
+					$errLogT2 .= '添加学生记录失败！';
+				}
+
+				if($errLogT2 != '') $errorLog .= $sheetErr . $errLogT1 . $errLogT2 . $errLogT3;
 			}
-					
-			//$birObj = object2array($stuinfo['birthday']);
-			//$data['birthday'] = date('Y-m-d H:i:s',strtotime($birObj['date']));
-
-			$school_length54 = $stuinfo['school_length54'];
-
-			$detail_id = D('import_detail_new')->add($data);
-					
-			if(!$detail_id){
-				$errLogT2 .= '添加学生记录失败！';
-			}
-
-			if($errLogT2 != '') $errorLog .= $errLogT1 . $errLogT2 . $errLogT3;
 		}
+
 		if(!empty($errorLog)){
 			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
 			//回滚
@@ -527,11 +577,14 @@ class UpController extends PublicController {
 			$this->ajaxReturn(array('errno'=>'109','errtitle'=>$errorLog));
 		}else{
 			//数据上传成功后修改状态为 待校验：204020
-			D('ImportLog')->where('import_id= %d',$import_id)->setField('deal_status','204020');
+			$where['import_id'] = array('IN',$importids);
+			D('ImportLog')->where($where)->setField('deal_status','204020');
+
 			//朝阳区学校自动变更为已上报，无需点击上报按钮
 			if($userinfo['org_id'] == 110105 || $userinfo['user_kind'] == 109010){
 				$data = array('s_status'=>206020,'sub_time'=>time());
-				D('SchoolStatus')->where('school_id = %d',array($importLogData['user_id']))->save($data);
+				$where['school_id'] = array('IN',$schoolids);
+				D('SchoolStatus')->where($where)->save($data);
 			}
 			//提交
 			M()->commit();
@@ -862,7 +915,7 @@ class UpController extends PublicController {
 		$ac = I('ac','default');
 
 		$sch_status = D('SchoolStatus')->get_status_info_one($this->school_year,$this->school_code);
-
+		//echo M()->getlastsql();
 		$this->assign('sch_status',$sch_status);
 
 		if($ac == 'dataSubmit' && IS_AJAX && IS_POST){

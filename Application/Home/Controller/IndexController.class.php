@@ -134,10 +134,10 @@ class IndexController extends PublicController {
            
 
             ///初始化用户菜单
-            $navList = D('SysFunc')->getFuncByRole($user_info['user_kind']);
+            $navList = D('SysFunc')->getFuncByRole($user_info['user_kind'],$user_info['user_id']);
             session('navList',$navList);
             //允许当前用户操作的action
-            $actionList = D('SysFunc')->getActionList($user_info['user_kind']);
+            $actionList = D('SysFunc')->getActionList($user_info['user_kind'],$user_info['user_id']);
             session('actionList',$actionList);
 
             //print_r($_SESSION);exit();
