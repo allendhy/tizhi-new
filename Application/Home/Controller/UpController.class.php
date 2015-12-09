@@ -97,7 +97,8 @@ class UpController extends PublicController {
 
 		if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
 
-			if($this->school_code == 0)$this->ajaxReturn(array('errno'=>98,'errtitle'=>'请选择学校!'));
+			$userinfo = session('userinfo');
+			if($this->school_code == 0 && $userinfo['org_id'] != 110105)$this->ajaxReturn(array('errno'=>98,'errtitle'=>'请选择学校!'));
 			//判断来源
 			if(!in_array($ac,array('phydata','phydata2','historyPhydata'))){
 				$this->ajaxReturn(array('errno'=>99,'errtitle'=>'请求来源错误!'));
