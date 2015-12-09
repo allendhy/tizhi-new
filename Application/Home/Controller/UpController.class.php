@@ -183,6 +183,14 @@ class UpController extends PublicController {
 		//读取excel文件内容
 		$fPath = '/Upload/' . $fileinfo['info']['savepath'] . $fileinfo['info']['savename'];
 		
+		//文件大小限制
+		$filesize = filesize($_SERVER['DOCUMENT_ROOT'] . $fPath);
+
+		if($filesize > 2097152){
+			@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
+			$this->ajaxReturn(array('errno'=>111,'errtitle'=>'请不要上传超过2M的文件！'));
+		}
+
 		import("Org.Util.PHPExcel");
 		import("Org.Util.PHPExcel.IOFactory");
 
