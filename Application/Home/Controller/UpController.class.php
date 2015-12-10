@@ -23,7 +23,7 @@ class UpController extends PublicController {
 
 		$importLogs = D("ImportLog")->alias('ilog')->field('ilog.*,s.school_code')->join('LEFT JOIN school s ON s.school_id = ilog.user_id AND s.year_year = '.$this->school_year)->where(array('ilog.import_id'=>array('IN',$importids)))->select();
 
-		if(empty($importLog)){
+		if(empty($importLogs)){
 			$this->ajaxReturn(array('errno'=>1,'errtitle'=>'获取文件上传状态失败，请到‘查看学生体质上传情况’处查看上传记录！'));
 		}
 
