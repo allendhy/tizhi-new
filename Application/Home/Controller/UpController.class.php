@@ -30,28 +30,28 @@ class UpController extends PublicController {
 		$errorLists = '';
 
 		$errno = 0;
-		$msg = '';
+		$msglist = '';
 
 		foreach($importLogs as $importLog){
 			switch($importLog['deal_status']){
 				case '204010':
-					$msg = "文件上传中...";
+					$msg[$importLog['school_code']] = "文件上传中...";
 				break;
 				case '204020':
 					$count = D('import_log')->where('deal_status = 204020 AND is_error = 0')->count();
 					if($count > 1){
-						$msg = '排在您前边共有'.$count.'份体质数据文件等待校验，请您耐心等候。。。';
+						$msg[$importLog['school_code']] = '排在您前边共有'.$count.'份体质数据文件等待校验，请您耐心等候。。。';
 					}else{
-						$msg = "请稍候片刻，正在校验您上传的文件...";
+						$msg[$importLog['school_code']] = "请稍候片刻，正在校验您上传的文件...";
 					}
 				break;
 				case '204030':
-					$msg = "正在执行数据校验，请稍后...";
+					$msg[$importLog['school_code']] = "正在执行数据校验，请稍后...";
 				break;
 				case '204040':
-					$msg = "校验完毕";
+					$msg[$importLog['school_code']] = "校验完毕";
 					if($importLog['is_error']==1){
-						$msg = "校验完毕，数据有错误";
+						$msg[$importLog['school_code']] = "校验完毕，数据有错误";
 						if($importLog['year_year'] >= 2014){
 							$errorLists[$importLog['school_code']] = D('import_detail_new')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,country_education_id,name,sex')->where("partition_field = %d AND import_id= %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
 						}else{
@@ -61,34 +61,34 @@ class UpController extends PublicController {
 					}
 					if($importLog['is_examine'] != ''){
 						$errno = 1;
-						$msg = '数据校验完毕,待区县审核完毕后进行计算分数';
+						$msg[$importLog['school_code']] = '数据校验完毕,待区县审核完毕后进行计算分数';
 					}
 					
 
 				break;
 				case '204050':
-					$msg = "正在计算得分，请稍候...";
+					$msg[$importLog['school_code']] = "正在计算得分，请稍候...";
 				break;
 				case '204060':
-					$msg = "计算得分完毕";
+					$msg[$importLog['school_code']] = "计算得分完毕";
 				break;
 				default:
-					$msg = "正在上传文件...";
+					$msg[$importLog['school_code']] = "正在上传文件...";
 				break;
 			}
-			$msg = '<p>' . $importLog['school_code'] . '页  ' . $msg . '</p>';
+			$msglist .= '<p>' . $importLog['school_code'] . '页  ' . $msg[$importLog['school_code']] . '</p>';
 		}
 		if(!empty($errorLists)){
-			$msg .= '';
+			$msglist .= '';
 			foreach($errorLists as $school_code=>$errorList){
 				foreach($errorList as $row){
-					$msg .= "<p>" . $importLog['school_code'] . '页  ' . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
+					$msglist .= "<p>" . $importLog['school_code'] . '页  ' . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
 				}
 			}
 		}
 
 		//$msg = date('Y-m-d H:i:s');
-		$this->ajaxReturn(array('errno'=>$errno,'errtitle'=>$msg));
+		$this->ajaxReturn(array('errno'=>$errno,'errtitle'=>$msglist));
 	}
 	//上传体质信息
 	public function index($ac='phydata'){
