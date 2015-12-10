@@ -360,7 +360,7 @@ class DownController extends PublicController {
 			
 			$fileName = iconv('utf-8','gbk',$fileName);
 			// Rename sheet
-			$objPHPExcel->getActiveSheet()->setTitle('studentData');
+			$objPHPExcel->getActiveSheet()->setTitle($this->school_code);
 			// Set active sheet index to the first sheet, so Excel opens this as the first sheet
 			$objPHPExcel->setActiveSheetIndex(0);
 
