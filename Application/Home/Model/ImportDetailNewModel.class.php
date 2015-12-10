@@ -19,7 +19,7 @@ class ImportDetailNewModel extends Model {
         	$page = new \Think\Page($count,C('PAGE_LISTROWS'));
         	$limit = ($page->firstRow . ',' . $page->listRows);
 
-                $list = $this->alias('detail')->field('detail.*,s.school_name,t.town_name')->join('LEFT JOIN import_log log ON log.import_id = detail.import_id')->join('LEFT JOIN school s ON s.school_id = log.user_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->order('detail_id')->select();
+                $list = $this->alias('detail')->field('detail.*,s.school_name,t.town_name')->join('LEFT JOIN import_log log ON log.import_id = detail.import_id')->join('LEFT JOIN school s ON s.school_id = log.user_id')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->order('detail_id')->limit($limit)->select();
                 $show = $page->show();
                 return array('list'=>$list,'page'=>$show,'nums'=>$nums);
 	}
