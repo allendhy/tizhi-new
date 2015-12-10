@@ -19,64 +19,71 @@ class UpController extends PublicController {
 	private function check_state($import_id){
 		if(!$import_id){$this->ajaxReturn(array('errno'=>1,'errtitle'=>'参数错误'));}
 
-		$importLog = D("ImportLog")->where("import_id = %d",$import_id)->find();
+		$importids = explode(',',$import_id);
+
+		$importLogs = D("ImportLog")->alias('ilog')->field('ilog.*,s.school_code')->join('LEFT JOIN school s ON s.school_id = ilog.user_id AND s.year_year = '.$this->school_year)->where(array('ilog.import_id',array('IN',$importids)))->select();
+
 		if(empty($importLog)){
 			$this->ajaxReturn(array('errno'=>1,'errtitle'=>'获取文件上传状态失败，请到‘查看学生体质上传情况’处查看上传记录！'));
 		}
 
-		$errorList = '';
+		$errorLists = '';
 
 		$errno = 0;
 		$msg = '';
 
-		switch($importLog['deal_status']){
-			case '204010':
-				$msg = "文件上传中...";
-			break;
-			case '204020':
-				$count = D('import_log')->where('deal_status = 204020 AND is_error = 0')->count();
-				if($count > 1){
-					$msg = '排在您前边共有'.$count.'份体质数据文件等待校验，请您耐心等候。。。';
-				}else{
-					$msg = "请稍候片刻，正在校验您上传的文件...";
-				}
-			break;
-			case '204030':
-				$msg = "正在执行数据校验，请稍后...";
-			break;
-			case '204040':
-				$msg = "校验完毕";
-				if($importLog['is_error']==1){
-					$msg = "校验完毕，数据有错误";
-					if($importLog['year_year'] >= 2014){
-						$errorList = D('import_detail_new')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,country_education_id,name,sex')->where("partition_field = %d AND import_id= %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
+		foreach($importLogs as $importLog){
+			switch($importLog['deal_status']){
+				case '204010':
+					$msg = "文件上传中...";
+				break;
+				case '204020':
+					$count = D('import_log')->where('deal_status = 204020 AND is_error = 0')->count();
+					if($count > 1){
+						$msg = '排在您前边共有'.$count.'份体质数据文件等待校验，请您耐心等候。。。';
 					}else{
-						$errorList = D('import_detail')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,student_no,name,sex')->where("partition_field = %d AND import_id = %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
+						$msg = "请稍候片刻，正在校验您上传的文件...";
 					}
-					$errno = 1;
-				}
-				if($importLog['is_examine'] != ''){
-					$errno = 1;
-					$msg = '数据校验完毕,待区县审核完毕后进行计算分数';
-				}
-				
+				break;
+				case '204030':
+					$msg = "正在执行数据校验，请稍后...";
+				break;
+				case '204040':
+					$msg = "校验完毕";
+					if($importLog['is_error']==1){
+						$msg = "校验完毕，数据有错误";
+						if($importLog['year_year'] >= 2014){
+							$errorLists[$importLog['school_code']] = D('import_detail_new')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,country_education_id,name,sex')->where("partition_field = %d AND import_id= %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
+						}else{
+							$errorLists[$importLog['school_code']] = D('import_detail')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,student_no,name,sex')->where("partition_field = %d AND import_id = %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
+						}
+						$errno = 1;
+					}
+					if($importLog['is_examine'] != ''){
+						$errno = 1;
+						$msg = '数据校验完毕,待区县审核完毕后进行计算分数';
+					}
+					
 
-			break;
-			case '204050':
-				$msg = "正在计算得分，请稍候...";
-			break;
-			case '204060':
-				$msg = "计算得分完毕";
-			break;
-			default:
-				$msg = "正在上传文件...";
-			break;
+				break;
+				case '204050':
+					$msg = "正在计算得分，请稍候...";
+				break;
+				case '204060':
+					$msg = "计算得分完毕";
+				break;
+				default:
+					$msg = "正在上传文件...";
+				break;
+			}
+			$msg = '<p>' . $importLog['school_code'] . '页  ' . $msg . '</p>';
 		}
-
-		if(!empty($errorList)){
+		if(!empty($errorLists)){
 			$msg .= '';
-			foreach($errorList as $row){
-				$msg .= "<p>" . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
+			foreach($errorLists as $school_code=>$errorList){
+				foreach($errorList as $row){
+					$msg .= "<p>" . $importLog['school_code'] . '页  ' . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
+				}
 			}
 		}
 
@@ -597,7 +604,7 @@ class UpController extends PublicController {
 			}
 			//提交
 			M()->commit();
-			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'文件上传成功,请等待系统校验...','import_id'=>$import_id));
+			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'文件上传成功,请等待系统校验...','import_id'=>implode(',',$importids)));
 		}
 	}
 	//历史数据补录
