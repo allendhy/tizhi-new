@@ -21,6 +21,8 @@ class UpController extends PublicController {
 
 		$importids = explode(',',$import_id);
 
+		//$counts = count($importids);
+
 		$importLogs = D("ImportLog")->alias('ilog')->field('ilog.*,s.school_code')->join('LEFT JOIN school s ON s.school_id = ilog.user_id AND s.year_year = '.$this->school_year)->where(array('ilog.import_id'=>array('IN',$importids)))->select();
 
 		if(empty($importLogs)){
@@ -29,10 +31,14 @@ class UpController extends PublicController {
 
 		$errorLists = '';
 
-		$errno = 0;
+		//$errno = 0;
 		$msglist = '';
 
+		//$i = 0;
+
 		foreach($importLogs as $importLog){
+			$errno = 0;
+			$i+=1;
 			switch($importLog['deal_status']){
 				case '204010':
 					$msg[$importLog['school_code']] = "文件上传中...";
@@ -76,16 +82,19 @@ class UpController extends PublicController {
 					$msg[$importLog['school_code']] = "正在上传文件...";
 				break;
 			}
+			$errnos[$school_code] = $errno;
 			$msglist .= '<p>' . $importLog['school_code'] . '页  ' . $msg[$importLog['school_code']] . '</p>';
 		}
 		if(!empty($errorLists)){
 			$msglist .= '';
 			foreach($errorLists as $school_code=>$errorList){
 				foreach($errorList as $row){
-					$msglist .= "<p>" . $importLog['school_code'] . '页  ' . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
+					$msglist .= "<p>" . $school_code . '页  ' . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
 				}
 			}
 		}
+
+		if(array_sum($errnos) == $i)$errno = 1;else $errno = 0;
 
 		//$msg = date('Y-m-d H:i:s');
 		$this->ajaxReturn(array('errno'=>$errno,'errtitle'=>$msglist));
