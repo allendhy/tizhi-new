@@ -82,7 +82,7 @@ class UpController extends PublicController {
 					$msg[$importLog['school_code']] = "正在上传文件...";
 				break;
 			}
-			$errnos[$school_code] = $errno;
+			$errnos += $errno;
 			$msglist .= '<p>' . $importLog['school_code'] . '页  ' . $msg[$importLog['school_code']] . '</p>';
 		}
 		if(!empty($errorLists)){
@@ -94,9 +94,9 @@ class UpController extends PublicController {
 			}
 		}
 
-		if(array_sum($errnos) == $i)$errno = 1;else $errno = 0;
+		if($errnos == $i)$errno = 1;else $errno = 0;
 
-		echo array_sum($errnos);
+		//echo array_sum($errnos);
 
 		//$msg = date('Y-m-d H:i:s');
 		$this->ajaxReturn(array('errno'=>$errno,'errtitle'=>$msglist));
