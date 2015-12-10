@@ -86,7 +86,7 @@ class UpController extends PublicController {
 			$msglist .= '<p>' . $importLog['school_code'] . '页  ' . $msg[$importLog['school_code']] . '</p>';
 		}
 		if(!empty($errorLists)){
-			$msglist .= '';
+			$msglist .= '<br /><br />';
 			foreach($errorLists as $school_code=>$errorList){
 				foreach($errorList as $row){
 					$msglist .= "<p>" . $school_code . '页  ' . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
@@ -95,6 +95,8 @@ class UpController extends PublicController {
 		}
 
 		if(array_sum($errnos) == $i)$errno = 1;else $errno = 0;
+
+		echo array_sum($errnos);
 
 		//$msg = date('Y-m-d H:i:s');
 		$this->ajaxReturn(array('errno'=>$errno,'errtitle'=>$msglist));
