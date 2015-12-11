@@ -426,7 +426,7 @@ class UpController extends PublicController {
 								break;
 						}
 					}
-					if(!in_array($realGrade,array('11','12','13','14','15','16','21','22','23','24','31','32','33','34')))$errLogT2 .= ' 年级编号错误 ;';
+					if(!in_array($realGrade,array('11','12','13','14','15','16','21','22','23','24','30','31','32','33','34')))$errLogT2 .= ' 年级编号错误 ;';
 							
 					if(in_array($realGrade,array('11','12'))){
 						$titles = $gradeItem[11];
