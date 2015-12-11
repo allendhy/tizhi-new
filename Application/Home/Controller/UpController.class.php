@@ -31,10 +31,10 @@ class UpController extends PublicController {
 
 		$errorLists = '';
 
-		//$errno = 0;
+		$errnos = 0;
 		$msglist = '';
 
-		//$i = 0;
+		$i = 0;
 
 		foreach($importLogs as $importLog){
 			$errno = 0;
@@ -94,7 +94,7 @@ class UpController extends PublicController {
 			}
 		}
 
-		if($errnos == $i)$errno = 1;else $errno = 0;
+		if($errnos == $i && $errnos != 0)$errno = 1;else $errno = 0;
 
 		//echo array_sum($errnos);
 
