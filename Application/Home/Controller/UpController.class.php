@@ -240,7 +240,7 @@ class UpController extends PublicController {
 			}
 		}
 		/*表头*/
-		$keys = array('grade_num','class_num','class_name','country_education_id','folk_code','name','sex','birthday','address');
+		$key_base = array('grade_num','class_num','class_name','country_education_id','folk_code','name','sex','birthday','address');
 		$titContent = array(
 			'body_height'=>'身高',
 			'body_weight'=>'体重',
@@ -362,7 +362,7 @@ class UpController extends PublicController {
 			}
 
 			//合并表头
-			$keys = array_merge($keys,$titleArr);
+			$keys = array_merge($key_base,$titleArr);
 			$titleCount = count($keys);
 
 			if($ac == 'phydata2'){
