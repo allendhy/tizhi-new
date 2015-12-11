@@ -59,9 +59,9 @@ class UpController extends PublicController {
 					if($importLog['is_error']==1){
 						$msg[$importLog['school_code']] = "校验完毕，数据有错误";
 						if($importLog['year_year'] >= 2014){
-							$errorLists[$importLog['school_code']] = D('import_detail_new')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,country_education_id,name,sex')->where("partition_field = %d AND import_id= %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
+							$errorLists[$importLog['school_code']] = D('import_detail_new')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,country_education_id,name,sex')->where("partition_field = %d AND import_id= %d AND is_error = 1",array($importLog['partition_field'],$importLog['import_id']))->select();
 						}else{
-							$errorLists[$importLog['school_code']] = D('import_detail')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,student_no,name,sex')->where("partition_field = %d AND import_id = %d AND is_error = 1",array($importLog['partition_field'],$import_id))->select();
+							$errorLists[$importLog['school_code']] = D('import_detail')->field('detail_id,import_id,error_desc,excel_num,education_id,grade_num,class_num,class_name,student_no,name,sex')->where("partition_field = %d AND import_id = %d AND is_error = 1",array($importLog['partition_field'],$importLog['import_id']))->select();
 						}
 						$errno = 1;
 					}
@@ -86,7 +86,7 @@ class UpController extends PublicController {
 			$msglist .= '<p>' . $importLog['school_code'] . '页  ' . $msg[$importLog['school_code']] . '</p>';
 		}
 		if(!empty($errorLists)){
-			$msglist .= '<br /><br />';
+			$msglist .= '<br />';
 			foreach($errorLists as $school_code=>$errorList){
 				foreach($errorList as $row){
 					$msglist .= "<p>" . $school_code . '页  ' . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
