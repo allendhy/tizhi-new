@@ -29,7 +29,7 @@
 												<tbody>
 													<tr><td class="width-30">学校全部人数(学籍在学人数)</td><td>{$sch_status.s_cnt}</td></tr>
 													<tr><td>其中不参测人数</td><td>{$sch_status.s_notinschool_cnt}</td></tr>
-													<tr><td>有全国学籍号人数</td><td>{$sch_status['s_cnt'] - $sch_status['s_noceid_cnt']}</td></tr>
+													<tr><td>有全国学籍号人数</td><td><gt name="sch_status['s_cnt']" value='0'>{$sch_status['s_cnt'] - $sch_status['s_noceid_cnt']}</gt></td></tr>
 													<tr><td>没有全国学籍号人数</td><td>{$sch_status.s_noceid_cnt}</td></tr>
 												</tbody>
 											</table>
@@ -64,7 +64,10 @@
 				});
 				//年级下拉框
 				$('#school_code').change(function(){
-					ajaxSelectSchool('grade','school_grade');
+					//ajaxSelectSchool('grade','school_grade');
+					school = $(this).val();
+					if(school == 0)return false;
+					location.href="{:U('Home/Down/template')}" + '?school_code=' + school;
 				});
 				//班级下拉框
 				$('#school_grade').change(function(){
