@@ -64,10 +64,14 @@
 				});
 				//年级下拉框
 				$('#school_code').change(function(){
-					//ajaxSelectSchool('grade','school_grade');
+					
+					<eq name="userinfo['user_kind']" value="109030">
+					ajaxSelectSchool('grade','school_grade');
+					<else/>
 					school = $(this).val();
 					if(school == 0)return false;
 					location.href="{:U('Home/Down/template')}" + '?school_code=' + school;
+					</eq>
 				});
 				//班级下拉框
 				$('#school_grade').change(function(){
