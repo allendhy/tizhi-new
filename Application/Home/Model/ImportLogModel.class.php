@@ -8,6 +8,8 @@ class ImportLogModel extends Model {
 
                 $where['log.partition_field'] = intval($town_id . $school_year);
 
+                if($school_code != '0')
+
                 $where['s.school_code'] = $school_code;
 
                 if($is_error != ''){
