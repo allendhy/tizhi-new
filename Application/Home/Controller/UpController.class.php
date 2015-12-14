@@ -77,6 +77,7 @@ class UpController extends PublicController {
 				break;
 				case '204060':
 					$msg[$importLog['school_code']] = "计算得分完毕";
+					$errno = 1;
 				break;
 				default:
 					$msg[$importLog['school_code']] = "正在上传文件...";

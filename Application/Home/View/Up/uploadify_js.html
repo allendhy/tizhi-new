@@ -76,6 +76,7 @@
 						var idInt = setInterval(function(){
 						    $.post("{:U('Home/Up/index')}", {id:dataObj.import_id,ac:'check_state'},function(data){
 						        $('#file_check_state').html(data.errtitle);
+						        console.log(data.errtitle);
 						        if(data.errno == 1){
 						        	clearInterval(idInt);
 						        	return false;
