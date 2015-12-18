@@ -1,6 +1,9 @@
 <?php
 return array(
-	
+	//缓存
+	'DATA_CACHE_TYPE' => 'Memcache', 
+	'MEMCACHE_HOST'  => 'tcp://127.0.0.1:11211',
+
 	//年级编号和测试项目对应关系
 	'GRADE_ITEM'	=> 	array(
 		11=>array('身高','体重','肺活量','50米跑','坐位体前屈','一分钟跳绳'),

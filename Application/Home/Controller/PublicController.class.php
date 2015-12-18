@@ -40,6 +40,7 @@ class PublicController extends Controller {
 
 		//end
 
+
 		//用户菜单
 		$navList = array();
 		$userinfo = session('userinfo');
@@ -61,6 +62,7 @@ class PublicController extends Controller {
 		//用户菜单
 		$navList = session('navList');
 		$this->assign('navList',$navList);
+
 
 		//检索学生信息相关字段赋值
 		$school_year = I('school_year',0);

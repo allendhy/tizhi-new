@@ -49,7 +49,7 @@ class UpController extends PublicController {
 						$msg[$importLog['school_code']] = '排在您前边共有'.$count.'文件等待校验，';
 						if($count > 10){//队列过长,无需一直刷新等待
 							$msg[$importLog['school_code']] .= ' 因队列较多,您可以进行其他操作,稍后请在"查看上传记录"处查看数据上传状态';
-							$error = 1;
+							$errno = 1;
 						}else{
 							$msg[$importLog['school_code']] .= '请您耐心等候。。。';
 						}
@@ -110,6 +110,7 @@ class UpController extends PublicController {
 	}
 	//上传体质信息
 	public function index($ac='phydata'){
+
 		$ac = $ac != '' ? $ac : I('ac','phydata');
 
 		$unique_salt = C('UNIQUE_SALT');
@@ -235,7 +236,7 @@ class UpController extends PublicController {
 				$this->ajaxReturn(array('errno'=>104,'errtitle'=>'未发现excel文件!'));
 			}
 		}
-
+		
 		////不需要读取整个Excel文件而获取所有工作表数组的函数
 		$sheetNames  = $PHPReader->listWorksheetNames($_SERVER['DOCUMENT_ROOT']  . $fPath);
 
@@ -265,6 +266,15 @@ class UpController extends PublicController {
 		);
 
 		$gradeItem = C('GRADE_ITEM_FIELD');
+
+		//判断验证学籍号还是教育ID号
+		if($ac == 'phydata2'){
+			$field = 'education_id';
+			$fieldTitle = '教育ID号';
+		}else{
+			$field = 'country_education_id';
+			$fieldTitle = '全国学籍号';
+		}
 		/*表头end*/
 
 		//循环sheet
@@ -287,7 +297,9 @@ class UpController extends PublicController {
 			$this->school_id = $this->school_id['school_id'];
 
 			$schoolids[] = $this->school_id;
-		
+
+			dump(S('base_data_' . $this->school_id));exit();
+			
 			/*读取每一页内容*/
 	
 			$sheet = $PHPExcel->getSheet($sk);//sheet1
@@ -329,6 +341,12 @@ class UpController extends PublicController {
 				M()->rollback();
 				$this->ajaxReturn(array('errno'=>102,'errtitle'=>'保存上传记录失败，请稍候重试！'));
 			}
+
+			//缓存学校学生信息
+			$stuinfos = D('StudentScore')->get_school_datas($importLogData['partition_field'],$this->school_id,$ac);
+
+			//echo M()->getlastsql();exit();
+			//var_dump($stuinfos);exit();
 
 			$titleArr = array();
 			//从第九列开始
@@ -372,13 +390,7 @@ class UpController extends PublicController {
 			$keys = array_merge($key_base,$titleArr);
 			$titleCount = count($keys);
 
-			if($ac == 'phydata2'){
-				$field = 'education_id';
-				$fieldTitle = '教育ID号';
-			}else{
-				$field = 'country_education_id';
-				$fieldTitle = '全国学籍号';
-			}
+
 
 			$phyData = array();
 
@@ -403,8 +415,10 @@ class UpController extends PublicController {
 				if($phyData[$row]['country_education_id'] == '')$errLogT2 .= $fieldTitle . '不能为空；';
 				if($phyData[$row]['name'] == '')$errLogT2 .= '姓名不能为空；';
 
-				$stuinfo = D('StudentScore')->where("partition_field = %d AND school_id= %d AND ".$field." = '%s' AND name = '%s' AND is_del = 0",array($importLogData['partition_field'],$this->school_id,$phyData[$row]['country_education_id'],$phyData[$row]['name']))->find();
-		
+				///$stuinfo = D('StudentScore')->where("partition_field = %d AND school_id= %d AND ".$field." = '%s' AND name = '%s' AND is_del = 0",array($importLogData['partition_field'],$this->school_id,$phyData[$row]['country_education_id'],$phyData[$row]['name']))->find();
+
+				$stuinfo = $stuinfos[$phyData[$row][$field]];
+				//dump($);
 				if(empty($stuinfo) || $stuinfo['in_school'] == 0){
 					if(empty($stuinfo)){
 						$errLogT2 .=  " 非当前学校数据或者数据格式错误，请核对学生姓名、".$fieldTitle."是否有误；";
@@ -539,7 +553,7 @@ class UpController extends PublicController {
 					'grade_num'				=>	str_replace("'","",$phyData[$row]['grade_num']),
 					'class_num'				=>	str_replace("'","",$phyData[$row]['class_num']),
 					'class_name'			=>	str_replace("'","",$phyData[$row]['class_name']),
-					'folk_code'				=>	str_replace("'","",$stuinfo['fork_code']),
+					'folk_code'				=>	str_replace("'","",$stuinfo['folk']),
 					'name'					=>	$stuinfo['name'],
 					'sex'					=>	$stuinfo['sex'] == '106020' ? '女' : '男',
 					'birthday'				=>	date('Y-m-d',strtotime($stuinfo['birthday'])),
