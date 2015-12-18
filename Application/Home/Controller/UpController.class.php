@@ -46,7 +46,13 @@ class UpController extends PublicController {
 				case '204020':
 					$count = D('import_log')->where('deal_status = 204020 AND is_error = 0')->count();
 					if($count > 1){
-						$msg[$importLog['school_code']] = '排在您前边共有'.$count.'份体质数据文件等待校验，请您耐心等候。。。';
+						$msg[$importLog['school_code']] = '排在您前边共有'.$count.'文件等待校验，';
+						if($count > 10){//队列过长,无需一直刷新等待
+							$msg[$importLog['school_code']] .= ' 因队列较多,您可以进行其他操作,稍后请在"查看上传记录"处查看数据上传状态';
+							$error = 1;
+						}else{
+							$msg[$importLog['school_code']] .= '请您耐心等候。。。';
+						}
 					}else{
 						$msg[$importLog['school_code']] = "请稍候片刻，正在校验您上传的文件...";
 					}
@@ -596,6 +602,7 @@ class UpController extends PublicController {
 
 				if($errLogT2 != '') $errorLog .= $sheetErr . $errLogT1 . $errLogT2 . $errLogT3;
 			}
+			///M()->execute("execute sp_check_detail_main");
 		}
 
 		if(!empty($errorLog)){
@@ -614,6 +621,7 @@ class UpController extends PublicController {
 				$where['school_id'] = array('IN',$schoolids);
 				D('SchoolStatus')->where($where)->save($data);
 			}
+
 			//提交
 			M()->commit();
 			$this->ajaxReturn(array('errno'=>0,'errtitle'=>'文件上传成功,请等待系统校验...','import_id'=>implode(',',$importids)));
