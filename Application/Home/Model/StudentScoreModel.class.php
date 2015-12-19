@@ -5,10 +5,6 @@ class StudentScoreModel extends Model {
 
 	//上传时缓存学校的基本数据
 	public function get_school_datas($partition_field,$school_id,$ac='phydata'){
-		$base_data = S('base_data_' . $school_id);
-		
-		if($base_data !== false)
-			return $base_data;
 
 		$datas = $this->field('year_score_id,school_grade,folk,name,sex,studentno,education_id,town_id,birthday,country_education_id,in_school,school_length54')->where('partition_field=%d AND school_id=%d AND is_del=0',array($partition_field,$school_id))->select();
 
@@ -17,11 +13,12 @@ class StudentScoreModel extends Model {
 		if($ac == 'phydata2')$field='education_id';
 		else $field='country_education_id';
 
-		foreach($datas as $row){
+		foreach($datas as $key=>$row){
+			if($key == 0)
+			$aa = $row[$field];
 			$base_data[$row[$field]] = $row;
 		}
-
-		S('base_data_' . $school_id,$base_data);
+		
 		return $base_data;
 	}
 	//根据schoolcode获取年级信息

@@ -110,7 +110,6 @@ class UpController extends PublicController {
 	}
 	//上传体质信息
 	public function index($ac='phydata'){
-
 		$ac = $ac != '' ? $ac : I('ac','phydata');
 
 		$unique_salt = C('UNIQUE_SALT');
@@ -298,7 +297,7 @@ class UpController extends PublicController {
 
 			$schoolids[] = $this->school_id;
 
-			dump(S('base_data_' . $this->school_id));exit();
+			//dump(S('base_data_' . $this->school_id));exit();
 			
 			/*读取每一页内容*/
 	
@@ -334,7 +333,6 @@ class UpController extends PublicController {
 
 			$importids[] = $import_id;
 
-
 			if(!$import_id){
 				//删除文件
 				@unlink($_SERVER['DOCUMENT_ROOT'] . $fPath);
@@ -343,10 +341,30 @@ class UpController extends PublicController {
 			}
 
 			//缓存学校学生信息
-			$stuinfos = D('StudentScore')->get_school_datas($importLogData['partition_field'],$this->school_id,$ac);
-
-			//echo M()->getlastsql();exit();
-			//var_dump($stuinfos);exit();
+			
+			$stuinfos = S('base_data_' . $this->school_id);
+			
+			if($stuinfos === false){
+				$stuinfos = D('StudentScore')->get_school_datas($importLogData['partition_field'],$this->school_id,$ac);
+				S('base_data_' . $this->school_id,serialize($stuinfos));
+				//echo $this->school_id;exit();
+			}else{
+				$stuinfos = unserialize($stuinfos);
+				//dump($stuinfos);exit();
+			}
+			
+			/**
+			$memcache_test = S('cache_' . $this->school_id);
+			if($memcache_test === false){
+				$memcache_test = serialize($_SESSION);
+				S('cache_' . $this->school_id,$memcache_test);
+				exit('test end');
+			}else{
+				$memcache_test = unserialize($memcache_test);
+				echo $this->school_id;
+				dump($memcache_test);exit();
+			}
+			*/
 
 			$titleArr = array();
 			//从第九列开始
@@ -397,6 +415,9 @@ class UpController extends PublicController {
 			$sheetErr = $sname . '页 ';
 
 			for($row=2;$row<=$highestRow;$row++){
+
+				//if($row == 100) exit($highestRow);
+
 				for($column = 0;$column < $titleCount;$column++){
 					$val = $sheet->getCellByColumnAndRow($column,$row)->getValue();
 					if($val instanceof PHPExcel_RichText) {
@@ -418,9 +439,10 @@ class UpController extends PublicController {
 				///$stuinfo = D('StudentScore')->where("partition_field = %d AND school_id= %d AND ".$field." = '%s' AND name = '%s' AND is_del = 0",array($importLogData['partition_field'],$this->school_id,$phyData[$row]['country_education_id'],$phyData[$row]['name']))->find();
 
 				$stuinfo = $stuinfos[$phyData[$row][$field]];
-				//dump($);
+				
+
 				if(empty($stuinfo) || $stuinfo['in_school'] == 0){
-					if(empty($stuinfo)){
+					if(empty($stuinfo) || $stuinfo['name'] != $phyData[$row]['name']){
 						$errLogT2 .=  " 非当前学校数据或者数据格式错误，请核对学生姓名、".$fieldTitle."是否有误；";
 					}elseif($stuinfo['in_school'] == 0){
 						$errLogT2 .=  " 当前学生已设置为不在测,如需上报体质信息请设置该生是否在测为'是';";
@@ -566,6 +588,7 @@ class UpController extends PublicController {
 					'import_time'			=>  date('Y-m-d H:i:s'),
 					'is_avoid'				=>	'否'
 				);
+
 				//是否为补录数据
 				if($ac == 'historyPhydata')$data['examine'] = 0;
 				
@@ -603,13 +626,10 @@ class UpController extends PublicController {
 					}
 				}
 						
-				//$birObj = object2array($stuinfo['birthday']);
-				//$data['birthday'] = date('Y-m-d H:i:s',strtotime($birObj['date']));
-
-				$school_length54 = $stuinfo['school_length54'];
+				//$school_length54 = $stuinfo['school_length54'];
 
 				$detail_id = D('import_detail_new')->add($data);
-						
+					
 				if(!$detail_id){
 					$errLogT2 .= '添加学生记录失败！';
 				}
