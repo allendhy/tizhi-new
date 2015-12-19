@@ -3,6 +3,8 @@ return array(
 	//缓存
 	'DATA_CACHE_TYPE' => 'Memcache', 
 	'MEMCACHE_HOST'  => 'tcp://127.0.0.1:11211',
+	'DATA_CACHE_TIME'=> '3600',
+	'SHOW_PAGE_TRACE'=>false,
 
 	//年级编号和测试项目对应关系
 	'GRADE_ITEM'	=> 	array(

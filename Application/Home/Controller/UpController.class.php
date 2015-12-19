@@ -1,6 +1,7 @@
 <?php
 namespace Home\Controller;
 use Think\Controller;
+use Think\Cache;
 class UpController extends PublicController {
 	public function _initialize(){
 		parent::_initialize();
@@ -110,6 +111,7 @@ class UpController extends PublicController {
 	}
 	//上传体质信息
 	public function index($ac='phydata'){
+		
 		$ac = $ac != '' ? $ac : I('ac','phydata');
 
 		$unique_salt = C('UNIQUE_SALT');
@@ -172,7 +174,9 @@ class UpController extends PublicController {
 	}
 	//有全国学籍号:phydata, 无全国学籍号:phydata2
 	private function _phydata($fileinfo,$ac='phydata'){
-		//$this->ajaxReturn($fileinfo);
+
+		//import('Think.Cache');
+		//$Cache = \Cache::getInstance();
 
 		//查看是否截止上报
 		$school_year_info  = D('SchoolYear')->get_info($this->school_year);
@@ -297,7 +301,6 @@ class UpController extends PublicController {
 
 			$schoolids[] = $this->school_id;
 
-			//dump(S('base_data_' . $this->school_id));exit();
 			
 			/*读取每一页内容*/
 	
@@ -341,30 +344,16 @@ class UpController extends PublicController {
 			}
 
 			//缓存学校学生信息
-			
-			$stuinfos = S('base_data_' . $this->school_id);
-			
-			if($stuinfos === false){
+			//$stuinfos = S('base_data_' . $this->school_id);
+
+			//if($stuinfos === false){
 				$stuinfos = D('StudentScore')->get_school_datas($importLogData['partition_field'],$this->school_id,$ac);
-				S('base_data_' . $this->school_id,serialize($stuinfos));
-				//echo $this->school_id;exit();
-			}else{
-				$stuinfos = unserialize($stuinfos);
+			//	S('base_data_' . $this->school_id,serialize($stuinfos));
+			//}else{
+			//	$stuinfos = unserialize($stuinfos);
 				//dump($stuinfos);exit();
-			}
+			//}
 			
-			/**
-			$memcache_test = S('cache_' . $this->school_id);
-			if($memcache_test === false){
-				$memcache_test = serialize($_SESSION);
-				S('cache_' . $this->school_id,$memcache_test);
-				exit('test end');
-			}else{
-				$memcache_test = unserialize($memcache_test);
-				echo $this->school_id;
-				dump($memcache_test);exit();
-			}
-			*/
 
 			$titleArr = array();
 			//从第九列开始
