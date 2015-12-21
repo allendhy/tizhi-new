@@ -425,8 +425,6 @@ class UpController extends PublicController {
 				if($phyData[$row]['country_education_id'] == '')$errLogT2 .= $fieldTitle . '不能为空；';
 				if($phyData[$row]['name'] == '')$errLogT2 .= '姓名不能为空；';
 
-				///$stuinfo = D('StudentScore')->where("partition_field = %d AND school_id= %d AND ".$field." = '%s' AND name = '%s' AND is_del = 0",array($importLogData['partition_field'],$this->school_id,$phyData[$row]['country_education_id'],$phyData[$row]['name']))->find();
-
 				$stuinfo = $stuinfos[$phyData[$row]['country_education_id']];
 
 				if(empty($stuinfo) || $stuinfo['in_school'] == 0 || $stuinfo['name'] != $phyData[$row]['name'] ){
