@@ -427,10 +427,9 @@ class UpController extends PublicController {
 
 				///$stuinfo = D('StudentScore')->where("partition_field = %d AND school_id= %d AND ".$field." = '%s' AND name = '%s' AND is_del = 0",array($importLogData['partition_field'],$this->school_id,$phyData[$row]['country_education_id'],$phyData[$row]['name']))->find();
 
-				$stuinfo = $stuinfos[$phyData[$row][$field]];
-				
+				$stuinfo = $stuinfos[$phyData[$row]['country_education_id']];
 
-				if(empty($stuinfo) || $stuinfo['in_school'] == 0){
+				if(empty($stuinfo) || $stuinfo['in_school'] == 0 || $stuinfo['name'] != $phyData[$row]['name'] ){
 					if(empty($stuinfo) || $stuinfo['name'] != $phyData[$row]['name']){
 						$errLogT2 .=  " 非当前学校数据或者数据格式错误，请核对学生姓名、".$fieldTitle."是否有误；";
 					}elseif($stuinfo['in_school'] == 0){
@@ -473,7 +472,7 @@ class UpController extends PublicController {
 					if(!in_array($phyData[$row]['sex'],array(1,2))){
 						$errLogT2 .= ' 性别列用数字1和2表示 ;';
 					}
-					if($phyData[$row]['sex']!= substr($stuinfo['sex'],4,1)){
+					if($phyData[$row]['sex'] != substr($stuinfo['sex'],4,1)){
 						$errLogT2 .= ' 学生性别与cmis信息不一致 ;';
 					}
 							
