@@ -38,11 +38,11 @@
 														</td>
 														<td>{$vo.ysbxx}</td>
 														<td>{$vo.sjsbxx}</td>
-														<td>{:round($vo['sjsbxx']/$vo['ysbxx'],4)*100}%</td>
+														<td>{:number_format(($vo['sjsbxx']/$vo['ysbxx'])*100,2)}%</td>
 														<td>{$vo['s_cnt'] - $vo['s_notinschool_cnt']}</td>
 														<td>{$vo['s_phy_cnt'] - $vo['s_phynotinschool_cnt']}</td>
 														<td>{$vo['s_phy_cnt'] - $vo['s_phynotinschool_cnt'] - $vo['s_phyavoid_cnt']}</td>
-														<td>{:round(($vo['s_phy_cnt'] - $vo['s_phynotinschool_cnt'] - $vo['s_phyavoid_cnt'])/($vo['s_cnt'] - $vo['s_notinschool_cnt']),4)*100}%</td>
+														<td>{:number_format((($vo['s_phy_cnt'] - $vo['s_phynotinschool_cnt'] - $vo['s_phyavoid_cnt'])/($vo['s_cnt'] - $vo['s_notinschool_cnt']))*100,2)}%</td>
 													</tr>
 												</volist>
 												</tbody>

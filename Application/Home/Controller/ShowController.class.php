@@ -155,8 +155,8 @@ class ShowController extends PublicController {
 			$data['s_sj_cnt'] = $data['s_phy_cnt'] - $data['s_phynotinschool_cnt'];
 			//未受检人数
 			$data['s_wsj_cnt'] = $data['s_ysj_cnt'] - $data['s_sj_cnt'];
-			//上传率
-			$data['s_scl'] = round($data['s_sj_cnt']/$data['s_ysj_cnt'],4) * 100 . '%';
+
+			$data['s_scl'] = sprintf("%.2f",substr(sprintf("%.4f", ($data['s_sj_cnt']/$data['s_ysj_cnt']) * 100), 0, -2)) . '%';
 
 			$this->assign('sch_status',$data);
 		}
