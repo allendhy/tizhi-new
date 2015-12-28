@@ -100,12 +100,12 @@ class ExportController extends PublicController {
 			//未受检人数
 			$noTotalUp = $totalStu2-$totalUp;
 			//上传率
-			$percentage = $totalUp/($totalStu2)*100;
-			$percentage = round($percentage,2);
+			$percentage = number_format($totalUp/($totalStu2)*100,2);
+			//$percentage = round($percentage,2);
 			$percentage = $percentage.'%';
 			//未上传率
-			$noPercentage = $noTotalUp/($totalStu2)*100;
-			$noPercentage = round($noPercentage,2);
+			$noPercentage = number_format($noTotalUp/($totalStu2)*100,2);
+			//$noPercentage = round($noPercentage,2);
 			$noPercentage = $noPercentage.'%';
 
 

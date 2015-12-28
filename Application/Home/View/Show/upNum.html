@@ -74,6 +74,7 @@
 				$('#school_grade').change(function(){
 					ajaxSelectSchool('class','class_num');
 				});
+				console.log('应受检人数:{$sch_status.s_ysj_cnt}\n\r,未受检人数:{$sch_status.s_wsj_cnt}\n\r,已受检人数:{$sch_status.s_sj_cnt},\n\r{:(($sch_status['s_sj_cnt']/$sch_status['s_ysj_cnt']))}');
 			});
 		</script>
 

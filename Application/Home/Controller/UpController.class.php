@@ -400,8 +400,10 @@ class UpController extends PublicController {
 
 
 			$phyData = array();
-
+			
+			if(count($sheetNames) > 1)
 			$sheetErr = $sname . '页 ';
+			else $sheetErr = '';
 
 			for($row=2;$row<=$highestRow;$row++){
 

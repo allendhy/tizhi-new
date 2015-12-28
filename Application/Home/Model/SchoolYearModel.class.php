@@ -10,8 +10,10 @@ class SchoolYearModel extends Model {
 		$list = $this->order('year_year DESC')->select();
 		$option = '';
 
+		$this_year = $this->this_year();
+
 		foreach($list as $row){
-			if($type=='history' && $school_year < $row['year_year'])continue;
+			if($type=='history' && $row['year_year'] > $this_year['year_year'])continue;
 			$selected = $school_year > 0 && $school_year == $row['year_year'] ? 'selected' : ($row['used_year'] == 1 ? 'selecetd' : '');
 			$option .= "<option value='".$row['year_year']."' ".$selected.">".$row['year_name'] . '学年'."</option>";
 		}
