@@ -51,7 +51,7 @@ class ImportLogModel extends Model {
 
         $limit = ($page->firstRow . ',' . $page->listRows);
 
-        $list = $this->alias('log')->field('log.*,sd.dict_name AS deal_status_name')->join('LEFT JOIN school s ON s.school_id = log.user_id')->join('LEFT JOIN sys_dict sd ON sd.dict_id = log.deal_status')->where($where)->order('import_id DESC')->limit($limit)->select();
+        $list = $this->alias('log')->field('log.*,sd.dict_name AS deal_status_name,t.town_name,s.school_name')->join('LEFT JOIN school s ON s.school_id = log.user_id')->join('LEFT JOIN sys_dict sd ON sd.dict_id = log.deal_status')->where($where)->order('import_id DESC')->join('LEFT JOIN town t ON t.town_id = s.town_id')->where($where)->order('import_id DESC')->limit($limit)->select();
 
         $show = $page->show();
 

@@ -49,6 +49,10 @@
 														</eq>
 														<th>上传记录ID</th>
 														<th>所属学年</th>
+														<neq name="userinfo['user_kind']" value="109030">
+														<th class="hidden-480">区县</th>
+														<th class="hidden-480">学校</th>
+														</neq>
 														<th class="hidden-480">上传时间</th>
 														<th class="hidden-480">上传状态</th>
 														<th class="hidden-480">是否错误</th>
@@ -68,12 +72,16 @@
 															{$vo.import_id}
 														</td>
 														<td>{$vo.year_year}-{$vo['year_year'] + 1}学年</td>
+														<neq name="userinfo['user_kind']" value="109030">
+														<td>{$vo.town_name}</td>
+														<td>{$vo.school_name}</td>
+														</neq>
 														<td class="hidden-480">{$vo.import_time}</td>
 
 														<td class="hidden-480">{$vo.deal_status_name}</td>
 														<td class="hidden-480"><eq name="vo['is_error']" value="1">是<else/>否</eq></td>
 														<td class="hidden-480"><a href="{:U('Home/Down/receipt',array('ac'=>'import_log','id'=>$vo['import_id']))}">下载</a></td>
-														<td class="hidden-480"><eq name="vo['is_error']" value="0"><eq name="vo['is_examine']" value="1">审核未通过<else/><eq name="vo['is_examine']" value="2">审核已通过<else/>未审核</eq></eq></eq></td>
+														<td class="hidden-480"><eq name="vo['is_error']" value="0"><eq name="vo['is_examine']" value="1">审核未通过<else/><eq name="vo['is_examine']" value="2">审核已通过<else/>待审核</eq></eq></eq></td>
 														<td class="hidden-480"><a href="{:U('Home/Show/historyUpStatus',array('ac'=>'showdetail','id'=>$vo['import_id'],'school_year'=>$vo['year_year'],'town_id'=>$vo['town_id']))}">查看</a></td>
 														
 													</tr>
