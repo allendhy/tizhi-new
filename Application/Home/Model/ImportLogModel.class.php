@@ -29,7 +29,10 @@ class ImportLogModel extends Model {
     public function getHistoryList($school_year,$town_id,$school_code,$examine='',$ac="historyUpStatus"){
         $where = array();
         // $where['log.import_time']
-
+		
+		if($town_id > 0){
+			$where['s.town_id'] = $town_id;
+		}
         if($school_code != 0)$where['s.school_code'] = $school_code;
 
         if($ac == 'historyUpStatus'){
@@ -40,6 +43,8 @@ class ImportLogModel extends Model {
              $where['log.year_year'] = $school_year;
         }
 
+
+		
         if($examine == ''){
             $where['log.is_examine'] = array('exp','IS NOT NULL');
         }else
