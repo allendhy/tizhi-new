@@ -91,13 +91,19 @@ class UpController extends PublicController {
 				break;
 			}
 			$errnos += $errno;
+			
+			if(count($importLogs) > 1)
 			$msglist .= '<p>' . $importLog['school_code'] . '页  ' . $msg[$importLog['school_code']] . '</p>';
+			else $msglist .= '<p>' . $msg[$importLog['school_code']] . '</p>';
 		}
 		if(!empty($errorLists)){
 			$msglist .= '<br />';
 			foreach($errorLists as $school_code=>$errorList){
 				foreach($errorList as $row){
+					if(count($errorLists) > 1)
 					$msglist .= "<p>" . $school_code . '页  ' . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
+					else 
+						$msglist .= "<p>" . '第 ' . $row['excel_num'] . ' 行 '.$row['name'] . ' ' . $row['error_desc'] . '</p>';
 				}
 			}
 		}
