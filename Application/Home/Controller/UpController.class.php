@@ -403,8 +403,6 @@ class UpController extends PublicController {
 			$keys = array_merge($key_base,$titleArr);
 			$titleCount = count($keys);
 
-
-
 			$phyData = array();
 			
 			if(count($sheetNames) > 1)
